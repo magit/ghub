@@ -136,8 +136,8 @@
   (unless (eobp)
     (let ((json-object-type 'alist)
           (json-array-type  'list)
-          (json-key-type    nil)
-          (json-false       :json-false)
+          (json-key-type    'symbol)
+          (json-false       nil)
           (json-null        nil))
       (json-read))))
 
