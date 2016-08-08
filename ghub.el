@@ -5,6 +5,7 @@
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/tarsius/ghub
 ;; Keywords: tools
+;; Package-Requires: ((emacs "25"))
 
 ;; This file is not part of GNU Emacs.
 
