@@ -97,11 +97,12 @@
 (defun ghub--request (method resource &optional params data noerror)
   (let* ((p (and params (concat "?" (ghub--url-encode-params params))))
          (d (and data   (json-encode-list data)))
-         (url-request-extra-headers
-          `(("Content-Type"  . "application/json")
-            ("Authorization" . ,(concat "token " (ghub--get-access-token)))))
+         (url-request-extra-headers '(("Content-Type"  . "application/json")))
          (url-request-method method)
          (url-request-data d))
+    (when-let ((token (ghub--get-access-token)))
+      (add-to-list 'url-request-extra-headers
+                   (cons "Authorization" (concat "token " token))))
     (with-current-buffer
         (url-retrieve-synchronously (concat ghub--root-endpoint resource p))
       (let (link body)
