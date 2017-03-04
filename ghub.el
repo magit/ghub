@@ -60,6 +60,7 @@
 (require 'auth-source)
 (require 'json)
 (require 'url)
+(require 'subr-x)
 
 (defvar url-http-end-of-headers)
 (defvar url-http-response-status)
