@@ -60,14 +60,67 @@
 (require 'auth-source)
 (require 'json)
 (require 'url)
+(require 'subr-x)
 
 (defvar url-http-end-of-headers)
 (defvar url-http-response-status)
 
-(defconst ghub--domain "api.github.com")
-(defconst ghub--root-endpoint "https://api.github.com")
-
 (defvar ghub-unpaginate nil)
+(defvar ghub-force-basic-authentication nil)
+
+(defvar ghub-domain "github.com"
+  "The GitHub domain to query against.
+Default value is for GitHub.com, but this variable may be
+let-bound to query against GitHub Enterprise installations.
+
+See also `ghub-domain-configuration'.")
+
+(defgroup ghub nil
+  "The minuscule client for GitHub"
+  :prefix "ghub")
+
+(defcustom ghub-domain-configuration
+  '(("github.com" t (lambda ()
+                      (substring (shell-command-to-string "git config github.user")
+                                 0 -1))))
+  "Domain configurations.
+Each configuration is a list of the following format:
+
+  \(DOMAIN SECURE USERNAME\)
+
+where
+
+  DOMAIN is the domain name of your GitHub installation
+  SECURE specifies use of HTTPS (default) when non-nil
+  USERNAME is your username or a function that returns it"
+  :group 'ghub
+  :type '(repeat (list (string  :tag "Domain")
+                       (boolean :tag "Use secure connection?"
+                                :value t)
+                       (choice  :tag "Username"
+                                (string)
+                                (function)))))
+
+(defun ghub--domain-configuration (domain prop &optional default)
+  "Search for DOMAIN in `ghub-domain-configuration' and return PROP.
+If DOMAIN is not present in `ghub-domain-configuration', return
+DEFAULT."
+  (let* ((config (cdr (assoc-string domain ghub-domain-configuration)))
+         (config (list :secure (nth 0 config)
+                       :username (nth 1 config))))
+    (let ((val (if (member domain (mapcar #'car ghub-domain-configuration))
+                   (plist-get config prop)
+                 default)))
+      (if (functionp val)
+          (funcall val)
+        val))))
+
+(defun ghub--root-endpoint (domain)
+  "Gets the root API endpoint for DOMAIN."
+  (if (string= domain "github.com")
+      "https://api.github.com"
+    (concat "http" (when (ghub--domain-configuration domain :secure t) "s")
+            "://" domain "/api/v3")))
 
 (defun ghub-get (resource &optional params data noerror)
   (ghub--request "GET" resource params data noerror))
@@ -97,13 +150,15 @@
 (defun ghub--request (method resource &optional params data noerror)
   (let* ((p (and params (concat "?" (ghub--url-encode-params params))))
          (d (and data   (json-encode-list data)))
-         (url-request-extra-headers
-          `(("Content-Type"  . "application/json")
-            ("Authorization" . ,(concat "token " (ghub--get-access-token)))))
+         (url-request-extra-headers '(("Content-Type"  . "application/json")))
          (url-request-method method)
          (url-request-data d))
+    (unless ghub-force-basic-authentication
+      (when-let ((token (ghub--get-access-token ghub-domain)))
+        (push (cons "Authorization" (concat "token " token))
+              url-request-extra-headers)))
     (with-current-buffer
-        (url-retrieve-synchronously (concat ghub--root-endpoint resource p))
+        (url-retrieve-synchronously (concat (ghub--root-endpoint ghub-domain) resource p))
       (let (link body)
         (goto-char (point-min))
         (save-restriction
@@ -148,14 +203,12 @@
                        (url-hexify-string val)))
              params "&"))
 
-(defun ghub--get-access-token ()
+(defun ghub--get-access-token (domain)
   (let ((secret
          (plist-get (car (auth-source-search
                           :max 1
-                          :user (substring (shell-command-to-string
-                                            "git config github.user")
-                                           0 -1)
-                          :host ghub--domain))
+                          :user (ghub--domain-configuration domain :username)
+                          :host domain))
                     :secret)))
     (if (functionp secret)
         (funcall secret)
