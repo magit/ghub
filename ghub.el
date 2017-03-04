@@ -60,11 +60,13 @@
 (require 'auth-source)
 (require 'json)
 (require 'url)
+(require 'subr-x)
 
 (defvar url-http-end-of-headers)
 (defvar url-http-response-status)
 
 (defvar ghub-unpaginate nil)
+(defvar ghub-force-basic-authentication nil)
 
 (defvar ghub-domain "github.com"
   "The GitHub domain to query against.
@@ -148,11 +150,13 @@ DEFAULT."
 (defun ghub--request (method resource &optional params data noerror)
   (let* ((p (and params (concat "?" (ghub--url-encode-params params))))
          (d (and data   (json-encode-list data)))
-         (url-request-extra-headers
-          `(("Content-Type"  . "application/json")
-            ("Authorization" . ,(concat "token " (ghub--get-access-token ghub-domain)))))
+         (url-request-extra-headers '(("Content-Type"  . "application/json")))
          (url-request-method method)
          (url-request-data d))
+    (unless ghub-force-basic-authentication
+      (when-let ((token (ghub--get-access-token ghub-domain)))
+        (push (cons "Authorization" (concat "token " token))
+              url-request-extra-headers)))
     (with-current-buffer
         (url-retrieve-synchronously (concat (ghub--root-endpoint ghub-domain) resource p))
       (let (link body)
