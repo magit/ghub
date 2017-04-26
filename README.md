@@ -36,6 +36,13 @@ Usage examples
              (ghub-get "/users/tarsius/repos")))
   ```
 
+* Making an unauthenticated request:
+
+  ```lisp
+  (let ((ghub-authenticate nil))
+    (ghub-get "/orgs/magit/repos"))
+  ```
+
 Alternatives
 ------------
 

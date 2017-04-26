@@ -50,6 +50,11 @@
 ;;   (--keep (cdr (assq 'name it))
 ;;           (let ((ghub-unpaginate t))
 ;;             (ghub-get "/users/tarsius/repos")))
+;;
+;; Making an unauthenticated request:
+;;
+;;   (let ((ghub-authenticate nil))
+;;     (ghub-get "/orgs/magit/repos"))
 
 ;; Alternatives
 ;; ------------
@@ -64,6 +69,7 @@
 
 (require 'auth-source)
 (require 'json)
+(require 'subr-x)
 (require 'url)
 
 (defvar url-http-end-of-headers)
@@ -71,6 +77,7 @@
 
 (defconst ghub--domain "api.github.com")
 (defconst ghub--root-endpoint "https://api.github.com")
+(defvar ghub-authenticate t)
 (defvar ghub-token nil)
 (defvar ghub-unpaginate nil)
 
@@ -104,7 +111,8 @@
          (d (and data   (json-encode-list data)))
          (url-request-extra-headers
           `(("Content-Type"  . "application/json")
-            ("Authorization" . ,(concat "token " (ghub--token)))))
+            ,@(when-let ((token (ghub--token)))
+                `(("Authorization" . ,(concat "token " token))))))
          (url-request-method method)
          (url-request-data d))
     (with-current-buffer
@@ -154,18 +162,19 @@
              params "&"))
 
 (defun ghub--token ()
-  (or ghub-token
-      (let ((secret
-             (plist-get (car (auth-source-search
-                              :max 1
-                              :user (substring (shell-command-to-string
-                                                "git config github.user")
-                                               0 -1)
-                              :host ghub--domain))
-                        :secret)))
-        (if (functionp secret)
-            (funcall secret)
-          secret))))
+  (and ghub-authenticate
+       (or ghub-token
+           (let ((secret
+                  (plist-get (car (auth-source-search
+                                   :max 1
+                                   :user (substring (shell-command-to-string
+                                                     "git config github.user")
+                                                    0 -1)
+                                   :host ghub--domain))
+                             :secret)))
+             (if (functionp secret)
+                 (funcall secret)
+               secret)))))
 
 (defun ghub-wait (resource)
   (with-local-quit
