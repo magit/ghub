@@ -43,6 +43,26 @@ Usage examples
     (ghub-get "/orgs/magit/repos"))
   ```
 
+Github Enterprise support
+-------------------------
+
+* Initial configuration:
+
+  ```shell
+  $ git config example_com.user employee
+  $ emacs ~/.authinfo.gpg
+  # -*- epa-file-encrypt-to: ("employee@example.com") -*-
+  machine example.com login employee password <token>
+  ```
+
+* Making a request:
+
+  ```lisp
+  (let ((ghub-instance "example.com")
+        (ghub-base-url "https://example.com/api/v3"))
+    (ghub-get "/users/example/repos"))
+  ```
+
 Alternatives
 ------------
 

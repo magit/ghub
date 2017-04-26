@@ -56,6 +56,22 @@
 ;;   (let ((ghub-authenticate nil))
 ;;     (ghub-get "/orgs/magit/repos"))
 
+;; Github Enterprise support
+;; -------------------------
+;;
+;; Initial configuration:
+;;
+;;   $ git config example_com.user employee
+;;   $ emacs ~/.authinfo.gpg
+;;   # -*- epa-file-encrypt-to: ("employee@example.com") -*-
+;;   machine example.com login employee password <token>
+;;
+;; Making a request:
+;;
+;;   (let ((ghub-instance "example.com")
+;;         (ghub-base-url "https://example.com/api/v3"))
+;;     (ghub-get "/users/example/repos"))
+
 ;; Alternatives
 ;; ------------
 
@@ -75,8 +91,8 @@
 (defvar url-http-end-of-headers)
 (defvar url-http-response-status)
 
-(defconst ghub--domain "api.github.com")
-(defconst ghub--root-endpoint "https://api.github.com")
+(defvar ghub-instance "github.com")
+(defvar ghub-base-url "https://api.github.com")
 (defvar ghub-authenticate t)
 (defvar ghub-token nil)
 (defvar ghub-username nil)
@@ -117,7 +133,7 @@
          (url-request-method method)
          (url-request-data d))
     (with-current-buffer
-        (url-retrieve-synchronously (concat ghub--root-endpoint resource p))
+        (url-retrieve-synchronously (concat ghub-base-url resource p))
       (let (link body)
         (goto-char (point-min))
         (save-restriction
@@ -168,7 +184,7 @@
            (let ((secret (plist-get (car (auth-source-search
                                           :max 1
                                           :user (ghub--username)
-                                          :host ghub--domain))
+                                          :host ghub-instance))
                                     :secret)))
              (if (functionp secret)
                  (funcall secret)
@@ -177,7 +193,11 @@
 (defun ghub--username ()
   (or ghub-username
       (substring (shell-command-to-string
-                  "git config github.user")
+                  (format "git config %s.user"
+                          (if (equal ghub-instance "github.com")
+                              "github"
+                            (replace-regexp-in-string
+                             "\\." "_" ghub-instance))))
                  0 -1)))
 
 (defun ghub-wait (resource)
