@@ -164,17 +164,19 @@
 (defun ghub--token ()
   (and ghub-authenticate
        (or ghub-token
-           (let ((secret
-                  (plist-get (car (auth-source-search
-                                   :max 1
-                                   :user (substring (shell-command-to-string
-                                                     "git config github.user")
-                                                    0 -1)
-                                   :host ghub--domain))
-                             :secret)))
+           (let ((secret (plist-get (car (auth-source-search
+                                          :max 1
+                                          :user (ghub--username)
+                                          :host ghub--domain))
+                                    :secret)))
              (if (functionp secret)
                  (funcall secret)
                secret)))))
+
+(defun ghub--username ()
+  (substring (shell-command-to-string
+              "git config github.user")
+             0 -1))
 
 (defun ghub-wait (resource)
   (with-local-quit
