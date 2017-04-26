@@ -1,6 +1,6 @@
 ;;; ghub.el --- minuscule client for the Github API  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2016  Jonas Bernoulli
+;; Copyright (C) 2016-2017  Jonas Bernoulli
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/tarsius/ghub
@@ -25,29 +25,34 @@
 
 ;; A minuscule client for the Github API.
 
-;; Initial configuration:
+;; This library just provides the HTTP verbs.  Instead of wrapping
+;; every resource, I recommend https://developer.github.com/v3.
+;; Due to the lack of doc-strings, I also recommend having a quick
+;; look at the source, which is quite trivial.
+
+;; Initial configuration
+;; ---------------------
 ;;
 ;;   $ git config github.user <username>
 ;;   $ emacs ~/.authinfo.gpg
 ;;   # -*- epa-file-encrypt-to: ("A.U.Thor@example.com") -*-
 ;;   machine api.github.com login <login> password <token>
 
-;; Usage examples:
+;; Usage examples
+;; --------------
 ;;
-;; Get details about a repository:
+;; Getting details about a repository:
 ;;
 ;;   (ghub-get "/repos/tarsius/ghub")
 ;;
-;; List names of all repositories of a user:
+;; Listing names of all repositories of a user:
 ;;
 ;;   (--keep (cdr (assq 'name it))
 ;;           (let ((ghub-unpaginate t))
 ;;             (ghub-get "/users/tarsius/repos")))
 
-;; This library just provides the basic verbs.  Instead of wrapping
-;; every resource, I recommend https://developer.github.com/v3.  Due
-;; to the lack of doc-strings, I also recommend having a quick look
-;; at the source, which is quite trivial.
+;; Alternatives
+;; ------------
 
 ;; If you like this, then you might also like `glab.el'; a minuscule
 ;; client for the Gitlab API.  See https://gitlab.com/tarsius/glab.

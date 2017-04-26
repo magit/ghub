@@ -1,6 +1,11 @@
 Minuscule client for the Github API
 ===================================
 
+This library just provides the HTTP verbs.  Instead of wrapping
+every resource, I recommend https://developer.github.com/v3.
+Due to the lack of doc-strings, I also recommend having a quick
+look at the source, which is quite trivial.
+
 Initial configuration
 ---------------------
 
@@ -17,13 +22,13 @@ machine api.github.com login <login> password <token>
 Usage examples
 --------------
 
-* Get details about a repository:
+* Getting details about a repository:
 
   ```lisp
   (ghub-get "/repos/tarsius/ghub")
   ```
 
-* List names of all repositories of a user:
+* Listing names of all repositories of a user:
 
   ```lisp
   (--keep (cdr (assq 'name it))
@@ -31,13 +36,8 @@ Usage examples
              (ghub-get "/users/tarsius/repos")))
   ```
 
-Links
------
-
-This library just provides the basic verbs.  Instead of wrapping
-every resource, I recommend https://developer.github.com/v3.  Due
-to the lack of doc-strings, I also recommend having a quick look
-at the source, which is quite trivial.
+Alternatives
+------------
 
 If you like this, then you might also like `glab.el`; a minuscule
 client for the Gitlab API.  See https://gitlab.com/tarsius/glab.
