@@ -71,7 +71,7 @@
 
 (defconst ghub--domain "api.github.com")
 (defconst ghub--root-endpoint "https://api.github.com")
-
+(defvar ghub-token nil)
 (defvar ghub-unpaginate nil)
 
 (defun ghub-get (resource &optional params data noerror)
@@ -154,17 +154,18 @@
              params "&"))
 
 (defun ghub--token ()
-  (let ((secret
-         (plist-get (car (auth-source-search
-                          :max 1
-                          :user (substring (shell-command-to-string
-                                            "git config github.user")
-                                           0 -1)
-                          :host ghub--domain))
-                    :secret)))
-    (if (functionp secret)
-        (funcall secret)
-      secret)))
+  (or ghub-token
+      (let ((secret
+             (plist-get (car (auth-source-search
+                              :max 1
+                              :user (substring (shell-command-to-string
+                                                "git config github.user")
+                                               0 -1)
+                              :host ghub--domain))
+                        :secret)))
+        (if (functionp secret)
+            (funcall secret)
+          secret))))
 
 (defun ghub-wait (resource)
   (with-local-quit
