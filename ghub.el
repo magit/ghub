@@ -104,7 +104,7 @@
          (d (and data   (json-encode-list data)))
          (url-request-extra-headers
           `(("Content-Type"  . "application/json")
-            ("Authorization" . ,(concat "token " (ghub--get-access-token)))))
+            ("Authorization" . ,(concat "token " (ghub--token)))))
          (url-request-method method)
          (url-request-data d))
     (with-current-buffer
@@ -153,7 +153,7 @@
                        (url-hexify-string val)))
              params "&"))
 
-(defun ghub--get-access-token ()
+(defun ghub--token ()
   (let ((secret
          (plist-get (car (auth-source-search
                           :max 1
