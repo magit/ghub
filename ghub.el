@@ -79,6 +79,7 @@
 (defconst ghub--root-endpoint "https://api.github.com")
 (defvar ghub-authenticate t)
 (defvar ghub-token nil)
+(defvar ghub-username nil)
 (defvar ghub-unpaginate nil)
 
 (defun ghub-get (resource &optional params data noerror)
@@ -174,9 +175,10 @@
                secret)))))
 
 (defun ghub--username ()
-  (substring (shell-command-to-string
-              "git config github.user")
-             0 -1))
+  (or ghub-username
+      (substring (shell-command-to-string
+                  "git config github.user")
+                 0 -1)))
 
 (defun ghub-wait (resource)
   (with-local-quit
