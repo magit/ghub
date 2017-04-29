@@ -36,7 +36,7 @@
 ;;   $ git config github.user <username>
 ;;   $ emacs ~/.authinfo.gpg
 ;;   # -*- epa-file-encrypt-to: ("A.U.Thor@example.com") -*-
-;;   machine api.github.com login <login> password <token>
+;;   machine github.com login <login> password <token>
 
 ;; Usage examples
 ;; --------------
