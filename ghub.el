@@ -81,8 +81,8 @@
 ;; If you don't like this, then you might instead like `gh.el'; a big
 ;; client for the Github API.  See https://github.com/sigma/gh.el.
 
-;; If you would like to use `ghub.el', but also want decicated
-;; functions for each API entpoint, then you can create those using
+;; If you would like to use `ghub.el', but also want dedicated
+;; functions for each API endpoint, then you can create those using
 ;; `apiwrap.el'.  See https://github.com/vermiculus/apiwrap.el.
 
 ;;; Code:
