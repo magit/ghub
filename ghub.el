@@ -130,8 +130,9 @@
          (d (and data   (json-encode-list data)))
          (url-request-extra-headers
           `(("Content-Type"  . "application/json")
-            ,@(when-let ((token (ghub--token)))
-                `(("Authorization" . ,(concat "token " token))))))
+            ,@(and ghub-authenticate
+                   (when-let ((token (ghub--token)))
+                     `(("Authorization" . ,(concat "token " token)))))))
          (url-request-method method)
          (url-request-data d))
     (with-current-buffer
@@ -182,20 +183,19 @@
              params "&"))
 
 (defun ghub--token ()
-  (and ghub-authenticate
-       (or ghub-token
-           (let ((secret
-                  (plist-get
-                   (car (auth-source-search
-                         :max 1
-                         :user (ghub--username)
-                         :host (save-match-data
-                                 (string-match "\\`https?://" ghub-base-url)
-                                 (substring ghub-base-url (match-end 0)))))
-                   :secret)))
-             (if (functionp secret)
-                 (funcall secret)
-               secret)))))
+  (or ghub-token
+      (let ((secret
+             (plist-get
+              (car (auth-source-search
+                    :max 1
+                    :user (ghub--username)
+                    :host (save-match-data
+                            (string-match "\\`https?://" ghub-base-url)
+                            (substring ghub-base-url (match-end 0)))))
+              :secret)))
+        (if (functionp secret)
+            (funcall secret)
+          secret))))
 
 (defun ghub--username ()
   (or ghub-username
