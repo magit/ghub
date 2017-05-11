@@ -64,13 +64,12 @@
 ;;   $ git config example_com.user employee
 ;;   $ emacs ~/.authinfo.gpg
 ;;   # -*- epa-file-encrypt-to: ("employee@example.com") -*-
-;;   machine example.com login employee password <token>
+;;   machine example.com/api/v3 login employee password <token>
 ;;
 ;; Making a request:
 ;;
-;;   (let ((ghub-instance "example.com")
-;;         (ghub-base-url "https://example.com/api/v3"))
-;;     (ghub-get "/users/example/repos"))
+;;   (let ((ghub-base-url "https://example.com/api/v3"))
+;;     (ghub-get "/users/employee/repos"))
 
 ;; Alternatives
 ;; ------------
@@ -95,7 +94,6 @@
 (defvar url-http-end-of-headers)
 (defvar url-http-response-status)
 
-(defvar ghub-instance "github.com")
 (defvar ghub-base-url "https://api.github.com")
 (defvar ghub-authenticate t)
 (defvar ghub-token nil)
@@ -186,24 +184,31 @@
 (defun ghub--token ()
   (and ghub-authenticate
        (or ghub-token
-           (let ((secret (plist-get (car (auth-source-search
-                                          :max 1
-                                          :user (ghub--username)
-                                          :host ghub-instance))
-                                    :secret)))
+           (let ((secret
+                  (plist-get
+                   (car (auth-source-search
+                         :max 1
+                         :user (ghub--username)
+                         :host (save-match-data
+                                 (string-match "\\`https?://" ghub-base-url)
+                                 (substring ghub-base-url (match-end 0)))))
+                   :secret)))
              (if (functionp secret)
                  (funcall secret)
                secret)))))
 
 (defun ghub--username ()
   (or ghub-username
-      (substring (shell-command-to-string
-                  (format "git config %s.user"
-                          (if (equal ghub-instance "github.com")
-                              "github"
-                            (replace-regexp-in-string
-                             "\\." "_" ghub-instance))))
-                 0 -1)))
+      (substring
+       (shell-command-to-string
+        (format "git config %s.user"
+                (if (string-equal ghub-base-url "https://api.github.com")
+                    "github"
+                  (save-match-data
+                    (and (string-match "\\`https?://\\([^/]+\\)" ghub-base-url)
+                         (replace-regexp-in-string
+                          "\\." "_" (match-string 1 ghub-base-url)))))))
+       0 -1)))
 
 (defun ghub-wait (resource)
   (with-local-quit
