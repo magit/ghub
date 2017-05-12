@@ -43,6 +43,14 @@ Usage examples
     (ghub-get "/orgs/magit/repos"))
   ```
 
+* Making a request using basic authentication:
+
+  ```lisp
+  (let ((ghub-authenticate 'basic))
+    (ghub-get "/orgs/magit/repos"))
+  ```
+
+
 Github Enterprise support
 -------------------------
 
