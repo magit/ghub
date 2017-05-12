@@ -119,7 +119,7 @@
   (ghub--request "DELETE" resource params data noerror))
 
 (define-error 'ghub-error "Ghub Error")
-(define-error 'ghub-http-error "HTTP Error")
+(define-error 'ghub-http-error "HTTP Error" 'ghub-error)
 (define-error 'ghub-301 "Moved Permanently" 'ghub-http-error)
 (define-error 'ghub-400 "Bad Request" 'ghub-http-error)
 (define-error 'ghub-404 "Not Found" 'ghub-http-error)
