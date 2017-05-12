@@ -119,6 +119,7 @@
   (ghub--request "DELETE" resource params data noerror))
 
 (define-error 'ghub-error "Ghub Error")
+(define-error 'ghub-auth-error "Auth Error" 'ghub-error)
 (define-error 'ghub-http-error "HTTP Error" 'ghub-error)
 (define-error 'ghub-301 "Moved Permanently" 'ghub-http-error)
 (define-error 'ghub-400 "Bad Request" 'ghub-http-error)
@@ -131,8 +132,7 @@
          (url-request-extra-headers
           `(("Content-Type"  . "application/json")
             ,@(and ghub-authenticate
-                   (when-let ((token (ghub--token)))
-                     `(("Authorization" . ,(concat "token " token)))))))
+                   `(("Authorization" . ,(concat "token " (ghub--token)))))))
          (url-request-method method)
          (url-request-data d))
     (with-current-buffer
@@ -193,9 +193,10 @@
                             (string-match "\\`https?://" ghub-base-url)
                             (substring ghub-base-url (match-end 0)))))
               :secret)))
-        (if (functionp secret)
-            (funcall secret)
-          secret))))
+        (or (if (functionp secret)
+                (funcall secret)
+              secret)
+            (signal 'ghub-auth-error "Token not found")))))
 
 (defun ghub--username ()
   (or ghub-username
