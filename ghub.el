@@ -138,6 +138,7 @@
          (url-request-data d))
     (with-current-buffer
         (url-retrieve-synchronously (concat ghub-base-url resource p))
+      (set-buffer-multibyte t)
       (let (link body)
         (goto-char (point-min))
         (save-restriction
