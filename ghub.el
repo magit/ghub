@@ -27,16 +27,18 @@
 
 ;; This library just provides the HTTP verbs.  Instead of wrapping
 ;; every resource, I recommend https://developer.github.com/v3.
-;; Due to the lack of doc-strings, I also recommend having a quick
-;; look at the source, which is quite trivial.
 
 ;; Initial configuration
 ;; ---------------------
 ;;
-;;   $ git config github.user <username>
+;;   $ git config --global github.user <username>
 ;;   $ emacs ~/.authinfo.gpg
 ;;   # -*- epa-file-encrypt-to: ("A.U.Thor@example.com") -*-
 ;;   machine api.github.com login <login> password <token>
+;;
+;; To acquire a token, go to https://github.com/settings/tokens.  Note
+;; that currently the same token is shared by all Emacs packages that
+;; use `ghub.el'.
 
 ;; Usage examples
 ;; --------------
@@ -66,14 +68,20 @@
 ;;
 ;; Initial configuration:
 ;;
-;;   $ git config example_com.user employee
+;;   $ cd /path/to/repository
+;;   $ git config gh_example_com.user employee
 ;;   $ emacs ~/.authinfo.gpg
 ;;   # -*- epa-file-encrypt-to: ("employee@example.com") -*-
-;;   machine example.com/api/v3 login employee password <token>
+;;   machine gh.example.com/api/v3 login employee password <token>
+;;
+;; Note that unlike for Github.com, which uses `github.user', the Git
+;; variable used to store the username for an Enterprise instance is
+;; named `HOST.user', where HOST is the host part of the `URI', with
+;; dots replaced with underscores.
 ;;
 ;; Making a request:
 ;;
-;;   (let ((ghub-base-url "https://example.com/api/v3"))
+;;   (let ((ghub-base-url "https://gh.example.com/api/v3"))
 ;;     (ghub-get "/users/employee/repos"))
 
 ;; Alternatives
@@ -107,21 +115,39 @@
 (defvar ghub-unpaginate nil)
 
 (defun ghub-get (resource &optional params data noerror)
+  "Make `GET' request for RESOURCE, optionally sending PARAMS and/or DATA.
+Signal an error if the status code isn't in the 2xx class;
+unless optional NOERROR is non-nil, in which case return nil."
   (ghub--request "GET" resource params data noerror))
 
 (defun ghub-put (resource &optional params data noerror)
+  "Make `PUT' request for RESOURCE, optionally sending PARAMS and/or DATA.
+Signal an error if the status code isn't in the 2xx class;
+unless optional NOERROR is non-nil, in which case return nil."
   (ghub--request "PUT" resource params data noerror))
 
 (defun ghub-head (resource &optional params data noerror)
+  "Make `HEAD' request for RESOURCE, optionally sending PARAMS and/or DATA.
+Signal an error if the status code isn't in the 2xx class;
+unless optional NOERROR is non-nil, in which case return nil."
   (ghub--request "HEAD" resource params data noerror))
 
 (defun ghub-post (resource &optional params data noerror)
+  "Make `POST' request for RESOURCE, optionally sending PARAMS and/or DATA.
+Signal an error if the status code isn't in the 2xx class;
+unless optional NOERROR is non-nil, in which case return nil."
   (ghub--request "POST" resource params data noerror))
 
 (defun ghub-patch (resource &optional params data noerror)
+  "Make `PATCH' request for RESOURCE, optionally sending PARAMS and/or DATA.
+Signal an error if the status code isn't in the 2xx class;
+unless optional NOERROR is non-nil, in which case return nil."
   (ghub--request "PATCH" resource params data noerror))
 
 (defun ghub-delete (resource &optional params data noerror)
+  "Make `DELETE' request for RESOURCE, optionally sending PARAMS and/or DATA.
+Signal an error if the status code isn't in the 2xx class; unless
+optional NOERROR is non-nil, in which case return nil."
   (ghub--request "DELETE" resource params data noerror))
 
 (define-error 'ghub-error "Ghub Error")
@@ -133,6 +159,11 @@
 (define-error 'ghub-422 "Unprocessable Entity" 'ghub-http-error)
 
 (defun ghub--request (method resource &optional params data noerror)
+  "Make a request using METHOD for RESOURCE.
+METHOD is a `HTTP' request method, a string.  If non-nil, send
+PARAMS and/or DATA in the request.  Signal an error if the status
+code isn't in the 2xx class; unless optional NOERROR is non-nil,
+in which case return nil."
   (let* ((p (and params (concat "?" (ghub--url-encode-params params))))
          (d (and data   (json-encode-list data)))
          (url-request-extra-headers
@@ -198,6 +229,10 @@
     (url-basic-auth url t)))
 
 (defun ghub--token ()
+  "Return the configured token.
+Use `auth-source-search' to get the token for the user returned
+by `ghub--username' and a host based on `ghub-base-url'.  When
+`ghub-token' is non-nil, then return its value instead."
   (or ghub-token
       (let ((secret
              (plist-get
@@ -214,6 +249,11 @@
             (signal 'ghub-auth-error "Token not found")))))
 
 (defun ghub--username ()
+  "Return the configured username.
+For Github.com get the value of the Git variable `github.user'.
+For Github enterprise instances, get the value of `HOST.user',
+where HOST is the host part of the `URI', with dots replaced with
+underscores.  E.g. `gh_example_com.user' for gh.example.com/api."
   (or ghub-username
       (substring
        (shell-command-to-string
@@ -227,6 +267,7 @@
        0 -1)))
 
 (defun ghub-wait (resource)
+  "Busy-wait until RESOURCE becomes available."
   (with-local-quit
     (let ((for 0.5)
           (total 0))
