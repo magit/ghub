@@ -55,6 +55,13 @@
 ;;
 ;;   (let ((ghub-authenticate nil))
 ;;     (ghub-get "/orgs/magit/repos"))
+;;
+;; Making a request using basic authentication:
+;;
+;; (let ((ghub-authenticate 'basic))
+;;   (ghub-post "/authorizations" nil
+;;              '((scopes . (public_repo))
+;;                (note . "example"))))
 
 ;; Github Enterprise support
 ;; -------------------------
@@ -91,6 +98,7 @@
 (require 'json)
 (require 'subr-x)
 (require 'url)
+(require 'url-auth)
 
 (defvar url-http-end-of-headers)
 (defvar url-http-response-status)
@@ -132,8 +140,8 @@
          (d (and data   (json-encode-list data)))
          (url-request-extra-headers
           `(("Content-Type"  . "application/json")
-            ,@(when-let ((token (ghub--token)))
-                `(("Authorization" . ,(concat "token " token))))))
+            ,@(and ghub-authenticate
+                   `(("Authorization" . ,(ghub--get-auth))))))
          (url-request-method method)
          (url-request-data d))
     (with-current-buffer
@@ -183,17 +191,27 @@
                        (url-hexify-string val)))
              params "&"))
 
+(defun ghub--get-auth ()
+  (let* ((ghub-username (ghub--username))
+         (token (unless (eq ghub-authenticate 'basic)
+                  (ghub--token)))
+         url)
+    (if token
+        (concat "token " token)
+      (setq url (url-generic-parse-url ghub-base-url))
+      (setf (url-user url) ghub-username)
+      (url-basic-auth url t))))
+
 (defun ghub--token ()
-  (and ghub-authenticate
-       (or ghub-token
-           (let ((secret (plist-get (car (auth-source-search
-                                          :max 1
-                                          :user (ghub--username)
-                                          :host ghub-instance))
-                                    :secret)))
-             (if (functionp secret)
-                 (funcall secret)
-               secret)))))
+  (or ghub-token
+      (let ((secret (plist-get (car (auth-source-search
+                                     :max 1
+                                     :user (ghub--username)
+                                     :host ghub-instance))
+                               :secret)))
+        (if (functionp secret)
+            (funcall secret)
+          secret))))
 
 (defun ghub--username ()
   (or ghub-username
