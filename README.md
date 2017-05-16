@@ -84,12 +84,12 @@ dots replaced with underscores.
 Alternatives
 ------------
 
+If you like this, then you might never-the-less prefer `ghub+.el`;
+a thick GitHub API client built on `ghub.el'.
+See https://github.com/vermiculus/ghub-plus.
+
 If you like this, then you might also like `glab.el`; a minuscule
 client for the Gitlab API.  See https://gitlab.com/tarsius/glab.
 
 If you don't like this, then you might instead like `gh.el`; a big
 client for the Github API.  See https://github.com/sigma/gh.el.
-
-If you would like to use `ghub.el`, but also want dedicated
-functions for each API endpoint, then you can create those using
-`apiwrap.el`.  See https://github.com/vermiculus/apiwrap.el.
