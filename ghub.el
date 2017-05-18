@@ -101,9 +101,10 @@
 
 (require 'auth-source)
 (require 'json)
-(require 'subr-x)
 (require 'url)
 (require 'url-auth)
+
+(eval-when-compile (require 'subr-x))
 
 (defvar url-http-end-of-headers)
 (defvar url-http-response-status)
