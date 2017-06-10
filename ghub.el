@@ -247,7 +247,7 @@ by `ghub--username' and a host based on `ghub-base-url'.  When
         (or (if (functionp secret)
                 (funcall secret)
               secret)
-            (signal 'ghub-auth-error "Token not found")))))
+            (signal 'ghub-auth-error '("Token not found"))))))
 
 (defun ghub--username ()
   "Return the configured username.
@@ -273,11 +273,12 @@ underscores.  E.g. `gh_example_com.user' for gh.example.com/api."
     (let ((for 0.5)
           (total 0))
       (while (not (ignore-errors (ghub-get resource)))
-        (setq for (truncate (* 2 for)))
-        (setq total (+ total for))
+        (setq for   (truncate (* 2 for))
+              total (+ total for))
         (when (= for 128)
           (signal 'ghub-error
-                  (format "Github is taking to long to create %s" resource)))
+                  (list
+                   (format "Github is taking too long to create %s" resource))))
         (message "Waiting for %s (%ss)..." resource total)
         (sit-for for)))))
 
