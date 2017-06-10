@@ -204,7 +204,7 @@ in which case return nil."
             (nconc body
                    (ghub--request method resource
                                   (cons (cons 'page link)
-                                        (cl-delete 'page params :key #'car))
+                                        (assq-delete-all 'page params))
                                   data noerror))
           body)))))
 
@@ -218,10 +218,10 @@ in which case return nil."
       (json-read))))
 
 (defun ghub--url-encode-params (params)
-  (mapconcat (pcase-lambda (`(,key . ,val))
-               (concat (url-hexify-string (symbol-name key)) "="
-                       (url-hexify-string val)))
-             params "&"))
+  (url-build-query-string
+   (mapcar (lambda (param)
+             (list (car param) (cdr param)))
+           params)))
 
 (defun ghub--basic-auth ()
   (let ((url (url-generic-parse-url ghub-base-url)))
