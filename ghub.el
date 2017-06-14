@@ -100,6 +100,7 @@
 ;;; Code:
 
 (require 'auth-source)
+(require 'cl-lib)
 (require 'json)
 (require 'url)
 (require 'url-auth)
