@@ -1,8 +1,8 @@
 Minuscule client for the Github API
 ===================================
 
-This library just provides the HTTP verbs.  Instead of wrapping
-every resource, I recommend https://developer.github.com/v3.
+This library just provides the HTTP methods.
+See https://developer.github.com/v3 for valid requests.
 
 Initial configuration
 ---------------------
