@@ -259,13 +259,15 @@ For Github enterprise instances, get the value of `HOST.user',
 where HOST is the host part of the `URI', with dots replaced with
 underscores.  E.g. `gh_example_com.user' for gh.example.com/api."
   (or ghub-username
-      (car (ignore-errors
-             (process-lines
-              "git" "config"
-              (concat (if (string-equal ghub-base-url "https://api.github.com")
-                          "github"
-                        (subst-char-in-string ?. ?_ (ghub--hostname)))
-                      ".user"))))))
+      (let* ((var (concat
+                   (if (string-equal ghub-base-url "https://api.github.com")
+                       "github"
+                     (subst-char-in-string ?. ?_ (ghub--hostname)))
+                   ".user"))
+             (val (ignore-errors (car (process-lines "git" "config" var)))))
+        (if val
+            (subst-char-in-string ?. ?_ val)
+          (signal 'ghub-auth-error (list (format "%s is undefined" var)))))))
 
 (defun ghub-wait (resource)
   "Busy-wait until RESOURCE becomes available."
