@@ -72,7 +72,7 @@
 ;;   $ git config gh_example_com.user employee
 ;;   $ emacs ~/.authinfo.gpg
 ;;   # -*- epa-file-encrypt-to: ("employee@example.com") -*-
-;;   machine gh.example.com/api/v3 login employee password <token>
+;;   machine gh.example.com login employee password <token>
 ;;
 ;; Note that unlike for Github.com, which uses `github.user', the Git
 ;; variable used to store the username for an Enterprise instance is
@@ -242,8 +242,8 @@ by `ghub--username' and a host based on `ghub-base-url'.  When
                     :max 1
                     :user (ghub--username)
                     :host (save-match-data
-                            (string-match "\\`https?://" ghub-base-url)
-                            (substring ghub-base-url (match-end 0)))))
+                            (string-match "\\`https?://\\([^/]+\\)" ghub-base-url)
+                            (match-string 1 ghub-base-url))))
               :secret)))
         (or (if (functionp secret)
                 (funcall secret)

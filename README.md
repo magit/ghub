@@ -66,7 +66,7 @@ Github Enterprise support
 
   ```
   # -*- epa-file-encrypt-to: ("employee@example.com") -*-
-  machine gh.example.com/api/v3 login employee password <token>
+  machine gh.example.com login employee password <token>
   ```
 
 Note that unlike for Github.com, which uses `github.user`, the Git
