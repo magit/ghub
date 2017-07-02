@@ -259,13 +259,13 @@ For Github enterprise instances, get the value of `HOST.user',
 where HOST is the host part of the `URI', with dots replaced with
 underscores.  E.g. `gh_example_com.user' for gh.example.com/api."
   (or ghub-username
-      (substring
-       (shell-command-to-string
-        (format "git config %s.user"
-                (if (string-equal ghub-base-url "https://api.github.com")
-                    "github"
-                  (subst-char-in-string ?. ?_ (ghub--hostname)))))
-       0 -1)))
+      (car (ignore-errors
+             (process-lines
+              "git" "config"
+              (concat (if (string-equal ghub-base-url "https://api.github.com")
+                          "github"
+                        (subst-char-in-string ?. ?_ (ghub--hostname)))
+                      ".user"))))))
 
 (defun ghub-wait (resource)
   "Busy-wait until RESOURCE becomes available."
