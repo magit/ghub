@@ -78,12 +78,12 @@ Github Enterprise support
 Alternatives
 ------------
 
-If you like this, then you might never-the-less prefer `ghub+.el`;
-a thick GitHub API client built on `ghub.el'.
-See https://github.com/vermiculus/ghub-plus.
+* [`ghub+`](https://github.com/vermiculus/ghub-plus) is a wrapper
+  around `ghub`, which provides functions for accessing specific
+  end-points.
 
-If you like this, then you might also like `glab.el`; a minuscule
-client for the Gitlab API.  See https://gitlab.com/tarsius/glab.
+* [`gh`](https://github.com/sigma/gh.el) is a more heavy weight
+  implementation which uses Eieio.
 
-If you don't like this, then you might instead like `gh.el`; a big
-client for the Github API.  See https://github.com/sigma/gh.el.
+* [`glab`](https://gitlab.com/tarsius/glab) is to Gitlab what `ghub`
+  is to Github.

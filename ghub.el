@@ -78,19 +78,6 @@
 ;;   (let ((ghub-base-url "https://gh.example.com"))
 ;;     (ghub-get "/users/employee/repos"))
 
-;; Alternatives
-;; ------------
-
-;; If you like this, then you might never-the-less prefer `ghub+.el';
-;; a thick GitHub API client built on `ghub.el'.
-;; See https://github.com/vermiculus/ghub-plus.
-
-;; If you like this, then you might also like `glab.el'; a minuscule
-;; client for the Gitlab API.  See https://gitlab.com/tarsius/glab.
-
-;; If you don't like this, then you might instead like `gh.el'; a big
-;; client for the Github API.  See https://github.com/sigma/gh.el.
-
 ;;; Code:
 
 (require 'auth-source)
