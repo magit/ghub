@@ -193,16 +193,16 @@ in which case return nil."
           body)))))
 
 (defun ghub--read-response ()
-  (unless (eobp)
-    (let ((json-object-type 'alist)
-          (json-array-type  'list)
-          (json-key-type    'symbol)
-          (json-false       nil)
-          (json-null        nil))
-      (json-read-from-string
-       (decode-coding-string
-        (buffer-substring-no-properties (point) (point-max))
-        'utf-8)))))
+  (and (not (eobp))
+       (let ((json-object-type 'alist)
+             (json-array-type  'list)
+             (json-key-type    'symbol)
+             (json-false       nil)
+             (json-null        nil))
+         (json-read-from-string
+          (decode-coding-string
+           (buffer-substring-no-properties (point) (point-max))
+           'utf-8)))))
 
 (defun ghub--url-encode-params (params)
   (mapconcat (pcase-lambda (`(,key . ,val))
