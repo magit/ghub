@@ -148,14 +148,16 @@ PARAMS and/or DATA in the request.  Signal an error if the status
 code isn't in the 2xx class; unless optional NOERROR is non-nil,
 in which case return nil."
   (let* ((p (and params (concat "?" (ghub--url-encode-params params))))
-         (d (and data   (json-encode-list data)))
+         (d (and data   (encode-coding-string (json-encode-list data) 'utf-8)))
          (url-request-extra-headers
           `(("Content-Type"  . "application/json")
             ,@(and ghub-authenticate
                    `(("Authorization"
                       . ,(if (eq ghub-authenticate 'basic)
                              (ghub--basic-auth)
-                           (concat "token " (ghub--token))))))))
+                           (concat "token "
+                                   (encode-coding-string
+                                    (ghub--token) 'utf-8))))))))
          (url-request-method method)
          (url-request-data d))
     (with-current-buffer
