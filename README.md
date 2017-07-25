@@ -59,8 +59,7 @@ Github Enterprise support
 * Initial configuration:
 
   ```shell
-  $ cd /path/to/repository
-  $ git config eg_example_com.user employee
+  $ git config --global github.gh.example.com.user employee
   $ emacs ~/.authinfo.gpg
   ```
 
@@ -69,15 +68,10 @@ Github Enterprise support
   machine gh.example.com login employee password <token>
   ```
 
-Note that unlike for Github.com, which uses `github.user`, the Git
-variable used to store the username for an Enterprise instance is
-named `HOST.user`, where HOST is the host part of the `URI`, with
-dots replaced with underscores.
-
 * Making a request:
 
   ```lisp
-  (let ((ghub-base-url "https://example.com/api/v3"))
+  (let ((ghub-base-url "https://gh.example.com"))
     (ghub-get "/users/employee/repos"))
   ```
 

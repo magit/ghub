@@ -68,20 +68,14 @@
 ;;
 ;; Initial configuration:
 ;;
-;;   $ cd /path/to/repository
-;;   $ git config gh_example_com.user employee
+;;   $ git config --global github.gh.example.com.user employee
 ;;   $ emacs ~/.authinfo.gpg
 ;;   # -*- epa-file-encrypt-to: ("employee@example.com") -*-
 ;;   machine gh.example.com login employee password <token>
 ;;
-;; Note that unlike for Github.com, which uses `github.user', the Git
-;; variable used to store the username for an Enterprise instance is
-;; named `HOST.user', where HOST is the host part of the `URI', with
-;; dots replaced with underscores.
-;;
 ;; Making a request:
 ;;
-;;   (let ((ghub-base-url "https://gh.example.com/api/v3"))
+;;   (let ((ghub-base-url "https://gh.example.com"))
 ;;     (ghub-get "/users/employee/repos"))
 
 ;; Alternatives
@@ -255,19 +249,16 @@ by `ghub--username' and a host based on `ghub-base-url'.  When
 (defun ghub--username ()
   "Return the configured username.
 For Github.com get the value of the Git variable `github.user'.
-For Github enterprise instances, get the value of `HOST.user',
-where HOST is the host part of the `URI', with dots replaced with
-underscores.  E.g. `gh_example_com.user' for gh.example.com/api."
+For Github enterprise instances, get the value of the Git
+variable `github.HOST.user'."
   (or ghub-username
-      (let* ((var (concat
-                   (if (string-equal ghub-base-url "https://api.github.com")
-                       "github"
-                     (subst-char-in-string ?. ?_ (ghub--hostname)))
-                   ".user"))
-             (val (ignore-errors (car (process-lines "git" "config" var)))))
-        (if val
-            (subst-char-in-string ?. ?_ val)
-          (signal 'ghub-auth-error (list (format "%s is undefined" var)))))))
+      (let ((var (if (string-equal ghub-base-url "https://api.github.com")
+                     "github.user"
+                   (format "github.%s.user" (ghub--hostname)))))
+        (condition-case nil
+            (car (process-lines "git" "config" var))
+          (error
+           (signal 'ghub-auth-error (list (format "%s is undefined" var))))))))
 
 (defun ghub-wait (resource)
   "Busy-wait until RESOURCE becomes available."
