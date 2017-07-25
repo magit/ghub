@@ -3,7 +3,7 @@
 ;; Copyright (C) 2016-2017  Jonas Bernoulli
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
-;; Homepage: https://github.com/tarsius/ghub
+;; Homepage: https://github.com/magit/ghub
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "25"))
 
