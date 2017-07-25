@@ -199,7 +199,10 @@ in which case return nil."
           (json-key-type    'symbol)
           (json-false       nil)
           (json-null        nil))
-      (json-read))))
+      (json-read-from-string
+       (decode-coding-string
+        (buffer-substring-no-properties (point) (point-max))
+        'utf-8)))))
 
 (defun ghub--url-encode-params (params)
   (mapconcat (pcase-lambda (`(,key . ,val))
