@@ -97,6 +97,7 @@
 (defvar ghub-username nil)
 (defvar ghub-unpaginate nil)
 (defvar ghub-extra-headers nil)
+(defvar ghub-read-response-function 'ghub--read-json-response)
 
 (defun ghub-get (resource &optional params data noerror)
   "Make `GET' request for RESOURCE, optionally sending PARAMS and/or DATA.
@@ -176,7 +177,7 @@ in which case return nil."
                (string-match "[?&]page=\\([^&>]+\\)" link)
                (setq link (match-string 1 link))))
         (goto-char (1+ url-http-end-of-headers))
-        (setq body (ghub--read-response))
+        (setq body (funcall ghub-read-response-function))
         (unless (or noerror (= (/ url-http-response-status 100) 2))
           (pcase url-http-response-status
             (301 (signal 'ghub-301 (list method resource p d body)))
@@ -196,17 +197,20 @@ in which case return nil."
 
 (define-obsolete-function-alias 'ghub--request 'ghub-request "Ghub 2.0")
 
-(defun ghub--read-response ()
+(defun ghub--read-json-response ()
   (and (not (eobp))
        (let ((json-object-type 'alist)
              (json-array-type  'list)
              (json-key-type    'symbol)
              (json-false       nil)
              (json-null        nil))
-         (json-read-from-string
-          (decode-coding-string
-           (buffer-substring-no-properties (point) (point-max))
-           'utf-8)))))
+         (json-read-from-string (ghub--read-raw-response)))))
+
+(defun ghub--read-raw-response ()
+  (and (not (eobp))
+       (decode-coding-string
+        (buffer-substring-no-properties (point) (point-max))
+        'utf-8)))
 
 (defun ghub--url-encode-params (params)
   (mapconcat (pcase-lambda (`(,key . ,val))
