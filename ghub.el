@@ -99,6 +99,8 @@
 (defvar ghub-extra-headers nil)
 (defvar ghub-read-response-function 'ghub--read-json-response)
 
+(defvar ghub-response-headers nil)
+
 (defun ghub-get (resource &optional params data noerror)
   "Make `GET' request for RESOURCE, optionally sending PARAMS and/or DATA.
 Signal an error if the status code isn't in the 2xx class;
@@ -168,14 +170,19 @@ in which case return nil."
       (set-buffer-multibyte t)
       (let (link body)
         (goto-char (point-min))
-        (save-restriction
-          (narrow-to-region (point) url-http-end-of-headers)
-          (and (setq link (mail-fetch-field "Link"))
+        (let (headers)
+          (while (re-search-forward "^\\([^:]*\\): \\(.+\\)"
+                                    url-http-end-of-headers t)
+            (push (cons (match-string 1)
+                        (match-string 2))
+                  headers))
+          (and (setq link (cdr (assoc "Link" headers)))
                (setq link (car (rassoc (list "rel=\"next\"")
                                        (mapcar (lambda (elt) (split-string elt "; "))
                                                (split-string link ",")))))
                (string-match "[?&]page=\\([^&>]+\\)" link)
-               (setq link (match-string 1 link))))
+               (setq link (match-string 1 link)))
+          (setq ghub-response-headers (nreverse headers)))
         (goto-char (1+ url-http-end-of-headers))
         (setq body (funcall ghub-read-response-function))
         (unless (or noerror (= (/ url-http-response-status 100) 2))
