@@ -96,6 +96,7 @@
 (defvar ghub-token nil)
 (defvar ghub-username nil)
 (defvar ghub-unpaginate nil)
+(defvar ghub-extra-headers nil)
 
 (defun ghub-get (resource &optional params data noerror)
   "Make `GET' request for RESOURCE, optionally sending PARAMS and/or DATA.
@@ -151,6 +152,7 @@ in which case return nil."
          (d (and data   (encode-coding-string (json-encode-list data) 'utf-8)))
          (url-request-extra-headers
           `(("Content-Type"  . "application/json")
+            ,@ghub-extra-headers
             ,@(and ghub-authenticate
                    `(("Authorization"
                       . ,(if (eq ghub-authenticate 'basic)
