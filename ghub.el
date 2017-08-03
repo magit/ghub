@@ -197,9 +197,9 @@ in which case return nil."
         (if (and link ghub-unpaginate)
             (nconc body
                    (ghub-request method resource
-                                  (cons (cons 'page link)
-                                        (cl-delete 'page params :key #'car))
-                                  data noerror))
+                                 (cons (cons 'page link)
+                                       (cl-delete 'page params :key #'car))
+                                 data noerror))
           body)))))
 
 (define-obsolete-function-alias 'ghub--request 'ghub-request "Ghub 2.0")
