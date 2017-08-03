@@ -137,10 +137,12 @@ optional NOERROR is non-nil, in which case return nil."
 (define-error 'ghub-error "Ghub Error")
 (define-error 'ghub-auth-error "Auth Error" 'ghub-error)
 (define-error 'ghub-http-error "HTTP Error" 'ghub-error)
-(define-error 'ghub-301 "Moved Permanently" 'ghub-http-error)
-(define-error 'ghub-400 "Bad Request" 'ghub-http-error)
-(define-error 'ghub-404 "Not Found" 'ghub-http-error)
-(define-error 'ghub-422 "Unprocessable Entity" 'ghub-http-error)
+
+(dolist (http-error '((ghub-301 . "Moved Permanently")
+                      (ghub-400 . "Bad Request")
+                      (ghub-404 . "Not Found")
+                      (ghub-422 . "Unprocessable Entity")))
+  (define-error (car http-error) (cdr http-error) 'ghub-http-error))
 
 (defun ghub-request (method resource &optional params data noerror)
   "Make a request using METHOD for RESOURCE.
@@ -178,20 +180,21 @@ in which case return nil."
         (goto-char (1+ url-http-end-of-headers))
         (setq body (ghub--read-response))
         (unless (or noerror (= (/ url-http-response-status 100) 2))
-          (pcase url-http-response-status
-            (301 (signal 'ghub-301 (list method resource p d body)))
-            (400 (signal 'ghub-400 (list method resource p d body)))
-            (404 (signal 'ghub-404 (list method resource p d body)))
-            (422 (signal 'ghub-422 (list method resource p d body)))
-            (_   (signal 'ghub-http-error
-                         (list url-http-response-status
-                               method resource p d body)))))
+          (let ((err-data (list method resource p d body)))
+            (pcase url-http-response-status
+              (301 (signal 'ghub-301 err-data))
+              (400 (signal 'ghub-400 err-data))
+              (404 (signal 'ghub-404 err-data))
+              (422 (signal 'ghub-422 err-data))
+              (_   (signal 'ghub-http-error
+                           (cons url-http-response-status
+                                 err-data))))))
         (if (and link ghub-unpaginate)
             (nconc body
                    (ghub-request method resource
-                                  (cons (cons 'page link)
-                                        (cl-delete 'page params :key #'car))
-                                  data noerror))
+                                 (cons (cons 'page link)
+                                       (cl-delete 'page params :key #'car))
+                                 data noerror))
           body)))))
 
 (define-obsolete-function-alias 'ghub--request 'ghub-request "Ghub 2.0")
