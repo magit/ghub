@@ -140,6 +140,8 @@ optional NOERROR is non-nil, in which case return nil."
 
 (dolist (http-error '((ghub-301 . "Moved Permanently")
                       (ghub-400 . "Bad Request")
+                      (ghub-401 . "Unauthorized")
+                      (ghub-403 . "Forbidden")
                       (ghub-404 . "Not Found")
                       (ghub-422 . "Unprocessable Entity")))
   (define-error (car http-error) (cdr http-error) 'ghub-http-error))
@@ -184,6 +186,8 @@ in which case return nil."
             (pcase url-http-response-status
               (301 (signal 'ghub-301 err-data))
               (400 (signal 'ghub-400 err-data))
+              (401 (signal 'ghub-401 err-data))
+              (403 (signal 'ghub-403 err-data))
               (404 (signal 'ghub-404 err-data))
               (422 (signal 'ghub-422 err-data))
               (_   (signal 'ghub-http-error
