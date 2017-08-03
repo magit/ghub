@@ -186,14 +186,14 @@ in which case return nil."
         (goto-char (1+ url-http-end-of-headers))
         (setq body (funcall ghub-read-response-function))
         (unless (or noerror (= (/ url-http-response-status 100) 2))
-          (pcase url-http-response-status
-            (301 (signal 'ghub-301 (list method resource p d body)))
-            (400 (signal 'ghub-400 (list method resource p d body)))
-            (404 (signal 'ghub-404 (list method resource p d body)))
-            (422 (signal 'ghub-422 (list method resource p d body)))
-            (_   (signal 'ghub-http-error
-                         (list url-http-response-status
-                               method resource p d body)))))
+          (let ((data (list method resource p d body)))
+            (pcase url-http-response-status
+              (301 (signal 'ghub-301 data))
+              (400 (signal 'ghub-400 data))
+              (404 (signal 'ghub-404 data))
+              (422 (signal 'ghub-422 data))
+              (_   (signal 'ghub-http-error
+                           (cons url-http-response-status data))))))
         (if (and link ghub-unpaginate)
             (nconc body
                    (ghub-request method resource
