@@ -142,6 +142,8 @@ optional NOERROR is non-nil, in which case return nil."
 (define-error 'ghub-http-error "HTTP Error" 'ghub-error)
 (define-error 'ghub-301 "Moved Permanently" 'ghub-http-error)
 (define-error 'ghub-400 "Bad Request" 'ghub-http-error)
+(define-error 'ghub-401 "Unauthorized" 'ghub-http-error)
+(define-error 'ghub-403 "Forbidden" 'ghub-http-error)
 (define-error 'ghub-404 "Not Found" 'ghub-http-error)
 (define-error 'ghub-422 "Unprocessable Entity" 'ghub-http-error)
 
@@ -190,6 +192,8 @@ in which case return nil."
             (pcase url-http-response-status
               (301 (signal 'ghub-301 data))
               (400 (signal 'ghub-400 data))
+              (401 (signal 'ghub-401 data))
+              (403 (signal 'ghub-403 data))
               (404 (signal 'ghub-404 data))
               (422 (signal 'ghub-422 data))
               (_   (signal 'ghub-http-error
