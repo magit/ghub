@@ -5,7 +5,7 @@
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/magit/ghub
 ;; Keywords: tools
-;; Package-Requires: ((emacs "25"))
+;; Package-Requires: ((emacs "24.4"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -220,9 +220,9 @@ in which case return nil."
         'utf-8)))
 
 (defun ghub--url-encode-params (params)
-  (mapconcat (pcase-lambda (`(,key . ,val))
-               (concat (url-hexify-string (symbol-name key)) "="
-                       (url-hexify-string val)))
+  (mapconcat (lambda (param)
+               (concat (url-hexify-string (symbol-name (car param))) "="
+                       (url-hexify-string (cdr param))))
              params "&"))
 
 (defun ghub--basic-auth ()
