@@ -71,7 +71,7 @@ Github Enterprise support
 * Making a request:
 
   ```lisp
-  (let ((ghub-base-url "https://gh.example.com"))
+  (let ((ghub-base-url "https://gh.example.com/api/v3"))
     (ghub-get "/users/employee/repos"))
   ```
 
