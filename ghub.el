@@ -188,8 +188,10 @@ in which case return nil."
         (goto-char (1+ url-http-end-of-headers))
         (setq body (funcall ghub-read-response-function))
         (unless (or noerror (= (/ url-http-response-status 100) 2))
-          (let ((data (list method resource p d body)))
-            (pcase url-http-response-status
+          (let ((data (list method resource p d body))
+                (status url-http-response-status))
+            (kill-buffer)
+            (pcase status
               (301 (signal 'ghub-301 data))
               (400 (signal 'ghub-400 data))
               (401 (signal 'ghub-401 data))
@@ -204,6 +206,7 @@ in which case return nil."
                                  (cons (cons 'page link)
                                        (cl-delete 'page params :key #'car))
                                  data noerror))
+          (kill-buffer)
           body)))))
 
 (define-obsolete-function-alias 'ghub--request 'ghub-request "Ghub 2.0")
