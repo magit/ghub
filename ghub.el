@@ -168,43 +168,46 @@ in which case return nil."
                     (url-request-method method)
                     (url-request-data d))
                 (url-retrieve-synchronously (concat ghub-base-url resource p)))))
-    (with-current-buffer buf
-      (set-buffer-multibyte t)
-      (let (link body)
-        (goto-char (point-min))
-        (let (headers)
-          (while (re-search-forward "^\\([^:]*\\): \\(.+\\)"
-                                    url-http-end-of-headers t)
-            (push (cons (match-string 1)
-                        (match-string 2))
-                  headers))
-          (and (setq link (cdr (assoc "Link" headers)))
-               (setq link (car (rassoc (list "rel=\"next\"")
-                                       (mapcar (lambda (elt) (split-string elt "; "))
-                                               (split-string link ",")))))
-               (string-match "[?&]page=\\([^&>]+\\)" link)
-               (setq link (match-string 1 link)))
-          (setq ghub-response-headers (nreverse headers)))
-        (goto-char (1+ url-http-end-of-headers))
-        (setq body (funcall ghub-read-response-function))
-        (unless (or noerror (= (/ url-http-response-status 100) 2))
-          (let ((data (list method resource p d body)))
-            (pcase url-http-response-status
-              (301 (signal 'ghub-301 data))
-              (400 (signal 'ghub-400 data))
-              (401 (signal 'ghub-401 data))
-              (403 (signal 'ghub-403 data))
-              (404 (signal 'ghub-404 data))
-              (422 (signal 'ghub-422 data))
-              (_   (signal 'ghub-http-error
-                           (cons url-http-response-status data))))))
-        (if (and link ghub-unpaginate)
-            (nconc body
-                   (ghub-request method resource
-                                 (cons (cons 'page link)
-                                       (cl-delete 'page params :key #'car))
-                                 data noerror))
-          body)))))
+    (unwind-protect
+        (with-current-buffer buf
+          (set-buffer-multibyte t)
+          (let (link body)
+            (goto-char (point-min))
+            (let (headers)
+              (while (re-search-forward "^\\([^:]*\\): \\(.+\\)"
+                                        url-http-end-of-headers t)
+                (push (cons (match-string 1)
+                            (match-string 2))
+                      headers))
+              (and (setq link (cdr (assoc "Link" headers)))
+                   (setq link (car (rassoc
+                                    (list "rel=\"next\"")
+                                    (mapcar (lambda (elt) (split-string elt "; "))
+                                            (split-string link ",")))))
+                   (string-match "[?&]page=\\([^&>]+\\)" link)
+                   (setq link (match-string 1 link)))
+              (setq ghub-response-headers (nreverse headers)))
+            (goto-char (1+ url-http-end-of-headers))
+            (setq body (funcall ghub-read-response-function))
+            (unless (or noerror (= (/ url-http-response-status 100) 2))
+              (let ((data (list method resource p d body)))
+                (pcase url-http-response-status
+                  (301 (signal 'ghub-301 data))
+                  (400 (signal 'ghub-400 data))
+                  (401 (signal 'ghub-401 data))
+                  (403 (signal 'ghub-403 data))
+                  (404 (signal 'ghub-404 data))
+                  (422 (signal 'ghub-422 data))
+                  (_   (signal 'ghub-http-error
+                               (cons url-http-response-status data))))))
+            (if (and link ghub-unpaginate)
+                (nconc body
+                       (ghub-request method resource
+                                     (cons (cons 'page link)
+                                           (cl-delete 'page params :key #'car))
+                                     data noerror))
+              body)))
+      (kill-buffer buf))))
 
 (define-obsolete-function-alias 'ghub--request 'ghub-request "Ghub 2.0")
 
