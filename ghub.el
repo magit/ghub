@@ -141,7 +141,6 @@ optional NOERROR is non-nil, in which case return nil."
   (ghub-request "DELETE" resource params data noerror))
 
 (define-error 'ghub-error "Ghub Error")
-(define-error 'ghub-auth-error "Auth Error" 'ghub-error)
 (define-error 'ghub-http-error "HTTP Error" 'ghub-error)
 (define-error 'ghub-301 "Moved Permanently" 'ghub-http-error)
 (define-error 'ghub-400 "Bad Request" 'ghub-http-error)
@@ -277,13 +276,13 @@ by `ghub--username' and a host based on `ghub-base-url'.  When
         (or (if (functionp secret)
                 (funcall secret)
               secret)
-            (signal 'ghub-auth-error '("Token not found"))))))
+            (signal 'ghub-error '("Token not found"))))))
 
 (defun ghub--hostname ()
   (save-match-data
     (if (string-match "\\`https?://\\([^/]+\\)" ghub-base-url)
         (match-string 1 ghub-base-url)
-      (signal 'ghub-auth-error '("Invalid value for ghub-base-url")))))
+      (signal 'ghub-error '("Invalid value for ghub-base-url")))))
 
 (defun ghub--username ()
   "Return the configured username.
@@ -297,7 +296,7 @@ variable `github.HOST.user'."
         (condition-case nil
             (car (process-lines "git" "config" var))
           (error
-           (signal 'ghub-auth-error (list (format "%s is undefined" var))))))))
+           (signal 'ghub-error (list (format "%s is undefined" var))))))))
 
 ;;; ghub.el ends soon
 (provide 'ghub)
