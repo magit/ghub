@@ -272,15 +272,10 @@ Use `auth-source-search' to get the token for the user returned
 by `ghub--username' and a host based on `ghub-base-url'.  When
 `ghub-token' is non-nil, then return its value instead."
   (or ghub-token
-      (let ((secret (plist-get (car (auth-source-search
-                                     :max 1
-                                     :user (ghub--username)
-                                     :host (ghub--hostname)))
-                               :secret)))
-        (or (if (functionp secret)
-                (funcall secret)
-              secret)
-            (signal 'ghub-error '("Token not found"))))))
+      (ghub--auth-source-get :secret
+        :host (ghub--hostname)
+        :user (ghub--username))
+      (signal 'ghub-error '("Token not found"))))
 
 (defun ghub--hostname ()
   (save-match-data
@@ -301,6 +296,15 @@ variable `github.HOST.user'."
             (car (process-lines "git" "config" var))
           (error
            (signal 'ghub-error (list (format "%s is undefined" var))))))))
+
+(defun ghub--auth-source-get (key:s &rest spec)
+  (declare (indent 1))
+  (let ((plist (car (apply #'auth-source-search :max 1 spec))))
+    (cl-flet ((value (k) (let ((v (plist-get plist k)))
+                           (if (functionp v) (funcall v) v))))
+      (if (listp key:s)
+          (mapcar #'value key:s)
+        (value key:s)))))
 
 ;;; ghub.el ends soon
 (provide 'ghub)
