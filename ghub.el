@@ -253,10 +253,12 @@ in which case return nil."
 ;;;; Internal
 
 (defun ghub--auth (auth)
-  (if (eq auth 'basic)
-      (ghub--basic-auth)
-    (concat "token "
-            (encode-coding-string (ghub--token) 'utf-8))))
+  (encode-coding-string
+   (if (eq auth 'basic)
+       (ghub--basic-auth)
+     (concat "token "
+             (ghub--token)))
+   'utf-8))
 
 (defun ghub--basic-auth ()
   (let ((url (url-generic-parse-url ghub-base-url)))
