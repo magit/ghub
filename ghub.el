@@ -257,7 +257,7 @@ in which case return nil."
    (if (eq auth 'basic)
        (ghub--basic-auth)
      (concat "token "
-             (ghub--token)))
+             (if (stringp auth) auth (ghub--token))))
    'utf-8))
 
 (defun ghub--basic-auth ()
