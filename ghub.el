@@ -263,12 +263,6 @@ in which case return nil."
           (ghub--username))
     (url-basic-auth url t)))
 
-(defun ghub--hostname ()
-  (save-match-data
-    (if (string-match "\\`https?://\\([^/]+\\)" ghub-base-url)
-        (match-string 1 ghub-base-url)
-      (signal 'ghub-auth-error '("Invalid value for ghub-base-url")))))
-
 (defun ghub--token ()
   "Return the configured token.
 Use `auth-source-search' to get the token for the user returned
@@ -284,6 +278,12 @@ by `ghub--username' and a host based on `ghub-base-url'.  When
                 (funcall secret)
               secret)
             (signal 'ghub-auth-error '("Token not found"))))))
+
+(defun ghub--hostname ()
+  (save-match-data
+    (if (string-match "\\`https?://\\([^/]+\\)" ghub-base-url)
+        (match-string 1 ghub-base-url)
+      (signal 'ghub-auth-error '("Invalid value for ghub-base-url")))))
 
 (defun ghub--username ()
   "Return the configured username.
