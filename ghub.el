@@ -187,6 +187,8 @@ in which case return nil."
                    (string-match "[?&]page=\\([^&>]+\\)" link)
                    (setq link (match-string 1 link)))
               (setq ghub-response-headers (nreverse headers)))
+            (unless url-http-end-of-headers
+              (error "ghub: url-http-end-of-headers is nil when it shouldn't"))
             (goto-char (1+ url-http-end-of-headers))
             (setq body (funcall ghub-read-response-function))
             (unless (or noerror (= (/ url-http-response-status 100) 2))
