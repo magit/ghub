@@ -155,20 +155,20 @@ code isn't in the 2xx class; unless optional NOERROR is non-nil,
 in which case return nil."
   (let* ((p (and params (concat "?" (ghub--url-encode-params params))))
          (d (and data   (encode-coding-string (json-encode-list data) 'utf-8)))
-         (url-request-extra-headers
-          `(("Content-Type"  . "application/json")
-            ,@ghub-extra-headers
-            ,@(and ghub-authenticate
-                   `(("Authorization"
-                      . ,(if (eq ghub-authenticate 'basic)
-                             (ghub--basic-auth)
-                           (concat "token "
-                                   (encode-coding-string
-                                    (ghub--token) 'utf-8))))))))
-         (url-request-method method)
-         (url-request-data d))
-    (with-current-buffer
-        (url-retrieve-synchronously (concat ghub-base-url resource p))
+         (buf (let ((url-request-extra-headers
+                     `(("Content-Type"  . "application/json")
+                       ,@ghub-extra-headers
+                       ,@(and ghub-authenticate
+                              `(("Authorization"
+                                 . ,(if (eq ghub-authenticate 'basic)
+                                        (ghub--basic-auth)
+                                      (concat "token "
+                                              (encode-coding-string
+                                               (ghub--token) 'utf-8))))))))
+                    (url-request-method method)
+                    (url-request-data d))
+                (url-retrieve-synchronously (concat ghub-base-url resource p)))))
+    (with-current-buffer buf
       (set-buffer-multibyte t)
       (let (link body)
         (goto-char (point-min))
