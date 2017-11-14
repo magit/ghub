@@ -159,14 +159,10 @@ in which case return nil."
          (d (and data   (encode-coding-string (json-encode-list data) 'utf-8)))
          (buf (let ((url-request-extra-headers
                      `(("Content-Type"  . "application/json")
-                       ,@ghub-extra-headers
                        ,@(and ghub-authenticate
-                              `(("Authorization"
-                                 . ,(if (eq ghub-authenticate 'basic)
-                                        (ghub--basic-auth)
-                                      (concat "token "
-                                              (encode-coding-string
-                                               (ghub--token) 'utf-8))))))))
+                              (list (cons "Authorization"
+                                          (ghub--auth ghub-authenticate))))
+                       ,@ghub-extra-headers))
                     (url-request-method method)
                     (url-request-data d))
                 (url-retrieve-synchronously (concat ghub-base-url resource p)))))
@@ -255,6 +251,12 @@ in which case return nil."
 
 ;;; Authentication
 ;;;; Internal
+
+(defun ghub--auth (auth)
+  (if (eq auth 'basic)
+      (ghub--basic-auth)
+    (concat "token "
+            (encode-coding-string (ghub--token) 'utf-8))))
 
 (defun ghub--basic-auth ()
   (let ((url (url-generic-parse-url ghub-base-url)))
