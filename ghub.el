@@ -104,7 +104,8 @@ optional NOERROR is non-nil, in which case return nil."
                      `(("Content-Type"  . "application/json")
                        ,@(and ghub-authenticate
                               (list (cons "Authorization"
-                                          (ghub--auth ghub-authenticate))))
+                                          (ghub--auth ghub-base-url
+                                                      ghub-authenticate))))
                        ,@ghub-extra-headers))
                     (url-request-method method)
                     (url-request-data d))
@@ -195,36 +196,36 @@ optional NOERROR is non-nil, in which case return nil."
 ;;; Authentication
 ;;;; Internal
 
-(defun ghub--auth (auth)
+(defun ghub--auth (host auth)
   (encode-coding-string
    (if (eq auth 'basic)
-       (ghub--basic-auth)
+       (ghub--basic-auth host)
      (concat "token "
-             (if (stringp auth) auth (ghub--token))))
+             (if (stringp auth) auth (ghub--token host))))
    'utf-8))
 
-(defun ghub--basic-auth ()
-  (let ((url (url-generic-parse-url ghub-base-url)))
+(defun ghub--basic-auth (host)
+  (let ((url (url-generic-parse-url host)))
     (setf (url-user url)
-          (ghub--username))
+          (ghub--username host))
     (url-basic-auth url t)))
 
-(defun ghub--token ()
+(defun ghub--token (host)
   (or (ghub--auth-source-get :secret
-        :host (ghub--hostname)
-        :user (ghub--username))
+        :host (ghub--hostname host)
+        :user (ghub--username host))
       (signal 'ghub-error '("Token not found"))))
 
-(defun ghub--hostname ()
+(defun ghub--hostname (host)
   (save-match-data
-    (if (string-match "\\`https?://\\([^/]+\\)" ghub-base-url)
-        (match-string 1 ghub-base-url)
-      (signal 'ghub-error '("Invalid value for ghub-base-url")))))
+    (if (string-match "\\`https?://\\([^/]+\\)" host)
+        (match-string 1 host)
+      (signal 'ghub-error (list (format "Invalid url %s" host))))))
 
-(defun ghub--username ()
-  (let ((var (if (string-equal ghub-base-url "https://api.github.com")
+(defun ghub--username (host)
+  (let ((var (if (string-prefix-p "https://api.github.com" host)
                  "github.user"
-               (format "github.%s.user" (ghub--hostname)))))
+               (format "github.%s.user" (ghub--hostname host)))))
     (condition-case nil
         (car (process-lines "git" "config" var))
       (error
