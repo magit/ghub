@@ -23,60 +23,9 @@
 
 ;;; Commentary:
 
-;; A minuscule client for the Github API.
-
-;; This library just provides the HTTP methods.
-;; See https://developer.github.com/v3 for valid requests.
-
-;; Initial configuration
-;; ---------------------
-;;
-;;   $ git config --global github.user <username>
-;;   $ emacs ~/.authinfo.gpg
-;;   # -*- epa-file-encrypt-to: ("A.U.Thor@example.com") -*-
-;;   machine api.github.com login <login> password <token>
-;;
-;; To acquire a token, go to https://github.com/settings/tokens.  Note
-;; that currently the same token is shared by all Emacs packages that
-;; use `ghub.el'.
-
-;; Usage examples
-;; --------------
-;;
-;; Getting details about a repository:
-;;
-;;   (ghub-get "/repos/tarsius/ghub")
-;;
-;; Listing names of all repositories of a user:
-;;
-;;   (--keep (cdr (assq 'name it))
-;;           (let ((ghub-unpaginate t))
-;;             (ghub-get "/users/tarsius/repos")))
-;;
-;; Making an unauthenticated request:
-;;
-;;   (let ((ghub-authenticate nil))
-;;     (ghub-get "/orgs/magit/repos"))
-;;
-;; Making a request using basic authentication:
-;;
-;;   (let ((ghub-authenticate 'basic))
-;;     (ghub-get "/orgs/magit/repos"))
-
-;; Github Enterprise support
-;; -------------------------
-;;
-;; Initial configuration:
-;;
-;;   $ git config --global github.gh.example.com.user employee
-;;   $ emacs ~/.authinfo.gpg
-;;   # -*- epa-file-encrypt-to: ("employee@example.com") -*-
-;;   machine gh.example.com login employee password <token>
-;;
-;; Making a request:
-;;
-;;   (let ((ghub-base-url "https://gh.example.com"))
-;;     (ghub-get "/users/employee/repos"))
+;; This library provides basic support for accessing the Github
+;; API from Emacs packages.  For more information see the wiki,
+;; which can be found at https://github.com/magit/ghub/wiki.
 
 ;;; Code:
 
@@ -150,11 +99,7 @@ optional NOERROR is non-nil, in which case return nil."
 (define-error 'ghub-422 "Unprocessable Entity" 'ghub-http-error)
 
 (defun ghub-request (method resource &optional params data noerror)
-  "Make a request using METHOD for RESOURCE.
-METHOD is a `HTTP' request method, a string.  If non-nil, send
-PARAMS and/or DATA in the request.  Signal an error if the status
-code isn't in the 2xx class; unless optional NOERROR is non-nil,
-in which case return nil."
+  "Make a request for RESOURCE using METHOD."
   (let* ((p (and params (concat "?" (ghub--url-encode-params params))))
          (d (and data   (encode-coding-string (json-encode-list data) 'utf-8)))
          (buf (let ((url-request-extra-headers
@@ -267,10 +212,6 @@ in which case return nil."
     (url-basic-auth url t)))
 
 (defun ghub--token ()
-  "Return the configured token.
-Use `auth-source-search' to get the token for the user returned
-by `ghub--username' and a host based on `ghub-base-url'.  When
-`ghub-token' is non-nil, then return its value instead."
   (or ghub-token
       (ghub--auth-source-get :secret
         :host (ghub--hostname)
@@ -284,10 +225,6 @@ by `ghub--username' and a host based on `ghub-base-url'.  When
       (signal 'ghub-error '("Invalid value for ghub-base-url")))))
 
 (defun ghub--username ()
-  "Return the configured username.
-For Github.com get the value of the Git variable `github.user'.
-For Github enterprise instances, get the value of the Git
-variable `github.HOST.user'."
   (or ghub-username
       (let ((var (if (string-equal ghub-base-url "https://api.github.com")
                      "github.user"
