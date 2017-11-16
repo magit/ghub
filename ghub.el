@@ -45,8 +45,6 @@
 
 (defvar ghub-base-url "https://api.github.com")
 (defvar ghub-authenticate t)
-(defvar ghub-token nil)
-(defvar ghub-username nil)
 (defvar ghub-unpaginate nil)
 (defvar ghub-extra-headers nil)
 (defvar ghub-read-response-function 'ghub--read-json-response)
@@ -212,8 +210,7 @@ optional NOERROR is non-nil, in which case return nil."
     (url-basic-auth url t)))
 
 (defun ghub--token ()
-  (or ghub-token
-      (ghub--auth-source-get :secret
+  (or (ghub--auth-source-get :secret
         :host (ghub--hostname)
         :user (ghub--username))
       (signal 'ghub-error '("Token not found"))))
@@ -225,14 +222,13 @@ optional NOERROR is non-nil, in which case return nil."
       (signal 'ghub-error '("Invalid value for ghub-base-url")))))
 
 (defun ghub--username ()
-  (or ghub-username
-      (let ((var (if (string-equal ghub-base-url "https://api.github.com")
-                     "github.user"
-                   (format "github.%s.user" (ghub--hostname)))))
-        (condition-case nil
-            (car (process-lines "git" "config" var))
-          (error
-           (signal 'ghub-error (list (format "%s is undefined" var))))))))
+  (let ((var (if (string-equal ghub-base-url "https://api.github.com")
+                 "github.user"
+               (format "github.%s.user" (ghub--hostname)))))
+    (condition-case nil
+        (car (process-lines "git" "config" var))
+      (error
+       (signal 'ghub-error (list (format "%s is undefined" var)))))))
 
 (defun ghub--auth-source-get (key:s &rest spec)
   (declare (indent 1))
