@@ -101,8 +101,9 @@ optional NOERROR is non-nil, in which case return nil."
 
 (defun ghub-request (method resource &optional params data noerror)
   "Make a request for RESOURCE using METHOD."
+  (when (and data (not (stringp data)))
+    (setq data (encode-coding-string (json-encode-list data) 'utf-8)))
   (let* ((p (and params (concat "?" (ghub--url-encode-params params))))
-         (d (and data   (encode-coding-string (json-encode-list data) 'utf-8)))
          (buf (let ((url-request-extra-headers
                      `(("Content-Type"  . "application/json")
                        ,@(and ghub-authenticate
@@ -111,7 +112,7 @@ optional NOERROR is non-nil, in which case return nil."
                                                       ghub-authenticate))))
                        ,@ghub-extra-headers))
                     (url-request-method method)
-                    (url-request-data d))
+                    (url-request-data data))
                 (url-retrieve-synchronously
                  (concat "https://" ghub-default-host resource p)))))
     (unwind-protect
@@ -138,7 +139,7 @@ optional NOERROR is non-nil, in which case return nil."
             (goto-char (1+ url-http-end-of-headers))
             (setq body (funcall ghub-read-response-function))
             (unless (or noerror (= (/ url-http-response-status 100) 2))
-              (let ((data (list method resource p d body)))
+              (let ((data (list method resource p data body)))
                 (pcase url-http-response-status
                   (301 (signal 'ghub-301 data))
                   (400 (signal 'ghub-400 data))
