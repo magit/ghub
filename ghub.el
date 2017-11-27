@@ -47,48 +47,73 @@
 ;;; Request
 ;;;; API
 
-(defvar ghub-authenticate t)
-(defvar ghub-unpaginate nil)
-(defvar ghub-extra-headers nil)
-(defvar ghub-read-response-function 'ghub--read-json-response)
-
 (defvar ghub-response-headers nil)
 
-(defun ghub-get (resource &optional params data noerror)
-  "Make `GET' request for RESOURCE, optionally sending PARAMS and/or DATA.
-Signal an error if the status code isn't in the 2xx class;
-unless optional NOERROR is non-nil, in which case return nil."
-  (ghub-request "GET" resource params data noerror))
+(cl-defun ghub-get (resource &optional params data
+                             &key headers
+                             unpaginate noerror reader
+                             username auth host)
+  "Make a `GET' request for RESOURCE.
+Like calling `ghub-request' (which see) with \"GET\" as METHOD."
+  (ghub-request "GET" resource params data
+                :headers headers
+                :unpaginate unpaginate :noerror noerror :reader reader
+                :username username :auth auth :host host))
 
-(defun ghub-put (resource &optional params data noerror)
-  "Make `PUT' request for RESOURCE, optionally sending PARAMS and/or DATA.
-Signal an error if the status code isn't in the 2xx class;
-unless optional NOERROR is non-nil, in which case return nil."
-  (ghub-request "PUT" resource params data noerror))
+(cl-defun ghub-put (resource &optional params data
+                             &key headers
+                             unpaginate noerror reader
+                             username auth host)
+  "Make a `PUT' request for RESOURCE.
+Like calling `ghub-request' (which see) with \"PUT\" as METHOD."
+  (ghub-request "PUT" resource params data
+                :headers headers
+                :unpaginate unpaginate :noerror noerror :reader reader
+                :username username :auth auth :host host))
 
-(defun ghub-head (resource &optional params data noerror)
-  "Make `HEAD' request for RESOURCE, optionally sending PARAMS and/or DATA.
-Signal an error if the status code isn't in the 2xx class;
-unless optional NOERROR is non-nil, in which case return nil."
-  (ghub-request "HEAD" resource params data noerror))
+(cl-defun ghub-head (resource &optional params data
+                              &key headers
+                              unpaginate noerror reader
+                              username auth host)
+  "Make a `HEAD' request for RESOURCE.
+Like calling `ghub-request' (which see) with \"HEAD\" as METHOD."
+  (ghub-request "HEAD" resource params data
+                :headers headers
+                :unpaginate unpaginate :noerror noerror :reader reader
+                :username username :auth auth :host host))
 
-(defun ghub-post (resource &optional params data noerror)
-  "Make `POST' request for RESOURCE, optionally sending PARAMS and/or DATA.
-Signal an error if the status code isn't in the 2xx class;
-unless optional NOERROR is non-nil, in which case return nil."
-  (ghub-request "POST" resource params data noerror))
+(cl-defun ghub-post (resource &optional params data
+                              &key headers
+                              unpaginate noerror reader
+                              username auth host)
+  "Make a `POST' request for RESOURCE.
+Like calling `ghub-request' (which see) with \"POST\" as METHOD."
+  (ghub-request "POST" resource params data
+                :headers headers
+                :unpaginate unpaginate :noerror noerror :reader reader
+                :username username :auth auth :host host))
 
-(defun ghub-patch (resource &optional params data noerror)
-  "Make `PATCH' request for RESOURCE, optionally sending PARAMS and/or DATA.
-Signal an error if the status code isn't in the 2xx class;
-unless optional NOERROR is non-nil, in which case return nil."
-  (ghub-request "PATCH" resource params data noerror))
+(cl-defun ghub-patch (resource &optional params data
+                               &key headers
+                               unpaginate noerror reader
+                               username auth host)
+  "Make a `PATCH' request for RESOURCE.
+Like calling `ghub-request' (which see) with \"PATCH\" as METHOD."
+  (ghub-request "PATCH" resource params data
+                :headers headers
+                :unpaginate unpaginate :noerror noerror :reader reader
+                :username username :auth auth :host host))
 
-(defun ghub-delete (resource &optional params data noerror)
-  "Make `DELETE' request for RESOURCE, optionally sending PARAMS and/or DATA.
-Signal an error if the status code isn't in the 2xx class; unless
-optional NOERROR is non-nil, in which case return nil."
-  (ghub-request "DELETE" resource params data noerror))
+(cl-defun ghub-delete (resource &optional params data
+                                &key headers
+                                unpaginate noerror reader
+                                username auth host)
+  "Make a `DELETE' request for RESOURCE.
+Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
+  (ghub-request "DELETE" resource params data
+                :headers headers
+                :unpaginate unpaginate :noerror noerror :reader reader
+                :username username :auth auth :host host))
 
 (define-error 'ghub-error "Ghub Error")
 (define-error 'ghub-http-error "HTTP Error" 'ghub-error)
@@ -99,22 +124,26 @@ optional NOERROR is non-nil, in which case return nil."
 (define-error 'ghub-404 "Not Found" 'ghub-http-error)
 (define-error 'ghub-422 "Unprocessable Entity" 'ghub-http-error)
 
-(defun ghub-request (method resource &optional params data noerror)
+(cl-defun ghub-request (method resource &optional params data
+                               &key headers
+                               unpaginate noerror reader
+                               username auth host)
   "Make a request for RESOURCE using METHOD."
+  (unless host
+    (setq host ghub-default-host))
   (when (and data (not (stringp data)))
     (setq data (encode-coding-string (json-encode-list data) 'utf-8)))
   (let* ((qry (and params (concat "?" (ghub--url-encode-params params))))
          (buf (let ((url-request-extra-headers
-                     `(("Content-Type"  . "application/json")
-                       ,@(and ghub-authenticate
+                     `(("Content-Type" . "application/json")
+                       ,@(and (not (eq auth 'none))
                               (list (cons "Authorization"
-                                          (ghub--auth ghub-default-host
-                                                      ghub-authenticate))))
-                       ,@ghub-extra-headers))
+                                          (ghub--auth host auth username))))
+                       ,@headers))
                     (url-request-method method)
                     (url-request-data data))
                 (url-retrieve-synchronously
-                 (concat "https://" ghub-default-host resource qry)))))
+                 (concat "https://" host resource qry)))))
     (unwind-protect
         (with-current-buffer buf
           (set-buffer-multibyte t)
@@ -137,7 +166,7 @@ optional NOERROR is non-nil, in which case return nil."
             (unless url-http-end-of-headers
               (error "ghub: url-http-end-of-headers is nil when it shouldn't"))
             (goto-char (1+ url-http-end-of-headers))
-            (setq body (funcall ghub-read-response-function))
+            (setq body (funcall (or reader 'ghub--read-json-response)))
             (unless (or noerror (= (/ url-http-response-status 100) 2))
               (let ((data (list method resource qry data body)))
                 (pcase url-http-response-status
@@ -149,23 +178,28 @@ optional NOERROR is non-nil, in which case return nil."
                   (422 (signal 'ghub-422 data))
                   (_   (signal 'ghub-http-error
                                (cons url-http-response-status data))))))
-            (if (and link ghub-unpaginate)
+            (if (and link unpaginate)
                 (nconc body
-                       (ghub-request method resource
-                                     (cons (cons 'page link)
-                                           (cl-delete 'page params :key #'car))
-                                     data noerror))
+                       (ghub-request
+                        method resource
+                        (cons (cons 'page link)
+                              (cl-delete 'page params :key #'car))
+                        data
+                        :headers headers
+                        :unpaginate t :noerror noerror :reader reader
+                        :username username :auth auth :host host))
               body)))
       (kill-buffer buf))))
 
-(define-obsolete-function-alias 'ghub--request 'ghub-request "Ghub 2.0")
-
-(defun ghub-wait (resource)
+(defun ghub-wait (resource &optional username auth host)
   "Busy-wait until RESOURCE becomes available."
   (with-local-quit
     (let ((for 0.5)
           (total 0))
-      (while (not (ignore-errors (ghub-get resource)))
+      (while (not (ignore-errors (ghub-get resource nil
+                                           :username username
+                                           :auth auth
+                                           :host host)))
         (setq for (truncate (* 2 for)))
         (setq total (+ total for))
         (when (= for 128)
@@ -201,12 +235,14 @@ optional NOERROR is non-nil, in which case return nil."
 ;;; Authentication
 ;;;; Internal
 
-(defun ghub--auth (host auth)
+(defun ghub--auth (host auth &optional username)
+  (unless username
+    (setq username (ghub--username host)))
   (encode-coding-string
    (if (eq auth 'basic)
        (ghub--basic-auth host)
      (concat "token "
-             (if (stringp auth) auth (ghub--token host))))
+             (if (stringp auth) auth (ghub--token host username))))
    'utf-8))
 
 (defun ghub--basic-auth (host)
@@ -215,10 +251,10 @@ optional NOERROR is non-nil, in which case return nil."
           (ghub--username host))
     (url-basic-auth url t)))
 
-(defun ghub--token (host)
+(defun ghub--token (host username)
   (or (ghub--auth-source-get :secret
         :host host
-        :user (ghub--username host))
+        :user username)
       (signal 'ghub-error '("Token not found"))))
 
 (defun ghub--username (host)
