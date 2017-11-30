@@ -51,6 +51,8 @@
 
 (defvar ghub-response-headers nil)
 
+(defvar ghub-raw-response-body nil)
+
 (cl-defun ghub-head (resource &optional params
                               &key query payload headers
                               unpaginate noerror reader
@@ -245,9 +247,10 @@ See `ghub-request' for information about the other arguments."
 
 (defun ghub--read-raw-response ()
   (and (not (eobp))
-       (decode-coding-string
-        (buffer-substring-no-properties (point) (point-max))
-        'utf-8)))
+       (setq ghub-raw-response-body
+             (decode-coding-string
+              (buffer-substring-no-properties (point) (point-max))
+              'utf-8))))
 
 (defun ghub--url-encode-params (params)
   (mapconcat (lambda (param)
