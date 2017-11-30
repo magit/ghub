@@ -49,69 +49,69 @@
 
 (defvar ghub-response-headers nil)
 
-(cl-defun ghub-get (resource &optional params data
-                             &key headers
+(cl-defun ghub-get (resource &optional params
+                             &key query payload headers
                              unpaginate noerror reader
                              username auth host)
-  "Make a `GET' request for RESOURCE.
+  "Make a `GET' request for RESOURCE, with optional query PARAMS.
 Like calling `ghub-request' (which see) with \"GET\" as METHOD."
-  (ghub-request "GET" resource params data
-                :headers headers
+  (ghub-request "GET" resource params
+                :query query :payload payload :headers headers
                 :unpaginate unpaginate :noerror noerror :reader reader
                 :username username :auth auth :host host))
 
-(cl-defun ghub-put (resource &optional params data
-                             &key headers
+(cl-defun ghub-put (resource &optional params
+                             &key query payload headers
                              unpaginate noerror reader
                              username auth host)
-  "Make a `PUT' request for RESOURCE.
+  "Make a `PUT' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"PUT\" as METHOD."
-  (ghub-request "PUT" resource params data
-                :headers headers
+  (ghub-request "PUT" resource params
+                :query query :payload payload :headers headers
                 :unpaginate unpaginate :noerror noerror :reader reader
                 :username username :auth auth :host host))
 
-(cl-defun ghub-head (resource &optional params data
-                              &key headers
+(cl-defun ghub-head (resource &optional params
+                              &key query payload headers
                               unpaginate noerror reader
                               username auth host)
-  "Make a `HEAD' request for RESOURCE.
+  "Make a `HEAD' request for RESOURCE, with optional query PARAMS.
 Like calling `ghub-request' (which see) with \"HEAD\" as METHOD."
-  (ghub-request "HEAD" resource params data
-                :headers headers
+  (ghub-request "HEAD" resource params
+                :query query :payload payload :headers headers
                 :unpaginate unpaginate :noerror noerror :reader reader
                 :username username :auth auth :host host))
 
-(cl-defun ghub-post (resource &optional params data
-                              &key headers
+(cl-defun ghub-post (resource &optional params
+                              &key query payload headers
                               unpaginate noerror reader
                               username auth host)
-  "Make a `POST' request for RESOURCE.
+  "Make a `POST' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"POST\" as METHOD."
-  (ghub-request "POST" resource params data
-                :headers headers
+  (ghub-request "POST" resource params
+                :query query :payload payload :headers headers
                 :unpaginate unpaginate :noerror noerror :reader reader
                 :username username :auth auth :host host))
 
-(cl-defun ghub-patch (resource &optional params data
-                               &key headers
+(cl-defun ghub-patch (resource &optional params
+                               &key query payload headers
                                unpaginate noerror reader
                                username auth host)
-  "Make a `PATCH' request for RESOURCE.
+  "Make a `PATCH' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"PATCH\" as METHOD."
-  (ghub-request "PATCH" resource params data
-                :headers headers
+  (ghub-request "PATCH" resource params
+                :query query :payload payload :headers headers
                 :unpaginate unpaginate :noerror noerror :reader reader
                 :username username :auth auth :host host))
 
-(cl-defun ghub-delete (resource &optional params data
-                                &key headers
+(cl-defun ghub-delete (resource &optional params
+                                &key query payload headers
                                 unpaginate noerror reader
                                 username auth host)
-  "Make a `DELETE' request for RESOURCE.
+  "Make a `DELETE' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
-  (ghub-request "DELETE" resource params data
-                :headers headers
+  (ghub-request "DELETE" resource params
+                :query query :payload payload :headers headers
                 :unpaginate unpaginate :noerror noerror :reader reader
                 :username username :auth auth :host host))
 
@@ -124,16 +124,26 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
 (define-error 'ghub-404 "Not Found" 'ghub-http-error)
 (define-error 'ghub-422 "Unprocessable Entity" 'ghub-http-error)
 
-(cl-defun ghub-request (method resource &optional params data
-                               &key headers
+(cl-defun ghub-request (method resource &optional params
+                               &key query payload headers
                                unpaginate noerror reader
                                username auth host)
   "Make a request for RESOURCE using METHOD."
   (unless host
     (setq host ghub-default-host))
-  (when (and data (not (stringp data)))
-    (setq data (encode-coding-string (json-encode-list data) 'utf-8)))
-  (let* ((qry (and params (concat "?" (ghub--url-encode-params params))))
+  (cond
+   ((not params))
+   ((memq method '("GET" "HEAD"))
+    (when query
+      (error "PARAMS and QUERY are mutually exclusive for METHOD %S" method))
+    (setq query params))
+   (t
+    (when payload
+      (error "PARAMS and PAYLOAD are mutually exclusive for METHOD %S" method))
+    (setq payload params)))
+  (when (and payload (not (stringp payload)))
+    (setq payload (encode-coding-string (json-encode-list payload) 'utf-8)))
+  (let* ((qry (and query (concat "?" (ghub--url-encode-params query))))
          (buf (let ((url-request-extra-headers
                      `(("Content-Type" . "application/json")
                        ,@(and (not (eq auth 'none))
@@ -141,7 +151,7 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
                                           (ghub--auth host auth username))))
                        ,@headers))
                     (url-request-method method)
-                    (url-request-data data))
+                    (url-request-data payload))
                 (url-retrieve-synchronously
                  (concat "https://" host resource qry)))))
     (unwind-protect
@@ -168,7 +178,7 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
             (goto-char (1+ url-http-end-of-headers))
             (setq body (funcall (or reader 'ghub--read-json-response)))
             (unless (or noerror (= (/ url-http-response-status 100) 2))
-              (let ((data (list method resource qry data body)))
+              (let ((data (list method resource qry payload body)))
                 (pcase url-http-response-status
                   (301 (signal 'ghub-301 data))
                   (400 (signal 'ghub-400 data))
@@ -181,10 +191,10 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
             (if (and link unpaginate)
                 (nconc body
                        (ghub-request
-                        method resource
-                        (cons (cons 'page link)
-                              (cl-delete 'page params :key #'car))
-                        data
+                        method resource nil
+                        :query (cons (cons 'page link)
+                                     (cl-delete 'page query :key #'car))
+                        :payload payload
                         :headers headers
                         :unpaginate t :noerror noerror :reader reader
                         :username username :auth auth :host host))
