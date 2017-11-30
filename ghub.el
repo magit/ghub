@@ -295,6 +295,22 @@ SCOPES are the scopes the token is given access to."
       (auth-source-forget (list :host host :user user))
       token)))
 
+;;;###autoload
+(defun ghub-token-scopes (host username package)
+  "Return and echo the scopes of the specified token.
+This is intended for debugging purposes only.  The user
+has to provide several values including their password."
+  (interactive (ghub--read-triplet))
+  (let ((scopes
+         (cdr (assq 'scopes (ghub--get-token-plist host username package)))))
+    (when (called-interactively-p 'any)
+      ;; Also show the input values to make it easy for package
+      ;; authors to verify that the user has done it correctly.
+      (message "Scopes for %s@%s: %S"
+               (ghub--ident username package)
+               host scopes))
+    scopes))
+
 ;;;; Internal
 
 (defun ghub--auth (host auth &optional username)
