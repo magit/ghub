@@ -42,7 +42,7 @@
 
 ;;; Settings
 
-(defvar ghub-default-host "api.github.com")
+(defconst ghub-default-host "api.github.com")
 (defvar ghub-github-token-scopes '(repo))
 (defvar ghub-override-system-name nil)
 
@@ -132,7 +132,7 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
                                username auth host)
   "Make a request for RESOURCE using METHOD."
   (unless host
-    (setq host ghub-default-host))
+    (setq host (ghub--host)))
   (cond
    ((not params))
    ((memq method '("GET" "HEAD"))
@@ -328,6 +328,10 @@ SCOPES are the scopes the token is given access to."
           (and (not nocreate)
                (ghub--confirm-create-token host username package))))))
 
+(defun ghub--host ()
+  (or (ignore-errors (car (process-lines "git" "config" "github.host")))
+      ghub-default-host))
+
 (defun ghub--username (host)
   (let ((var (if (string-prefix-p "api.github.com" host)
                  "github.user"
@@ -410,7 +414,7 @@ Create and store such a token? "
                :username username :auth 'basic :host host))
 
 (defun ghub--read-triplet ()
-  (let ((host (read-string "Host: " ghub-default-host)))
+  (let ((host (read-string "Host: " (ghub--host))))
     (list host
           (read-string "Username: " (ghub--username host))
           (intern (read-string "Package: " "ghub")))))
