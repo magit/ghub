@@ -43,6 +43,8 @@
 ;;; Settings
 
 (defvar ghub-default-host "api.github.com")
+(defvar ghub-github-token-scopes '(repo))
+(defvar ghub-override-system-name nil)
 
 ;;; Request
 ;;;; API
@@ -243,6 +245,45 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
              params "&"))
 
 ;;; Authentication
+;;;; API
+
+;;;###autoload
+(defun ghub-create-token (host username package scopes)
+  "Create, store and return a new token.
+
+HOST is the Github instance, usually \"api.github.com\".
+USERNAME is the name of a user on that instance.
+PACKAGE is the package that will use the token.
+SCOPES are the scopes the token is given access to."
+  (interactive
+   (pcase-let ((`(,host ,username ,package)
+                (ghub--read-triplet)))
+     (list host username package
+           (split-string
+            (read-string
+             "Scopes (separated by commas): "
+             (mapconcat #'symbol-name
+                        (symbol-value
+                         (intern (format "%s-github-token-scopes" package)))
+                        ","))
+            "," t "[\s\t]+"))))
+  (let ((user (ghub--ident username package)))
+    (cl-destructuring-bind (_save token)
+        (ghub--auth-source-get (list :save-function :secret)
+          :create t :host host :user user
+          :secret
+          (cdr (assq 'token
+                     (ghub-post
+                      "/authorizations"
+                      `((scopes . ,scopes)
+                        (note   . ,(ghub--ident-github package)))
+                      :username username :auth 'basic :host host))))
+      ;; If the Auth-Source cache contains the information that there
+      ;; is no value, then setting the value does not invalidate that
+      ;; now incorrect information.
+      (auth-source-forget (list :host host :user user))
+      token)))
+
 ;;;; Internal
 
 (defun ghub--auth (host auth &optional username)
@@ -264,11 +305,17 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
     (setf (url-user url) username)
     (url-basic-auth url t)))
 
-(defun ghub--token (host username package)
-  (or (ghub--auth-source-get :secret
-        :host host
-        :user (ghub--ident username package))
-      (signal 'ghub-error '("Token not found"))))
+(defun ghub--token (host username package &optional nocreate)
+  (let ((user (ghub--ident username package)))
+    (or (ghub--auth-source-get :secret :host host :user user)
+        (progn
+          ;; Auth-Source caches the information that there is no
+          ;; value, but in our case that is a situation that needs
+          ;; fixing so we want to keep trying by invalidating that
+          ;; information.
+          (auth-source-forget (list :host host :user user))
+          (and (not nocreate)
+               (ghub--confirm-create-token host username package))))))
 
 (defun ghub--username (host)
   (let ((var (if (string-prefix-p "api.github.com" host)
@@ -281,6 +328,76 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
 
 (defun ghub--ident (username package)
   (format "%s^%s" username package))
+
+(defun ghub--ident-github (package)
+  (format "Emacs package %s @ %s"
+          package
+          (or ghub-override-system-name (system-name))))
+
+(defun ghub--package-scopes (package)
+  (symbol-value (intern (format "%s-github-token-scopes" package))))
+
+(defun ghub--confirm-create-token (host username package)
+  (let* ((id-str (ghub--ident-github package))
+         (id-nbr (with-demoted-errors "Error: %S"
+                   (ghub--get-token-id host username package)))
+         (scopes (ghub--package-scopes package))
+         (max-mini-window-height 40))
+    (if (yes-or-no-p
+         (format
+          "Such a Github API token is not available:
+
+  Host:    %s
+  User:    %s
+  Package: %s
+
+  Scopes requested in `%s-github-token-scopes':\n%s
+  Store locally according to `auth-sources':\n    %S
+  Store on Github as:\n    %S
+%s
+WARNING: If you have enabled two-factor authentication
+         then you have to create the token manually.
+
+If in doubt, then abort and view the documentation first.
+
+Create and store such a token? "
+          host username package package
+          (mapconcat (lambda (scope) (format "    %s" scope)) scopes "\n")
+          auth-sources id-str
+          (if id-nbr
+              "\nWARNING: A matching token exists but is unavailable
+         locally.  It will be replaced.\n"
+            "")))
+        (progn
+          (when id-nbr
+            (ghub--delete-token host username package))
+          (ghub-create-token host username package scopes))
+      (user-error "Abort"))))
+
+(defun ghub--get-token-id (host username package)
+  (let ((ident (ghub--ident-github package)))
+    (cl-some (lambda (x)
+               (let-alist x
+                 (and (equal .app.name ident) .id)))
+             (ghub-get "/authorizations" nil
+                       :unpaginate t
+                       :username username :auth 'basic :host host))))
+
+(defun ghub--get-token-plist (host username package)
+  (ghub-get (format "/authorizations/%s"
+                    (ghub--get-token-id host username package))
+            nil :username username :auth 'basic :host host))
+
+(defun ghub--delete-token (host username package)
+  (ghub-delete (format "/authorizations/%s"
+                       (ghub--get-token-id host username package))
+               :username username :auth 'basic :host host))
+
+(defun ghub--read-triplet ()
+  (let ((host (read-string "Host: " ghub-default-host)))
+    (list host
+          (read-string "Username: " (ghub--username host))
+          (intern (read-string "Package: " "ghub")))))
 
 (defun ghub--auth-source-get (key:s &rest spec)
   (declare (indent 1))
