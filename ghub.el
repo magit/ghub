@@ -250,15 +250,14 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
     (setq username (ghub--username host)))
   (encode-coding-string
    (if (eq auth 'basic)
-       (ghub--basic-auth host)
+       (ghub--basic-auth host username)
      (concat "token "
              (if (stringp auth) auth (ghub--token host username))))
    'utf-8))
 
-(defun ghub--basic-auth (host)
+(defun ghub--basic-auth (host username)
   (let ((url (url-generic-parse-url (concat "https://" host))))
-    (setf (url-user url)
-          (ghub--username host))
+    (setf (url-user url) username)
     (url-basic-auth url t)))
 
 (defun ghub--token (host username)
