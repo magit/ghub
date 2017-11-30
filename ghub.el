@@ -133,6 +133,8 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
                                unpaginate noerror reader
                                username auth host)
   "Make a request for RESOURCE using METHOD."
+  (unless (string-prefix-p "/" resource)
+    (setq resource (concat "/" resource)))
   (unless host
     (setq host (ghub--host)))
   (cond
