@@ -324,7 +324,12 @@ SCOPES are the scopes the token is given access to."
     (condition-case nil
         (car (process-lines "git" "config" var))
       (error
-       (signal 'ghub-error (list (format "%s is undefined" var)))))))
+       (let ((user (read-string
+                    (format "Git variable `%s' is unset.  Set to: " var))))
+         (or (and user (progn (call-process "git" nil nil nil
+                                            "config" "--global" var user)
+                              user))
+             (user-error "Abort")))))))
 
 (defun ghub--ident (username package)
   (format "%s^%s" username package))
