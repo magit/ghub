@@ -1,4 +1,4 @@
-;;; ghub.el --- minuscule client for the Github API  -*- lexical-binding: t -*-
+;;; ghub.el --- minuscule client library for the Github API  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2016-2017  Jonas Bernoulli
 
@@ -23,9 +23,22 @@
 
 ;;; Commentary:
 
-;; This library provides basic support for accessing the Github
-;; API from Emacs packages.  For more information see the wiki,
-;; which can be found at https://github.com/magit/ghub/wiki.
+;; Ghub is a library that provides basic support for using the Github API
+;; from Emacs packages.  It abstracts access to API resources using only
+;; a handful of functions that are not resource-specific.
+
+;; It also handles the creation, storage and use of access tokens using a
+;; setup wizard, to make it easier for users to get started and to reduce
+;; the support burden imposed on package maintainers.  It also comes with
+;; a comprehensive manual to address the cases when things don't just
+;; work as expected.
+
+;; Ghub is intentionally limited to only provide these two essential
+;; features — basic request functions and guided setup — to avoid being
+;; too opinionated, which would hinder wide adaption.  It is assumed that
+;; wide adoption would make life easier for users and maintainers alike,
+;; because then all packages that talk to the Github API could be
+;; configured the same way.
 
 ;;; Code:
 
@@ -43,13 +56,39 @@
 ;;; Settings
 
 (defconst ghub-default-host "api.github.com")
-(defvar ghub-github-token-scopes '(repo))
-(defvar ghub-override-system-name nil)
+
+(defvar ghub-github-token-scopes '(repo)
+  "The Github API scopes that your private tools need.
+
+The token that is created based on the value of this variable
+is used when `ghub-request' (or one of its wrappers) is called
+without providing a value for AUTH.  Packages should always
+identify themselves using that argument, but when you use Ghub
+directly in private tools, then that is not necessary and the
+request is made on behalf of the `ghub' package itself, aka on
+behalf of some private tool.
+
+By default the only requested scope is `repo' because that is
+sufficient as well as required for most common uses.  This and
+other scopes are documented at https://magit.vc/goto/2e586d36.
+
+If your private tools need other scopes, then you have to add
+them here *before* creating the token.  Alternatively you can
+edit the scopes of an existing token using the web interface
+at https://github.com/settings/tokens.")
+
+(defvar ghub-override-system-name nil
+  "If non-nil, the string used to identify the local machine.
+If this is nil, then the value returned by `system-name' is
+used instead.")
 
 ;;; Request
 ;;;; API
 
-(defvar ghub-response-headers nil)
+(defvar ghub-response-headers nil
+  "The headers returned in response to the last request.
+`ghub-request' returns the response body and stores the
+response header in this variable.")
 
 (defvar ghub-raw-response-body nil)
 
@@ -132,7 +171,69 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
                                &key query payload headers
                                unpaginate noerror reader
                                username auth host)
-  "Make a request for RESOURCE using METHOD."
+  "Make a request for RESOURCE and return the response body.
+
+Also place the response header in `ghub-response-headers'.
+
+METHOD is the http method, given as a string.
+RESOURCE is the resource to access, given as a string beginning
+  with a slash.
+
+PARAMS, QUERY, PAYLOAD and HEADERS are alists used to specify
+  data.  The Github API documentation is vague on how data has
+  to be transmitted and for a particular resource usually just
+  talks about \"parameters\".  Generally speaking when the METHOD
+  is \"HEAD\" or \"GET\", then they have to be transmitted as a
+  query, otherwise as a payload.
+Use PARAMS to automatically transmit like QUERY or PAYLOAD would
+  depending on METHOD.
+Use QUERY to explicitly transmit data as a query.
+Use PAYLOAD to explicitly transmit data as a payload.
+Use HEADERS for those rare resources that require that the data
+  is transmitted as headers instead of as a query or payload.
+  When that is the case, then the api documentation usually
+  mentions it explicitly.
+
+If UNPAGINATE is non-nil, then make multiple requests if necessary
+  to get all items at RESOURCE.
+If NOERROR is non-nil, then do not raise an error if the request
+  fails and return nil instead.
+If READER is non-nil, then it is used to read and return from the
+  response buffer.  The default is `ghub--read-json-response'.
+  For the very few resources that do not return json, you might
+  want to use `ghub--read-raw-response'.
+
+If USERNAME is non-nil, then make a request on behalf of that
+  user.  It is better to specify the user using the Git variable
+  `github.user' for \"api.github.com\", or `github.HOST.user' if
+  connecting to a Github Enterprise instance.
+
+Each package that uses `ghub' should use its own token. If AUTH
+  is nil, then the generic `ghub' token is used instead.  This
+  is only acceptable for personal utilities.  A packages that
+  is distributed to other users should always use this argument
+  to identify itself, using a symbol matching its name.
+
+  Package authors who find this inconvenient should write a
+  wrapper around this function and possibly for the method
+  specific functions also.
+
+  Some symbols have a special meaning.  `none' means to make an
+  unauthorized request.  `basic' means to make a password based
+  request.  If the value is a string, then it is assumed to be
+  a valid token.  `basic' and an explicit token string are only
+  intended for internal and debugging uses.
+
+  If AUTH is a package symbol, then the scopes are specified
+  using the variable `AUTH-github-token-scopes'.  It is an error
+  if that is not specified.  See `ghub-github-token-scopes' for
+  an example.
+
+If HOST is non-nil, then connect to that Github instance.  This
+  defaults to \"api.github.com\".  When a repository is connected
+  to a Github Enterprise instance, then it is better to specify
+  that using the Git variable `github.host' instead of using this
+  argument."
   (unless (string-prefix-p "/" resource)
     (setq resource (concat "/" resource)))
   (unless host
