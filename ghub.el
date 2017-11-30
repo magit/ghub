@@ -203,23 +203,34 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
               body)))
       (kill-buffer buf))))
 
-(defun ghub-wait (resource &optional username auth host)
-  "Busy-wait until RESOURCE becomes available."
+(defun ghub-wait (resource &optional username auth host duration)
+  "Busy-wait up to DURATION seconds for RESOURCE to become available.
+
+DURATION specifies how many seconds to wait at most.  It defaults
+to 64 seconds.  The first attempt is made immediately, the second
+after two seconds, and each subequent attemts are made after
+waiting as long as we already waited between all preceding
+attempts combined.
+
+See `ghub-request' for information about the other arguments."
+  (unless duration
+    (setq duration 64))
   (with-local-quit
-    (let ((for 0.5)
-          (total 0))
+    (let ((total 0))
       (while (not (ignore-errors (ghub-get resource nil
                                            :username username
                                            :auth auth
                                            :host host)))
-        (setq for (truncate (* 2 for)))
-        (setq total (+ total for))
-        (when (= for 128)
-          (signal 'ghub-error
-                  (list (format "Github is taking too long to create %s"
-                                resource))))
-        (message "Waiting for %s (%ss)..." resource total)
-        (sit-for for)))))
+        (message "Waited (%3ss of %ss) for %s..." total duration resource)
+        (if (= total duration)
+            (signal 'ghub-error
+                    (list (format "Github is taking too long to create %s"
+                                  resource)))
+          (if (> total 0)
+              (let ((wait (min total (- duration total))))
+                (sit-for wait)
+                (cl-incf total wait))
+            (sit-for (setq total 2))))))))
 
 ;;;; Internal
 
