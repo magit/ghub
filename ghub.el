@@ -533,7 +533,7 @@ Create and store such a token? "
 (defun ghub--delete-token (host username package)
   (ghub-delete (format "/authorizations/%s"
                        (ghub--get-token-id host username package))
-               :username username :auth 'basic :host host))
+               nil :username username :auth 'basic :host host))
 
 (defun ghub--read-triplet ()
   (let ((host (read-string "Host: " (ghub--host))))
