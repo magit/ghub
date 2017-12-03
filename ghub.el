@@ -550,6 +550,14 @@ Create and store such a token? "
           (mapcar #'value key:s)
         (value key:s)))))
 
+(define-advice auth-source-netrc-parse-next-interesting
+    (:around (fn) save-match-data)
+  "Save match-data for the benefit of caller `auth-source-netrc-parse-one'.
+Without wrapping this function in `save-match-data' the caller
+won't see the secret from a line that is followed by a commented
+line."
+  (save-match-data (funcall fn)))
+
 ;;; ghub.el ends soon
 (provide 'ghub)
 ;; Local Variables:
