@@ -481,9 +481,7 @@ has to provide several values including their password."
   (symbol-value (intern (format "%s-github-token-scopes" package))))
 
 (defun ghub--confirm-create-token (host username package)
-  (let* ((id-str (ghub--ident-github package))
-         (id-nbr (with-demoted-errors "Error: %S"
-                   (ghub--get-token-id host username package)))
+  (let* ((ident (ghub--ident-github package))
          (scopes (ghub--package-scopes package))
          (max-mini-window-height 40))
     (if (yes-or-no-p
@@ -497,23 +495,29 @@ has to provide several values including their password."
   Scopes requested in `%s-github-token-scopes':\n%s
   Store locally according to `auth-sources':\n    %S
   Store on Github as:\n    %S
-%s
-WARNING: If you have enabled two-factor authentication
-         then you have to create the token manually.
+
+WARNING: If you have enabled two-factor authentication then
+         you have to abort and create the token manually.
 
 If in doubt, then abort and view the documentation first.
+
+Otherwise confirm and then provide your Github username and
+password at the next two prompts.  Depending on the backend
+you might have to provide a passphrase and confirm that you
+really want to save the token.
 
 Create and store such a token? "
           host username package package
           (mapconcat (lambda (scope) (format "    %s" scope)) scopes "\n")
-          auth-sources id-str
-          (if id-nbr
-              "\nWARNING: A matching token exists but is unavailable
-         locally.  It will be replaced.\n"
-            "")))
+          auth-sources ident))
         (progn
-          (when id-nbr
-            (ghub--delete-token host username package))
+          (when (ghub--get-token-id host username package)
+            (if (yes-or-no-p
+                 (format
+                  "A token named %S\nalready exists on Github.  Replace it?"
+                  ident))
+                (ghub--delete-token host username package)
+              (user-error "Abort")))
           (ghub-create-token host username package scopes))
       (user-error "Abort"))))
 

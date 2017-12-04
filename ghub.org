@@ -7,7 +7,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 1.2.0 (v1.2.0-60-g97edf6d+1)
+#+SUBTITLE: for version 1.3.0 (v1.3.0-22-g45cd8c8+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -31,7 +31,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 #+BEGIN_QUOTE
-This manual is for Ghub version 1.2.0 (v1.2.0-60-g97edf6d+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-22-g45cd8c8+1).
 
 Copyright (C) 2017 Jonas Bernoulli <jonas@bernoul.li>
 
@@ -211,21 +211,7 @@ two-factor authentication, in which case the token has to be created
 and stored manually.
 
 If you make a request and the required token is not available yet,
-then the setup wizard will first ask you this:
-
-#+BEGIN_EXAMPLE
-  Username [for https://USERNAME@api.github.com]: USERNAME
-#+END_EXAMPLE
-
-Unfortunately Ghub has no control over this, so it cannot present a
-more meaningful prompt.  Confirm the default choice by pressing ~RET~.
-If the shown USERNAME is not your Github.com (or Github Enterprise
-instance) username, then you have done something wrong during the step
-describe in the previous section (which see).
-
-Then you will also be asked for a password.  Provide the password that
-you use when accessing Github.com or the Github Enterprise instance in
-a browser.  Finally you are asked something like:
+then the setup wizard will first ask you something like this:
 
 #+BEGIN_EXAMPLE
   Such a Github API token is not available:
@@ -312,11 +298,12 @@ of the doubts that you might have:
 
   Github uses the token description to identify the token, not merely
   as something useful to humans.  Token descriptions therefore have to
-  be unique and in rare cases you might see this warning:
+  be unique and in rare cases you get an additional prompt, asking you
+  something like:
 
   #+BEGIN_EXAMPLE
-    WARNING: A matching token exists but is unavailable
-             locally.  It will be replaced.
+    A token named "Emacs package FOO @ LOCAL-MACHINE"
+    already exists on Github.  Replace it?
   #+END_EXAMPLE
 
   You might see this message when you have lost the old token and want
