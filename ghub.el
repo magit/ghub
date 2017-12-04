@@ -427,11 +427,12 @@ has to provide several values including their password."
       (ghub--basic-auth host username)
     (concat "token "
             (encode-coding-string
-             (cond ((stringp auth) auth)
-                   ((null    auth) (ghub--token host username 'ghub))
-                   ((symbolp auth) (ghub--token host username auth))
-                   (t (signal 'wrong-type-argument
-                              `((or stringp symbolp) ,auth))))
+             (cl-typecase auth
+               (string auth)
+               (null   (ghub--token host username 'ghub))
+               (symbol (ghub--token host username auth))
+               (t (signal 'wrong-type-argument
+                          `((or stringp symbolp) ,auth))))
              'utf-8))))
 
 (defun ghub--basic-auth (host username)
