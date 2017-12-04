@@ -257,7 +257,8 @@ If HOST is non-nil, then connect to that Github instance.  This
                               (list (cons "Authorization"
                                           (ghub--auth host auth username))))
                        ,@headers))
-                    (url-request-method method)
+                    ;; Encode in case caller used (symbol-name 'GET).  #35
+                    (url-request-method (encode-coding-string method 'utf-8))
                     (url-request-data payload))
                 (url-retrieve-synchronously
                  (concat "https://" host resource qry)))))
