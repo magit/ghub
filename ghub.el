@@ -423,16 +423,16 @@ has to provide several values including their password."
 (defun ghub--auth (host auth &optional username)
   (unless username
     (setq username (ghub--username host)))
-  (encode-coding-string
-   (if (eq auth 'basic)
-       (ghub--basic-auth host username)
-     (concat "token "
+  (if (eq auth 'basic)
+      (ghub--basic-auth host username)
+    (concat "token "
+            (encode-coding-string
              (cond ((stringp auth) auth)
                    ((null    auth) (ghub--token host username 'ghub))
                    ((symbolp auth) (ghub--token host username auth))
                    (t (signal 'wrong-type-argument
-                              `((or stringp symbolp) ,auth))))))
-   'utf-8))
+                              `((or stringp symbolp) ,auth))))
+             'utf-8))))
 
 (defun ghub--basic-auth (host username)
   (let ((url (url-generic-parse-url (concat "https://" host))))
