@@ -5,7 +5,7 @@
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/magit/ghub
 ;; Keywords: tools
-;; Package-Requires: ((emacs "24.4"))
+;; Package-Requires: ((emacs "24.4") (let-alist "1.0.5"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -45,6 +45,7 @@
 (require 'auth-source)
 (require 'cl-lib)
 (require 'json)
+(require 'let-alist)
 (require 'url)
 (require 'url-auth)
 
@@ -556,8 +557,9 @@ Create and store such a token? "
           (mapcar #'value key:s)
         (value key:s)))))
 
-(define-advice auth-source-netrc-parse-next-interesting
-    (:around (fn) save-match-data)
+(advice-add 'auth-source-netrc-parse-next-interesting :around
+            'auth-source-netrc-parse-next-interesting@save-match-data)
+(defun auth-source-netrc-parse-next-interesting@save-match-data (fn)
   "Save match-data for the benefit of caller `auth-source-netrc-parse-one'.
 Without wrapping this function in `save-match-data' the caller
 won't see the secret from a line that is followed by a commented
