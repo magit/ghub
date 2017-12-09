@@ -448,8 +448,10 @@ has to provide several values including their password."
           ;; Auth-Source caches the information that there is no
           ;; value, but in our case that is a situation that needs
           ;; fixing so we want to keep trying by invalidating that
-          ;; information.
-          (auth-source-forget (list :host host :user user))
+          ;; information.  The (:max 1) is needed for Emacs releases
+          ;; before 26.1.
+          (auth-source-forget (list :max 1 :host host :user
+          user))
           (and (not nocreate)
                (ghub--confirm-create-token host username package))))))
 
