@@ -486,9 +486,10 @@ has to provide several values including their password."
   (let* ((ident (ghub--ident-github package))
          (scopes (ghub--package-scopes package))
          (max-mini-window-height 40))
-    (if (yes-or-no-p
-         (format
-          "Such a Github API token is not available:
+    (if (let ((message-log-max nil))
+          (yes-or-no-p
+           (format
+            "Such a Github API token is not available:
 
   Host:    %s
   User:    %s
@@ -509,9 +510,9 @@ you might have to provide a passphrase and confirm that you
 really want to save the token.
 
 Create and store such a token? "
-          host username package package
-          (mapconcat (lambda (scope) (format "    %s" scope)) scopes "\n")
-          auth-sources ident))
+            host username package package
+            (mapconcat (lambda (scope) (format "    %s" scope)) scopes "\n")
+            auth-sources ident)))
         (progn
           (when (ghub--get-token-id host username package)
             (if (yes-or-no-p
