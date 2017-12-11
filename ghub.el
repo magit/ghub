@@ -167,6 +167,7 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
 (define-error 'ghub-403 "Forbidden" 'ghub-http-error)
 (define-error 'ghub-404 "Not Found" 'ghub-http-error)
 (define-error 'ghub-422 "Unprocessable Entity" 'ghub-http-error)
+(define-error 'ghub-500 "Internal Server Error" 'ghub-http-error)
 
 (cl-defun ghub-request (method resource &optional params
                                &key query payload headers
@@ -285,7 +286,8 @@ If HOST is non-nil, then connect to that Github instance.  This
             (unless url-http-end-of-headers
               (error "ghub: url-http-end-of-headers is nil when it shouldn't"))
             (goto-char (1+ url-http-end-of-headers))
-            (setq body (funcall (or reader 'ghub--read-json-response)))
+            (setq body (funcall (or reader 'ghub--read-json-response)
+                                url-http-response-status))
             (unless (or noerror (= (/ url-http-response-status 100) 2))
               (let ((data (list method resource qry payload body)))
                 (pcase url-http-response-status
@@ -295,6 +297,7 @@ If HOST is non-nil, then connect to that Github instance.  This
                   (403 (signal 'ghub-403 data))
                   (404 (signal 'ghub-404 data))
                   (422 (signal 'ghub-422 data))
+                  (500 (signal 'ghub-500 data))
                   (_   (signal 'ghub-http-error
                                (cons url-http-response-status data))))))
             (if (and link unpaginate)
@@ -341,21 +344,41 @@ See `ghub-request' for information about the other arguments."
 
 ;;;; Internal
 
-(defun ghub--read-json-response ()
-  (and (not (eobp))
-       (let ((json-object-type 'alist)
-             (json-array-type  'list)
-             (json-key-type    'symbol)
-             (json-false       nil)
-             (json-null        nil))
-         (json-read-from-string (ghub--read-raw-response)))))
+(defun ghub--read-json-response (status)
+  (let ((raw (ghub--read-raw-response)))
+    (and raw
+         (condition-case nil
+             (let ((json-object-type 'alist)
+                   (json-array-type  'list)
+                   (json-key-type    'symbol)
+                   (json-false       nil)
+                   (json-null        nil))
+               (json-read-from-string raw))
+           (json-readable-error
+            (ghub--handle-invalid-response status raw))))))
 
-(defun ghub--read-raw-response ()
+(defun ghub--read-raw-response (&optional _status)
   (and (not (eobp))
        (setq ghub-raw-response-body
              (decode-coding-string
               (buffer-substring-no-properties (point) (point-max))
               'utf-8))))
+
+(defun ghub--handle-invalid-response (status body)
+  (let ((html-p (string-prefix-p "<!DOCTYPE html>" body))
+        content)
+    (when html-p
+      (with-temp-buffer
+        (save-excursion (insert body))
+        (while (re-search-forward "<p>\\(?:<strong>\\)?\\([^<]+\\)" nil t)
+          (push (match-string 1) content)))
+      (when content
+        (setq content (mapconcat #'identity (reverse content) " "))))
+    `((http_status      . ,status)
+      (invalid_response . "Github failed to deliver Json.")
+      (invalid_is_html  . ,html-p)
+      (invalid_comment  . "Message consists of strings found in the html.")
+      (message          . ,content))))
 
 (defun ghub--url-encode-params (params)
   (mapconcat (lambda (param)
