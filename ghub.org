@@ -379,6 +379,13 @@ this:
   machine api.github.com login tarsius^ghub password 012345abcdef...
 #+END_SRC
 
+An entry for Magithub would look like this:
+
+#+BEGIN_SRC example
+  machine api.github.com login tarsius^magithub password 012345abcdef...
+#+END_SRC
+
+
 * Using Ghub in Personal Scripts
 
 You can use ~ghub-request~ and its wrapper functions in your personal
