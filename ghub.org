@@ -7,7 +7,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 1.3.0 (v1.3.0-30-g4d3d3a0+1)
+#+SUBTITLE: for version 1.3.0 (v1.3.0-31-g6443c4f+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -31,7 +31,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-30-g4d3d3a0+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-31-g6443c4f+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017 Jonas Bernoulli <jonas@bernoul.li>
@@ -373,11 +373,12 @@ separate tokens for each package, it has to squeeze four values into
 those three slots, and it does that by using "USERNAME^PACKAGE" as the
 "login".
 
-An entry in one of the three mentioned files would then look like
+Assuming your username is "ziggy" and the package is named "stardust",
+an entry in one of the three mentioned files would then look like
 this:
 
 #+BEGIN_SRC example
-  machine api.github.com login tarsius^ghub password 012345abcdef...
+  machine api.github.com login ziggy^stardust password 012345abcdef...
 #+END_SRC
 
 * Using Ghub in Personal Scripts
