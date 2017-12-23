@@ -166,6 +166,7 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
 (define-error 'ghub-401 "Unauthorized" 'ghub-http-error)
 (define-error 'ghub-403 "Forbidden" 'ghub-http-error)
 (define-error 'ghub-404 "Not Found" 'ghub-http-error)
+(define-error 'ghub-409 "Conflict" 'ghub-http-error)
 (define-error 'ghub-422 "Unprocessable Entity" 'ghub-http-error)
 (define-error 'ghub-500 "Internal Server Error" 'ghub-http-error)
 
@@ -296,6 +297,7 @@ If HOST is non-nil, then connect to that Github instance.  This
                   (401 (signal 'ghub-401 data))
                   (403 (signal 'ghub-403 data))
                   (404 (signal 'ghub-404 data))
+                  (409 (signal 'ghub-409 data))
                   (422 (signal 'ghub-422 data))
                   (500 (signal 'ghub-500 data))
                   (_   (signal 'ghub-http-error
