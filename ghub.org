@@ -7,7 +7,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 1.3.0 (v1.3.0-35-g5226d51+1)
+#+SUBTITLE: for version 1.3.0 (v1.3.0-36-gca466a0+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -31,7 +31,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-35-g5226d51+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-36-gca466a0+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -231,7 +231,8 @@ then the setup wizard will first ask you something like this:
   WARNING: If you have enabled two-factor authentication
            then you have to create the token manually.
 
-  If in doubt, then abort and view the documentation first.
+  If in doubt, then abort and first view the section of the Ghub
+  documentation called "Manually Creating and Storing a Token".
 
   Create and store such a token? (yes or no)
 #+END_EXAMPLE

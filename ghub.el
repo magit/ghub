@@ -529,7 +529,8 @@ has to provide several values including their password."
 WARNING: If you have enabled two-factor authentication then
          you have to abort and create the token manually.
 
-If in doubt, then abort and view the documentation first.
+If in doubt, then abort and first view the section of the Ghub
+documentation called \"Manually Creating and Storing a Token\".
 
 Otherwise confirm and then provide your Github username and
 password at the next two prompts.  Depending on the backend
