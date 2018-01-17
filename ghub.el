@@ -507,7 +507,10 @@ has to provide several values including their password."
           (or ghub-override-system-name (system-name))))
 
 (defun ghub--package-scopes (package)
-  (symbol-value (intern (format "%s-github-token-scopes" package))))
+  (let ((var (intern (format "%s-github-token-scopes" package))))
+    (if (boundp var)
+        (symbol-value var)
+      (error "%s fails to define %s" package var))))
 
 (defun ghub--confirm-create-token (host username package)
   (let* ((ident (ghub--ident-github package))
