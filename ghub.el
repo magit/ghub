@@ -35,7 +35,7 @@
 
 ;; Ghub is intentionally limited to only provide these two essential
 ;; features — basic request functions and guided setup — to avoid being
-;; too opinionated, which would hinder wide adaption.  It is assumed that
+;; too opinionated, which would hinder wide adoption.  It is assumed that
 ;; wide adoption would make life easier for users and maintainers alike,
 ;; because then all packages that talk to the Github API could be
 ;; configured the same way.
