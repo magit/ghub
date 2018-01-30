@@ -320,7 +320,7 @@ If HOST is non-nil, then connect to that Github instance.  This
 
 DURATION specifies how many seconds to wait at most.  It defaults
 to 64 seconds.  The first attempt is made immediately, the second
-after two seconds, and each subequent attemts are made after
+after two seconds, and each subequent attempts are made after
 waiting as long as we already waited between all preceding
 attempts combined.
 
