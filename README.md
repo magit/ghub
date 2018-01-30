@@ -18,4 +18,4 @@ wide adoption would make life easier for users and maintainers alike,
 because then all packages that talk to the Github API could be
 configured the same way.
 
-Consulting the [manual](https://magit.vc/manual/ghub) can be benefitial.
+Consulting the [manual](https://magit.vc/manual/ghub) can be beneficial.
