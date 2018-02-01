@@ -198,7 +198,8 @@ Use HEADERS for those rare resources that require that the data
   mentions it explicitly.
 
 If UNPAGINATE is non-nil, then make multiple requests if necessary
-  to get all items at RESOURCE.
+  to get all items at RESOURCE.  For forward-compatibility avoid
+  using using a function as value.
 If NOERROR is non-nil, then do not raise an error if the request
   fails and return nil instead.
 If READER is non-nil, then it is used to read and return from the

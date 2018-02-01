@@ -30,7 +30,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 1.3.0 (v1.3.0-39-gf1b647f+1)
+@subtitle for version 1.3.0 (v1.3.0-41-g595ba4f+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -61,7 +61,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-39-gf1b647f+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-41-g595ba4f+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -182,14 +182,13 @@ Functions for particular resources.
 
 
 @item
-Using something other than json-like alists to handle what the
-Github API calls "parameters".
+Returning and consuming data as anything but json-like alists.
 
 
 @item
 Retrieving an existing token.  Github does not support it so we
-cannot do it.  If you lose your local copy of a token, then you have
-to replace it with a new one.
+cannot do it either.  If you lose your local copy of a token, then
+you have to replace it with a new one.
 @end itemize
 
 These features are not supported yet:
@@ -319,7 +318,7 @@ Such a Github API token is not available:
   Store locally according to `auth-sources':
     ("~/.authinfo" "~/.authinfo.gpg" "~/.netrc")
   Store on Github as:
-    "Emacs package FOO @@ LOCAL-MACHINE"
+    "Emacs package PACKAGE @@ LOCAL-MACHINE"
 
 WARNING: If you have enabled two-factor authentication
          then you have to create the token manually.
@@ -342,13 +341,13 @@ authentication.  It also cannot determine whether you have enabled
 two-factor authentication depending on whether a request fails or
 not because there are other reasons why a request might fail.
 
-So this warning is always displayed and you are expected to know
-whether you have enabled two-factor authentication or not.  If you
-have, then you must abort and see @ref{Manually Creating and Storing a Token}.
+So this warning is always displayed and if you have enabled
+two-factor authentication, then you are expected to abort and follow
+the instructions in @ref{Manually Creating and Storing a Token}.
 
 
 @item
-@code{Host} usually is "api.github.com" and that's usually what you want.
+@code{Host} usually is "api.github.com" and that is usually what you want.
 If you are trying to access a Github Enterprise instance, then it
 should be something else and you have to set the value manually as
 described in the next section.
@@ -357,8 +356,8 @@ described in the next section.
 @item
 @code{User} should be your Github.com (or Github Enterprise instance)
 username.  If it is something else, then you made a mistake at the
-first prompt or during the step describe in the previous section and
-have to refer to that in order to fix this issue.
+first prompt or during the step described in the previous section
+and have to refer to that in order to fix this issue.
 
 
 @item
@@ -409,7 +408,7 @@ be unique and in rare cases you get an additional prompt, asking you
 something like:
 
 @example
-A token named "Emacs package FOO @@ LOCAL-MACHINE"
+A token named "Emacs package PACKAGE @@ LOCAL-MACHINE"
 already exists on Github.  Replace it?
 @end example
 
@@ -470,11 +469,11 @@ the list.  It doesn't matter which files already do or don't exist
 when storing a new secret, the first file is always used.
 
 Secrets are stored in @code{~/.authinfo} in plain text.  If you don't want
-that (good choice), then you have to customize @code{auth-sources} e.g. by
+that (good choice), then you have to customize @code{auth-sources}, e.g. by
 flipping the positions of the first two elements.
 
-Auth-Source also supports storing secrets in various key-chains, refer
-to its documentation for more information.
+Auth-Source also supports storing secrets in various key-chains.
+Refer to its documentation for more information.
 
 Some Auth-Source backends only support storing three values per entry,
 the "machine", the "login" and the "password".  Because Ghub uses
@@ -482,9 +481,9 @@ separate tokens for each package, it has to squeeze four values into
 those three slots, and it does that by using "USERNAME@math{^PACKAGE}" as the
 "login".
 
-Assuming your username is "ziggy" and the package is named "stardust",
-an entry in one of the three mentioned files would then look like
-this:
+Assuming your username is "ziggy",the package is named "stardust", and
+you want to access Github.com an entry in one of the three mentioned
+files would then look like this:
 
 @example
 machine api.github.com login ziggy^stardust password 012345abcdef...
@@ -603,7 +602,7 @@ latter is documented at @uref{https://developer.github.com/v3}.
 
 @defun ghub-request method resource &optional params &key query payload headers unpaginate noerror reader username auth host
 
-This function make a request for RESOURCE using METHOD.  PARAMS,
+This function makes a request for RESOURCE using METHOD.  PARAMS,
 QUERY, PAYLOAD and/or HEADERS are alists holding additional request
 data.  The response body is returned and the response header in
 stored in the variable @code{ghub-response-headers}.
@@ -620,7 +619,7 @@ with a slash.
 @item
 PARAMS, QUERY, PAYLOAD and HEADERS are alists and are used to
 specify request data.  All these arguments are alists that
-resemble the Json expected and returned by the Github API.  The
+resemble the json expected and returned by the Github API.  The
 keys are symbols and the values are stored in the @code{cdr} (not the
 @code{cadr}) and can be strings, integers and lists of strings and
 integers.
@@ -652,11 +651,14 @@ mentions it explicitly.
 
 @item
 If UNPAGINATE is non-nil, then this function makes multiple
-requests if necessary to get all items at RESOURCE.
+requests if necessary to get all items at RESOURCE.  For forward
+compatibility avoid using a function as value.
+
 
 @item
 If NOERROR is non-nil, then no error is raised if the request
 fails and @code{nil} is returned instead.
+
 
 @item
 If READER is non-nil, then it is used to read and return from the
@@ -674,20 +676,20 @@ connecting to a Github Enterprise instance.
 
 @item
 Each package that uses Ghub should use its own token. If AUTH is
-nil, then the generic @code{ghub} token is used instead.  This is only
-acceptable for personal utilities.  A packages that is distributed
-to other users should always use this argument to identify itself,
-using a symbol matching its name.
+@code{nil} or unspecified, then the generic @code{ghub} token is used instead.
+This is only acceptable for personal utilities.  A packages that
+is distributed to other users should always use this argument to
+identify itself, using a symbol matching its name.
 
 Package authors who find this inconvenient should write a wrapper
 around this function and possibly for the method specific
 functions also.
 
-Some symbols have a special meaning.  @code{none} means to make an
-unauthorized request.  @code{basic} means to make a password based
-request.  If the value is a string, then it is assumed to be a
-valid token.  @code{basic} and an explicit token string are only intended
-for internal and debugging uses.
+Beside @code{nil}, some other symbols have a special meaning too.  @code{none}
+means to make an unauthorized request.  @code{basic} means to make a
+password based request.  If the value is a string, then it is
+assumed to be a valid token.  @code{basic} and an explicit token string
+are only intended for internal and debugging uses.
 
 If AUTH is a package symbol, then the scopes are specified using
 the variable @code{AUTH-github-token-scopes}.  It is an error if that is
@@ -706,10 +708,10 @@ using the Git variable @code{github.host} instead of using this argument.
 
 A select few Github API resources respond by transmitting data in
 the response header instead of in the response body.  Because there
-are so few of these inconsistencies @code{ghub-request} always returns
+are so few of these inconsistencies, @code{ghub-request} always returns
 the response body.
 
-To access the response header use this variable after @code{ghub-request}
+To access the response headers use this variable after @code{ghub-request}
 has returned.
 @end defvar
 
@@ -725,7 +727,7 @@ each machine.  Also see @ref{Configuration Variables}.
 @end defvar
 @defvar PACKAGE-github-token-scopes
 
-Such a variable define the token scopes requested by the respective
+Such a variables define the token scopes requested by the respective
 package PACKAGE given by the first word in the variable name.  @code{ghub}
 itself is treated like any other package.  Also see @ref{Using Ghub in a Package}.
 @end defvar
@@ -770,15 +772,15 @@ Some API requests result in an immediate successful response even
 when the requested action has not actually been carried out yet.
 An example is the request for the creation of a new repository,
 which doesn't cause the repository to immediately become available.
-The Github API documentation usually mention this when describing
+The Github API documentation usually mentions this when describing
 an affected resource.
 
-If you want to do something with some resource right after creating
-after making a request for its creation, then you might have to wait
-for it to actually be created.  This function can be used to do so.
-It repeatedly tries to access the resource until it becomes
-available or until the timeout exceeds.  In the latter case it
-signals @code{ghub-error}.
+If you want to do something with some resource right after making
+a request for its creation, then you might have to wait for it to
+actually be created.  This function can be used to do so.  It
+repeatedly tries to access the resource until it becomes available
+or until the timeout exceeds.  In the latter case it signals
+@code{ghub-error}.
 
 RESOURCE specifies the resource that this function waits for.
 
@@ -806,8 +808,8 @@ user and then stores it according to variable @code{auth-sources}.  It can
 also be called non-interactively, but you shouldn't do that
 yourself.
 
-This is useful if you want fully setup things before attempting to
-make the initial request, if you want to provide fewer than the
+This is useful if you want to fully setup things before attempting
+to make the initial request, if you want to provide fewer than the
 requested scopes or customize @code{auth-sources} first, or if something
 has gone wrong when using the wizard that is used when making a
 request without doing this first.  (Note that instead of using this
@@ -856,9 +858,9 @@ This variable serves the same purpose as @code{github.user} but for the
 Github Enterprise instance identified by HOST.
 
 The reason why separate variables are used is that this makes it
-possible to set the both values globally instead of having to set
-one of the values locally in each and every repository that is
-connected to the Github Enterprise instance, not Github.com.
+possible to set both values globally instead of having to set one of
+the values locally in each and every repository that is connected to
+the Github Enterprise instance, not Github.com.
 @end defvar
 
 @defvar github.host
