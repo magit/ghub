@@ -30,7 +30,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 1.3.0 (v1.3.0-42-gb267bb6+1)
+@subtitle for version 1.3.0 (v1.3.0-43-gdabe8ac+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -61,7 +61,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-42-gb267bb6+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-43-gdabe8ac+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -640,6 +640,8 @@ Use QUERY to explicitly transmit data as a query.
 
 @item
 Use PAYLOAD to explicitly transmit data as a payload.
+Instead of an alist, PAYLOAD may also be a string, in which
+case it gets encoded as UTF-8 but is otherwise transmitted as-is.
 
 @item
 Use HEADERS for those rare resources that require that the data

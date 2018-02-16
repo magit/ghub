@@ -192,6 +192,8 @@ Use PARAMS to automatically transmit like QUERY or PAYLOAD would
   depending on METHOD.
 Use QUERY to explicitly transmit data as a query.
 Use PAYLOAD to explicitly transmit data as a payload.
+  Instead of an alist, PAYLOAD may also be a string, in which
+  case it gets encoded as UTF-8 but is otherwise transmitted as-is.
 Use HEADERS for those rare resources that require that the data
   is transmitted as headers instead of as a query or payload.
   When that is the case, then the API documentation usually
@@ -252,8 +254,10 @@ If HOST is non-nil, then connect to that Github instance.  This
     (when payload
       (error "PARAMS and PAYLOAD are mutually exclusive for METHOD %S" method))
     (setq payload params)))
-  (when (and payload (not (stringp payload)))
-    (setq payload (encode-coding-string (json-encode-list payload) 'utf-8)))
+  (when payload
+    (unless (stringp payload)
+      (setq payload (json-encode-list payload)))
+    (setq payload (encode-coding-string payload 'utf-8)))
   (let* ((qry (and query (concat "?" (ghub--url-encode-params query))))
          (buf (let ((url-request-extra-headers
                      `(("Content-Type" . "application/json")
