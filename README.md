@@ -1,9 +1,10 @@
 Ghub.el — Minuscule client library for the Github API
 =====================================================
 
-Ghub is a library that provides basic support for using the Github API
-from Emacs packages.  It abstracts access to API resources using only
-a handful of functions that are not resource-specific.
+Ghub is a library that provides basic support for using the Github
+REST (v3) and GraphQL (v4) APIs from Emacs packages.  It abstracts
+access to API resources using only a handful of functions that are
+not resource-specific.
 
 It also handles the creation, storage and use of access tokens using a
 setup wizard, to make it easier for users to get started and to reduce
