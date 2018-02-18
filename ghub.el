@@ -262,8 +262,7 @@ If HOST is non-nil, then connect to that Github instance.  This
          (buf (let ((url-request-extra-headers
                      `(("Content-Type" . "application/json")
                        ,@(and (not (eq auth 'none))
-                              (list (cons "Authorization"
-                                          (ghub--auth host auth username))))
+                              (list (ghub--auth host auth username)))
                        ,@headers))
                     ;; Encode in case caller used (symbol-name 'GET).  #35
                     (url-request-method (encode-coding-string method 'utf-8))
@@ -455,16 +454,18 @@ has to provide several values including their password."
   (unless username
     (setq username (ghub--username host)))
   (if (eq auth 'basic)
-      (ghub--basic-auth host username)
-    (concat "token "
-            (encode-coding-string
-             (cl-typecase auth
-               (string auth)
-               (null   (ghub--token host username 'ghub))
-               (symbol (ghub--token host username auth))
-               (t (signal 'wrong-type-argument
-                          `((or stringp symbolp) ,auth))))
-             'utf-8))))
+      (cons "Authorization" (ghub--basic-auth host username))
+    (cons "Authorization"
+          (concat
+           "token "
+           (encode-coding-string
+            (cl-typecase auth
+              (string auth)
+              (null   (ghub--token host username 'ghub))
+              (symbol (ghub--token host username auth))
+              (t (signal 'wrong-type-argument
+                         `((or stringp symbolp) ,auth))))
+            'utf-8)))))
 
 (defun ghub--basic-auth (host username)
   (let ((url (url-generic-parse-url (concat "https://" host))))
