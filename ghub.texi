@@ -30,7 +30,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 1.3.0 (v1.3.0-43-gdabe8ac+1)
+@subtitle for version 1.3.0 (v1.3.0-45-g74b577e+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -61,7 +61,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-43-gdabe8ac+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-45-g74b577e+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -85,6 +85,7 @@ General Public License for more details.
 * Using Ghub in Personal Scripts::
 * Using Ghub in a Package::
 * API::
+* Gitlab Support::
 
 @detailmenu
 --- The Detailed Node Listing ---
@@ -172,6 +173,12 @@ Support for Github Enterprise instances.
 
 @item
 Support for token scope validation.
+
+
+@item
+Support for Gitlab is implemented in the @code{glab.el} library, which is
+maintained in the same repository as @code{ghub.el} but distributed as a
+separate package.
 @end itemize
 
 These features will likely never be implemented in Ghub:
@@ -217,16 +224,6 @@ Once a token has been created a package cannot request new scopes
 that it previously did not need.  I am not quite sure yet whether
 Ghub should support that.  An alternative would be to let packages
 at least invalidate their own tokens.
-
-
-@item
-Other Git forges (Gitlab, Bitbucket@dots{}) are not supported.
-
-Support for other forges will likely be implemented using @strong{other}
-libraries that are very similar to this library.  Whether common
-code will be factored out into a library to be used by all these
-libraries or whether some code duplication is to be preferred, has
-not been decided yet.
 @end itemize
 
 @node Getting Started
@@ -450,6 +447,7 @@ variable named @code{PACKAGE-ghub-token-scopes}.  The doc-string of such
 variables should document what the various scopes are needed for.
 
 To create or edit a token go to @uref{https://github.com/settings/tokens}.
+For Gitlab.com use @uref{https://gitlab.com/profile/personal_access_tokens}.
 
 Finally store the token in a place where Ghub looks for it, as described
 in @ref{How Ghub uses Auth-Source}.
@@ -482,11 +480,19 @@ those three slots, and it does that by using "USERNAME@math{^PACKAGE}" as the
 "login".
 
 Assuming your username is "ziggy",the package is named "stardust", and
-you want to access Github.com an entry in one of the three mentioned
+you want to access @strong{Github.com} an entry in one of the three mentioned
 files would then look like this:
 
 @example
 machine api.github.com login ziggy^stardust password 012345abcdef...
+@end example
+
+Assuming your username is "ziggy",the package is named "stardust", and
+you want to access @strong{Gitlab.com} an entry in one of the three mentioned
+files would then look like this:
+
+@example
+machine gitlab.com/api/v4 login ziggy^stardust password 012345abcdef...
 @end example
 
 @node Using Ghub in Personal Scripts
@@ -703,6 +709,13 @@ If HOST is non-nil, then connect to that Github instance.  This
 defaults to "api.github.com".  When a repository is connected to
 a Github Enterprise instance, then it is better to specify that
 using the Git variable @code{github.host} instead of using this argument.
+
+
+@item
+If FORGE is @code{gitlab}, then connect to Gitlab.com or, depending on
+HOST to another Gitlab instance.  This is only intended for
+internal use.  Instead of using this argument you should use
+function @code{glab-request} and other @code{glab-*} functions.
 @end itemize
 @end defun
 
@@ -917,5 +930,39 @@ Alternatively you can set this variable to a unique value, that will
 then be used to identify the local machine instead of the value
 returned by @code{system-name}.
 @end defvar
+
+@node Gitlab Support
+@chapter Gitlab Support
+
+Support for Gitlab.com and other Gitlab instances is implemented in
+the library @code{glab.el}.  This library is build on top of @code{ghub.el} and is
+maintained in the same repository, but it is distributed as a separate
+package.
+
+When accessing Gitlab.com or another Gitlab instance, use @code{glab-request}
+instead of @code{ghub-request}, @code{glab-get} instead of @code{ghub-request}, etc.
+Likewise use the Git variables in the @code{gitlab} group instead of those in
+the @code{github} group, i.e.  @code{gitlab.user}, @code{gitlab.HOST.user} and @code{gitlab.host}.
+
+The Gitlab API cannot be used to create tokens, so Glab cannot provide
+a setup wizard like Ghub does.  As a consequence if the user makes a
+request and the necessary token cannot be found, then that results in
+an error.
+
+You have to manually create and store the necessary tokens.  Tokens
+can be created at @uref{https://gitlab.com/profile/personal_access_tokens},
+or the equivalent URL for another Gitlab instance.  To store the token
+locally, follow the instructions in @ref{Manually Creating and Storing a Token} and @ref{How Ghub uses Auth-Source}.
+
+Packages can that use Glab, can define @code{PACKAGE-gitlab-token-scopes} for
+documentation purposes.  But unlike @code{PACKAGE-github-token-scopes}, which
+is used by the setup wizard this is optional.
+
+And a random hint: where you would use @code{user/repo} when accessing Github,
+you have to use @code{user%2Frepo} when accessing Gitlab, e.g.:
+
+@lisp
+(glab-get "/projects/python-mode-devs%2Fpython-mode")
+@end lisp
 
 @bye

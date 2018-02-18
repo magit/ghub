@@ -1,5 +1,5 @@
-Minuscule client library for the Github API
-===========================================
+Ghub.el — Minuscule client library for the Github API
+=====================================================
 
 Ghub is a library that provides basic support for using the Github API
 from Emacs packages.  It abstracts access to API resources using only
@@ -18,4 +18,20 @@ wide adoption would make life easier for users and maintainers alike,
 because then all packages that talk to the Github API could be
 configured the same way.
 
-Consulting the [manual](https://magit.vc/manual/ghub) can be beneficial.
+Please consult the [manual][manual-ghub] for more information.
+
+Glab.el — Minuscule client library for the Gitlab API
+=====================================================
+
+Glab is a library that provides basic support for using the Gitlab API
+from Emacs packages.  It abstracts access to API resources using only
+a handful of functions that are not resource-specific.
+
+This library is implemented on top of Ghub.  Unlike Ghub, Glab does
+not support the guided creation of tokens because Gitlab lacks the
+features that would be necessary to implement that.  Users have to
+create tokens through the web interface.  Instructions can be found
+[here][manual-glab].
+
+[manual-ghub]: https://magit.vc/manual/ghub
+[manual-glab]: https://magit.vc/manual/ghub/Gitlab-Support.html
