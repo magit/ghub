@@ -7,7 +7,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 1.3.0 (v1.3.0-45-g74b577e+1)
+#+SUBTITLE: for version 1.3.0 (v1.3.0-46-g1fe02f3+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -31,7 +31,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-45-g74b577e+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-46-g1fe02f3+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -109,15 +109,24 @@ don't assume that they don't):
 
 - Support for token scope validation.
 
+- Basic support for GraphQL.
+
 - Support for Gitlab is implemented in the ~glab.el~ library, which is
   maintained in the same repository as ~ghub.el~ but distributed as a
   separate package.
 
-These features will likely never be implemented in Ghub:
+These features will likely never be implemented in Ghub itself:
 
 - Functions for particular resources.
 
-- Returning and consuming data as anything but json-like alists.
+  See ~ghub+.el~ for a package that provides such functionality.
+  It is built on top of ~ghub.el~.
+
+- Returning and consuming data as anything but JSON-like alists,
+  or in the case of GraphQL queries and mutations, plain strings.
+
+  See ~graphql.el~ for a package that provides such functionality.
+  It can be used along-side ~ghub.el~.
 
 - Retrieving an existing token.  Github does not support it so we
   cannot do it either.  If you lose your local copy of a token, then
@@ -127,7 +136,8 @@ These features are not supported yet:
 
 - Asynchronous requests are not supported yet.
 
-- The Github GraphQL API is not supported yet.
+- Controlled pagination for both the REST and GraphQL APIs have not
+  been implemented yet.
 
 - If a request fails due to a missing scope, then that isn't handled
   by ~ghub-request~ yet.  For now package authors just have to hope that
@@ -647,6 +657,17 @@ latter is documented at https://developer.github.com/v3.
 
   See ~ghub-request~'s documentation above for information about the
   other arguments.
+
+- Function: ghub-graphql graphql &optional variables &key username auth host
+
+  This function makes a GraphQL request using GRAPHQL and VARIABLES as
+  inputs.  GRAPHQL is a GraphQL string.  VARIABLES is a JSON-like
+  alist.  The other arguments behave like for `ghub-request' (which
+  see).
+
+  The response is returned as a JSON-like alist.  Even if the response
+  contains ~errors~, this function does not raise an error.  Likewise
+  cursor-handling too is left to the caller.
 
 ** Authentication
 

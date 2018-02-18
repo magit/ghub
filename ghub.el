@@ -359,6 +359,19 @@ See `ghub-request' for information about the other arguments."
                 (cl-incf total wait))
             (sit-for (setq total 2))))))))
 
+(cl-defun ghub-graphql (graphql &optional variables &key username auth host)
+  "Make a GraphQL request using GRAPHQL and VARIABLES.
+Return the response as a json-like alist.  Even if the response
+contains `errors', do not raise an error.  GRAPHQL is a GraphQL
+string.  VARIABLES is a json-like alist.  The other arguments
+behave like for `ghub-request' (which see)."
+  (cl-assert (stringp graphql))
+  (cl-assert (not (stringp variables)))
+  (ghub-request "POST" "/graphql" nil :payload
+                (json-encode `(("query" . ,graphql)
+                               ,@(and variables `(("variables" ,variables)))))
+                :username username :auth auth :host host))
+
 ;;;; Internal
 
 (defun ghub--read-json-response (status)
