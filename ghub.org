@@ -7,7 +7,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 1.3.0 (v1.3.0-46-g1fe02f3+1)
+#+SUBTITLE: for version 1.3.0 (v1.3.0-47-g1eed838+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -31,7 +31,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-46-g1fe02f3+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-47-g1eed838+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -299,7 +299,7 @@ of the doubts that you might have:
   Auth-Source]] for instructions on how to save the token more securely.
 
 - When creating a token it is necessary to provide a token
-  description.  Ghub used descriptions that have the form "Emacs
+  description.  Ghub uses descriptions that have the form "Emacs
   package PACKAGE @ LOCAL-MACHINE".
 
   Github uses the token description to identify the token, not merely
@@ -320,7 +320,7 @@ of the doubts that you might have:
   practice because it gains you nothing but leads to issues such as
   this.  Or you are dual-booting on this machine and use the same
   hostname in all operating systems, which is a somewhat reasonable
-  thing to do.
+  thing to do, but never-the-less leads to issues like this.
 
   In either case you will have to use something other than the value
   returned by ~system-name~ to identify the current machine or operating
