@@ -369,7 +369,7 @@ behave like for `ghub-request' (which see)."
   (cl-assert (not (stringp variables)))
   (ghub-request "POST" "/graphql" nil :payload
                 (json-encode `(("query" . ,graphql)
-                               ,@(and variables `(("variables" ,variables)))))
+                               ,@(and variables `(("variables" ,@variables)))))
                 :username username :auth auth :host host))
 
 ;;;; Internal
