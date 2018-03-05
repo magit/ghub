@@ -27,11 +27,11 @@
 ;; from Emacs packages.  It abstracts access to API resources using only
 ;; a handful of functions that are not resource-specific.
 
-;; It also handles the creation, storage and use of access tokens using a
-;; setup wizard, to make it easier for users to get started and to reduce
+;; Ghub handles the creation, storage and use of access tokens using a
+;; setup wizard to make it easier for users to get started and to reduce
 ;; the support burden imposed on package maintainers.  It also comes with
 ;; a comprehensive manual to address the cases when things don't just
-;; work as expected.
+;; work as expected or in case you don't want to use the wizard.
 
 ;; Ghub is intentionally limited to only provide these two essential
 ;; features — basic request functions and guided setup — to avoid being
