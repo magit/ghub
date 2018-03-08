@@ -291,7 +291,7 @@ If FORGE is `gitlab', then connect to Gitlab.com or, depending
                    (setq link (car (rassoc
                                     (list "rel=\"next\"")
                                     (mapcar (lambda (elt) (split-string elt "; "))
-                                            (split-string link ",")))))
+                                            (split-string link ", ")))))
                    (string-match "[?&]page=\\([^&>]+\\)" link)
                    (setq link (match-string 1 link)))
               (setq ghub-response-headers (nreverse headers)))
