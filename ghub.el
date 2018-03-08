@@ -253,7 +253,7 @@ If FORGE is `gitlab', then connect to Gitlab.com or, depending
     (setq host (ghub--host forge)))
   (cond
    ((not params))
-   ((memq method '("GET" "HEAD"))
+   ((member method '("GET" "HEAD"))
     (when query
       (error "PARAMS and QUERY are mutually exclusive for METHOD %S" method))
     (setq query params))
