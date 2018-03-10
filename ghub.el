@@ -219,7 +219,8 @@ If UNPAGINATE is non-nil, then make multiple requests if necessary
   to get all items at RESOURCE.  For forward-compatibility avoid
   using a function as value.
 If NOERROR is non-nil, then do not raise an error if the request
-  fails and return nil instead.
+  fails and return nil instead.  If UNPAGINATE is non-nil, then
+  this argument is ignored.
 If READER is non-nil, then it is used to read and return from the
   response buffer.  The default is `ghub--read-json-response'.
   For the very few resources that do not return json, you might
@@ -284,6 +285,8 @@ URL is intended for internal use only.  If it is non-nil, then
       (unless (stringp payload)
         (setq payload (json-encode-list payload)))
       (setq payload (encode-coding-string payload 'utf-8)))
+    (when unpaginate
+      (setq noerror nil))
     (setq url
           (concat "https://" host resource
                   (and query (concat "?" (ghub--url-encode-params query))))))
@@ -307,9 +310,8 @@ URL is intended for internal use only.  If it is non-nil, then
                   (if next
                       (nconc value
                              (ghub-request
-                              method nil nil :url next
-                              :headers headers
-                              :unpaginate t :noerror noerror :reader reader
+                              method nil nil :url next :unpaginate t
+                              :headers headers :reader reader
                               :username username :auth auth :host host))
                     value))
               value)))
