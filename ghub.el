@@ -278,7 +278,8 @@ If FORGE is `gitlab', then connect to Gitlab.com or, depending
     (unless (stringp payload)
       (setq payload (json-encode-list payload)))
     (setq payload (encode-coding-string payload 'utf-8)))
-  (let* ((qry (and query (concat "?" (ghub--url-encode-params query))))
+  (let* ((url (concat "https://" host resource
+                      (and query (concat "?" (ghub--url-encode-params query)))))
          (buf (let ((url-request-extra-headers
                      `(("Content-Type" . "application/json")
                        ,@(and (not (eq auth 'none))
@@ -287,14 +288,13 @@ If FORGE is `gitlab', then connect to Gitlab.com or, depending
                     ;; Encode in case caller used (symbol-name 'GET).  #35
                     (url-request-method (encode-coding-string method 'utf-8))
                     (url-request-data payload))
-                (url-retrieve-synchronously
-                 (concat "https://" host resource qry)))))
+                (url-retrieve-synchronously url))))
     (unwind-protect
         (with-current-buffer buf
           (set-buffer-multibyte t)
           (let ((link (ghub--handle-response-headers))
                 (body (ghub--handle-response-body reader)))
-            (ghub--handle-response-status noerror method resource qry payload body)
+            (ghub--handle-response-status noerror method url payload body)
             (if (and link unpaginate)
                 (nconc body
                        (ghub-request
@@ -400,11 +400,11 @@ See `ghub-request' for information about the other arguments."
       (invalid_comment  . "Message consists of strings found in the html.")
       (message          . ,content))))
 
-(defun ghub--handle-response-status (noerror method resource query payload value)
+(defun ghub--handle-response-status (noerror method url payload value)
   (unless (or noerror
               (= (/ url-http-response-status 100) 2)
               (= url-http-response-status 304)) ; gitlab only
-    (let ((data (list method resource query payload value)))
+    (let ((data (list method url payload value)))
       (pcase url-http-response-status
         (301 (signal 'ghub-301 data))
         (400 (signal 'ghub-400 data))
