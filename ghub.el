@@ -308,7 +308,6 @@ URL is intended for internal use only.  If it is non-nil, then
                         method resource nil
                         :query (cons (cons 'page link)
                                      (cl-delete 'page query :key #'car))
-                        :payload payload
                         :headers headers
                         :unpaginate t :noerror noerror :reader reader
                         :username username :auth auth :host host))
