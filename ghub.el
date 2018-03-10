@@ -292,27 +292,9 @@ If FORGE is `gitlab', then connect to Gitlab.com or, depending
     (unwind-protect
         (with-current-buffer buf
           (set-buffer-multibyte t)
-          (let (link body)
-            (goto-char (point-min))
-            (let (headers)
-              (while (re-search-forward "^\\([^:]*\\): \\(.+\\)"
-                                        url-http-end-of-headers t)
-                (push (cons (match-string 1)
-                            (match-string 2))
-                      headers))
-              (and (setq link (cdr (assoc "Link" headers)))
-                   (setq link (car (rassoc
-                                    (list "rel=\"next\"")
-                                    (mapcar (lambda (elt) (split-string elt "; "))
-                                            (split-string link ", ")))))
-                   (string-match "[?&]page=\\([^&>]+\\)" link)
-                   (setq link (match-string 1 link)))
-              (setq ghub-response-headers (nreverse headers)))
-            (unless url-http-end-of-headers
-              (error "ghub: url-http-end-of-headers is nil when it shouldn't"))
-            (goto-char (1+ url-http-end-of-headers))
-            (setq body (funcall (or reader 'ghub--read-json-response)
-                                url-http-response-status))
+          (let ((link (ghub--handle-response-headers))
+                (body (funcall (or reader 'ghub--read-json-response)
+                               url-http-response-status)))
             (unless (or noerror
                         (= (/ url-http-response-status 100) 2)
                         (= url-http-response-status 304)) ; gitlab only
@@ -373,6 +355,27 @@ See `ghub-request' for information about the other arguments."
             (sit-for (setq total 2))))))))
 
 ;;;; Internal
+
+(defun ghub--handle-response-headers ()
+  (goto-char (point-min))
+  (let (link headers)
+    (while (re-search-forward "^\\([^:]*\\): \\(.+\\)"
+                              url-http-end-of-headers t)
+      (push (cons (match-string 1)
+                  (match-string 2))
+            headers))
+    (and (setq link (cdr (assoc "Link" headers)))
+         (setq link (car (rassoc
+                          (list "rel=\"next\"")
+                          (mapcar (lambda (elt) (split-string elt "; "))
+                                  (split-string link ", ")))))
+         (string-match "[?&]page=\\([^&>]+\\)" link)
+         (setq link (match-string 1 link)))
+    (setq ghub-response-headers (nreverse headers))
+    (unless url-http-end-of-headers
+      (error "ghub: url-http-end-of-headers is nil when it shouldn't"))
+    (goto-char (1+ url-http-end-of-headers))
+    link))
 
 (defun ghub--read-json-response (status)
   (let ((raw (ghub--read-raw-response)))
