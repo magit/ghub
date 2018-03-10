@@ -299,18 +299,19 @@ URL is intended for internal use only.  If it is non-nil, then
     (unwind-protect
         (with-current-buffer buf
           (set-buffer-multibyte t)
-          (let ((next (ghub--handle-response-headers))
-                (value (ghub--handle-response-body reader)))
+          (ghub--handle-response-headers)
+          (let ((value (ghub--handle-response-body reader)))
             (ghub--handle-response-status noerror method url payload value)
-            (if (and next unpaginate)
-                (nconc value
-                       (ghub-request
-                        method resource nil
-                        :query (cons (cons 'page next)
-                                     (cl-delete 'page query :key #'car))
-                        :headers headers
-                        :unpaginate t :noerror noerror :reader reader
-                        :username username :auth auth :host host))
+            (if unpaginate
+                (let ((next (cdr (assq 'next (ghub-response-link-relations)))))
+                  (if next
+                      (nconc value
+                             (ghub-request
+                              method nil nil :url next
+                              :headers headers
+                              :unpaginate t :noerror noerror :reader reader
+                              :username username :auth auth :host host))
+                    value))
               value)))
       (kill-buffer buf))))
 
@@ -356,24 +357,16 @@ See `ghub-request' for information about the other arguments."
 
 (defun ghub--handle-response-headers ()
   (goto-char (point-min))
-  (let (link headers)
+  (let (headers)
     (while (re-search-forward "^\\([^:]*\\): \\(.+\\)"
                               url-http-end-of-headers t)
       (push (cons (match-string 1)
                   (match-string 2))
             headers))
-    (and (setq link (cdr (assoc "Link" headers)))
-         (setq link (car (rassoc
-                          (list "rel=\"next\"")
-                          (mapcar (lambda (elt) (split-string elt "; "))
-                                  (split-string link ", ")))))
-         (string-match "[?&]page=\\([^&>]+\\)" link)
-         (setq link (match-string 1 link)))
-    (setq ghub-response-headers (nreverse headers))
-    (unless url-http-end-of-headers
-      (error "ghub: url-http-end-of-headers is nil when it shouldn't"))
-    (goto-char (1+ url-http-end-of-headers))
-    link))
+    (setq ghub-response-headers (nreverse headers)))
+  (unless url-http-end-of-headers
+    (error "ghub: url-http-end-of-headers is nil when it shouldn't"))
+  (goto-char (1+ url-http-end-of-headers)))
 
 (defun ghub--handle-response-body (reader)
   (funcall (or reader 'ghub--read-json-response)
