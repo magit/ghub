@@ -412,8 +412,11 @@ behave like for `ghub-request' (which see)."
 
 (defun ghub--url-encode-params (params)
   (mapconcat (lambda (param)
-               (concat (url-hexify-string (symbol-name (car param))) "="
-                       (url-hexify-string (cdr param))))
+               (pcase-let ((`(,key . ,val) param))
+                 (concat (url-hexify-string (symbol-name key)) "="
+                         (if (integerp val)
+                             (number-to-string val)
+                           (url-hexify-string val)))))
              params "&"))
 
 ;;; Authentication
