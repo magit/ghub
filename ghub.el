@@ -294,23 +294,7 @@ If FORGE is `gitlab', then connect to Gitlab.com or, depending
           (set-buffer-multibyte t)
           (let ((link (ghub--handle-response-headers))
                 (body (ghub--handle-response-body reader)))
-            (unless (or noerror
-                        (= (/ url-http-response-status 100) 2)
-                        (= url-http-response-status 304)) ; gitlab only
-              (let ((data (list method resource qry payload body)))
-                (pcase url-http-response-status
-                  (301 (signal 'ghub-301 data))
-                  (400 (signal 'ghub-400 data))
-                  (401 (signal 'ghub-401 data))
-                  (403 (signal 'ghub-403 data))
-                  (404 (signal 'ghub-404 data))
-                  (405 (signal 'ghub-405 data)) ; gitlab only
-                  (409 (signal 'ghub-409 data))
-                  (412 (signal 'ghub-412 data)) ; gitlab only
-                  (422 (signal 'ghub-422 data))
-                  (500 (signal 'ghub-500 data))
-                  (_   (signal 'ghub-http-error
-                               (cons url-http-response-status data))))))
+            (ghub--handle-response-status noerror method resource qry payload body)
             (if (and link unpaginate)
                 (nconc body
                        (ghub-request
@@ -415,6 +399,25 @@ See `ghub-request' for information about the other arguments."
       (invalid_is_html  . ,html-p)
       (invalid_comment  . "Message consists of strings found in the html.")
       (message          . ,content))))
+
+(defun ghub--handle-response-status (noerror method resource query payload value)
+  (unless (or noerror
+              (= (/ url-http-response-status 100) 2)
+              (= url-http-response-status 304)) ; gitlab only
+    (let ((data (list method resource query payload value)))
+      (pcase url-http-response-status
+        (301 (signal 'ghub-301 data))
+        (400 (signal 'ghub-400 data))
+        (401 (signal 'ghub-401 data))
+        (403 (signal 'ghub-403 data))
+        (404 (signal 'ghub-404 data))
+        (405 (signal 'ghub-405 data)) ; gitlab only
+        (409 (signal 'ghub-409 data))
+        (412 (signal 'ghub-412 data)) ; gitlab only
+        (422 (signal 'ghub-422 data))
+        (500 (signal 'ghub-500 data))
+        (_   (signal 'ghub-http-error
+                     (cons url-http-response-status data)))))))
 
 (defun ghub--url-encode-params (params)
   (mapconcat (lambda (param)
