@@ -299,19 +299,19 @@ URL is intended for internal use only.  If it is non-nil, then
     (unwind-protect
         (with-current-buffer buf
           (set-buffer-multibyte t)
-          (let ((link (ghub--handle-response-headers))
-                (body (ghub--handle-response-body reader)))
-            (ghub--handle-response-status noerror method url payload body)
-            (if (and link unpaginate)
-                (nconc body
+          (let ((next (ghub--handle-response-headers))
+                (value (ghub--handle-response-body reader)))
+            (ghub--handle-response-status noerror method url payload value)
+            (if (and next unpaginate)
+                (nconc value
                        (ghub-request
                         method resource nil
-                        :query (cons (cons 'page link)
+                        :query (cons (cons 'page next)
                                      (cl-delete 'page query :key #'car))
                         :headers headers
                         :unpaginate t :noerror noerror :reader reader
                         :username username :auth auth :host host))
-              body)))
+              value)))
       (kill-buffer buf))))
 
 (defun ghub-wait (resource &optional username auth host duration)
