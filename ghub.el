@@ -293,8 +293,7 @@ If FORGE is `gitlab', then connect to Gitlab.com or, depending
         (with-current-buffer buf
           (set-buffer-multibyte t)
           (let ((link (ghub--handle-response-headers))
-                (body (funcall (or reader 'ghub--read-json-response)
-                               url-http-response-status)))
+                (body (ghub--handle-response-body reader)))
             (unless (or noerror
                         (= (/ url-http-response-status 100) 2)
                         (= url-http-response-status 304)) ; gitlab only
@@ -376,6 +375,10 @@ See `ghub-request' for information about the other arguments."
       (error "ghub: url-http-end-of-headers is nil when it shouldn't"))
     (goto-char (1+ url-http-end-of-headers))
     link))
+
+(defun ghub--handle-response-body (reader)
+  (funcall (or reader 'ghub--read-json-response)
+           url-http-response-status))
 
 (defun ghub--read-json-response (status)
   (let ((raw (ghub--read-raw-response)))
