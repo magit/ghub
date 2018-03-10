@@ -188,7 +188,8 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
 (cl-defun ghub-request (method resource &optional params
                                &key query payload headers
                                unpaginate noerror reader
-                               username auth host forge)
+                               username auth host forge
+                               url)
   "Make a request for RESOURCE and return the response body.
 
 Also place the response header in `ghub-response-headers'.
@@ -259,36 +260,42 @@ If HOST is non-nil, then connect to that Github instance.  This
 If FORGE is `gitlab', then connect to Gitlab.com or, depending
   on HOST to another Gitlab instance.  This is only intended for
   internal use.  Instead of using this argument you should use
-  function `glab-request' and other `glab-*' functions."
-  (unless (string-prefix-p "/" resource)
-    (setq resource (concat "/" resource)))
-  (unless host
-    (setq host (ghub--host forge)))
-  (cond
-   ((not params))
-   ((member method '("GET" "HEAD"))
-    (when query
-      (error "PARAMS and QUERY are mutually exclusive for METHOD %S" method))
-    (setq query params))
-   (t
+  function `glab-request' and other `glab-*' functions.
+
+URL is intended for internal use only.  If it is non-nil, then
+  some other arguments are ignored or expected to be nil."
+  (unless url
+    (unless (string-prefix-p "/" resource)
+      (setq resource (concat "/" resource)))
+    (unless host
+      (setq host (ghub--host forge)))
+    (cond ((not params))
+          ((member method '("GET" "HEAD"))
+           (when query
+             (error "PARAMS and QUERY are mutually exclusive for METHOD %S"
+                    method))
+           (setq query params))
+          (t
+           (when payload
+             (error "PARAMS and PAYLOAD are mutually exclusive for METHOD %S"
+                    method))
+           (setq payload params)))
     (when payload
-      (error "PARAMS and PAYLOAD are mutually exclusive for METHOD %S" method))
-    (setq payload params)))
-  (when payload
-    (unless (stringp payload)
-      (setq payload (json-encode-list payload)))
-    (setq payload (encode-coding-string payload 'utf-8)))
-  (let* ((url (concat "https://" host resource
-                      (and query (concat "?" (ghub--url-encode-params query)))))
-         (buf (let ((url-request-extra-headers
-                     `(("Content-Type" . "application/json")
-                       ,@(and (not (eq auth 'none))
-                              (list (ghub--auth host auth username forge)))
-                       ,@headers))
-                    ;; Encode in case caller used (symbol-name 'GET).  #35
-                    (url-request-method (encode-coding-string method 'utf-8))
-                    (url-request-data payload))
-                (url-retrieve-synchronously url))))
+      (unless (stringp payload)
+        (setq payload (json-encode-list payload)))
+      (setq payload (encode-coding-string payload 'utf-8)))
+    (setq url
+          (concat "https://" host resource
+                  (and query (concat "?" (ghub--url-encode-params query))))))
+  (let ((buf (let ((url-request-extra-headers
+                    `(("Content-Type" . "application/json")
+                      ,@(and (not (eq auth 'none))
+                             (list (ghub--auth host auth username forge)))
+                      ,@headers))
+                   ;; Encode in case caller used (symbol-name 'GET).  #35
+                   (url-request-method (encode-coding-string method 'utf-8))
+                   (url-request-data payload))
+               (url-retrieve-synchronously url))))
     (unwind-protect
         (with-current-buffer buf
           (set-buffer-multibyte t)

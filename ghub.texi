@@ -30,7 +30,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 1.3.0 (v1.3.0-54-g7d95256+1)
+@subtitle for version 1.3.0 (v1.3.0-59-ga1eda35+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -61,7 +61,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-54-g7d95256+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-59-ga1eda35+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -734,6 +734,11 @@ If FORGE is @code{gitlab}, then connect to Gitlab.com or, depending on
 HOST to another Gitlab instance.  This is only intended for
 internal use.  Instead of using this argument you should use
 function @code{glab-request} and other @code{glab-*} functions.
+
+
+@item
+URL is intended for internal use only.  If it is non-nil, then
+some other arguments are ignored or expected to be nil.
 @end itemize
 @end defun
 
