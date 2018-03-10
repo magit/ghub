@@ -215,9 +215,10 @@ Use HEADERS for those rare resources that require that the data
   When that is the case, then the API documentation usually
   mentions it explicitly.
 
-If UNPAGINATE is non-nil, then make multiple requests if necessary
-  to get all items at RESOURCE.  For forward-compatibility avoid
-  using a function as value.
+If UNPAGINATE is t, then make as many requests as necessary to
+  get all values.  If UNPAGINATE is a natural number, then get
+  at most that many pages.  For any other non-nil value raise
+  an error.
 If NOERROR is non-nil, then do not raise an error if the request
   fails and return nil instead.  If UNPAGINATE is non-nil, then
   this argument is ignored.
@@ -265,6 +266,7 @@ If FORGE is `gitlab', then connect to Gitlab.com or, depending
 
 URL is intended for internal use only.  If it is non-nil, then
   some other arguments are ignored or expected to be nil."
+  (cl-assert (or (booleanp unpaginate) (natnump unpaginate)))
   (unless url
     (unless (string-prefix-p "/" resource)
       (setq resource (concat "/" resource)))
@@ -305,12 +307,16 @@ URL is intended for internal use only.  If it is non-nil, then
           (ghub--handle-response-headers)
           (let ((value (ghub--handle-response-body reader)))
             (ghub--handle-response-status noerror method url payload value)
-            (if unpaginate
+            (if (and unpaginate
+                     (or (eq unpaginate t)
+                         (>  unpaginate 1)))
                 (let ((next (cdr (assq 'next (ghub-response-link-relations)))))
+                  (when (numberp unpaginate)
+                    (cl-decf unpaginate))
                   (if next
                       (nconc value
                              (ghub-request
-                              method nil nil :url next :unpaginate t
+                              method nil nil :url next :unpaginate unpaginate
                               :headers headers :reader reader
                               :username username :auth auth :host host))
                     value))
