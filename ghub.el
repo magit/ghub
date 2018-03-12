@@ -92,8 +92,6 @@ used instead.")
 `ghub-request' returns the response body and stores the
 response header in this variable.")
 
-(defvar ghub-raw-response-body nil)
-
 (cl-defun ghub-graphql (graphql &optional variables &key username auth host)
   "Make a GraphQL request using GRAPHQL and VARIABLES.
 Return the response as a json-like alist.  Even if the response
@@ -394,10 +392,9 @@ in `ghub-response-headers'."
 
 (defun ghub--decode-payload (&optional _status)
   (and (not (eobp))
-       (setq ghub-raw-response-body
-             (decode-coding-string
-              (buffer-substring-no-properties (point) (point-max))
-              'utf-8))))
+       (decode-coding-string
+        (buffer-substring-no-properties (point) (point-max))
+        'utf-8)))
 
 (defun ghub--url-encode-params (params)
   (mapconcat (lambda (param)
