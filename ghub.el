@@ -293,8 +293,8 @@ URL is intended for internal use only.  If it is non-nil, then
     (unwind-protect
         (with-current-buffer buf
           (set-buffer-multibyte t)
-          (ghub--handle-response-headers)
-          (let ((value (ghub--handle-response-body reader))
+          (let ((headers (ghub--handle-response-headers))
+                (value   (ghub--handle-response-body reader))
                 (err (plist-get (car url-callback-arguments) :error)))
             (when err
               (if noerror
@@ -303,7 +303,8 @@ URL is intended for internal use only.  If it is non-nil, then
             (if (and unpaginate
                      (or (eq unpaginate t)
                          (>  unpaginate 1)))
-                (let ((next (cdr (assq 'next (ghub-response-link-relations)))))
+                (let ((next (cdr (assq 'next (ghub-response-link-relations
+                                              headers)))))
                   (when (numberp unpaginate)
                     (cl-decf unpaginate))
                   (if next
@@ -344,9 +345,11 @@ See `ghub-request' for information about the other arguments."
                 (cl-incf total wait))
             (sit-for (setq total 2))))))))
 
-(defun ghub-response-link-relations ()
-  "Return an alist of link relations in `ghub-response-headers'."
-  (let ((rels (cdr (assoc "Link" ghub-response-headers))))
+(defun ghub-response-link-relations (&optional headers)
+  "Return an alist of link relations in HEADERS.
+If optional HEADERS is nil, then return those
+in `ghub-response-headers'."
+  (let ((rels (cdr (assoc "Link" (or headers ghub-response-headers)))))
     (and rels (mapcar (lambda (elt)
                         (pcase-let ((`(,url ,rel) (split-string elt "; ")))
                           (cons (intern (substring rel 5 -1))
