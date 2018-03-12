@@ -7,7 +7,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 1.3.0 (v1.3.0-49-gbe18238+1)
+#+SUBTITLE: for version 1.3.0 (v1.3.0-54-g7d95256+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -31,7 +31,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-49-gbe18238+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-54-g7d95256+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -122,8 +122,12 @@ These features will likely never be implemented in Ghub itself:
   See ~ghub+.el~ for a package that provides such functionality.
   It is built on top of ~ghub.el~.
 
-- Returning and consuming data as anything but JSON-like alists,
-  or in the case of GraphQL queries and mutations, plain strings.
+- Returning objects instead of JSON-like alists.
+
+  Implementing such functionality on top of ~ghub.el~ should be easy
+  though.
+
+- A GraphQL DSL.
 
   See ~graphql.el~ for a package that provides such functionality.
   It can be used along-side ~ghub.el~.
