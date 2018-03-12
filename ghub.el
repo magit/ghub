@@ -255,6 +255,8 @@ URL is intended for internal use only.  If it is non-nil, then
   some other arguments are ignored or expected to be nil."
   (cl-assert (or (booleanp unpaginate) (natnump unpaginate)))
   (unless url
+    ;; #35: Encode in case caller used (symbol-name 'GET).
+    (setq method (encode-coding-string method 'utf-8))
     (unless (string-prefix-p "/" resource)
       (setq resource (concat "/" resource)))
     (unless host
@@ -285,7 +287,7 @@ URL is intended for internal use only.  If it is non-nil, then
                              (list (ghub--auth host auth username forge)))
                       ,@headers))
                    ;; Encode in case caller used (symbol-name 'GET).  #35
-                   (url-request-method (encode-coding-string method 'utf-8))
+                   (url-request-method method)
                    (url-request-data payload))
                (url-retrieve-synchronously url))))
     (unwind-protect
