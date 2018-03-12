@@ -363,10 +363,11 @@ See `ghub-request' for information about the other arguments."
       (push (cons (match-string 1)
                   (match-string 2))
             headers))
-    (setq ghub-response-headers (nreverse headers)))
-  (unless url-http-end-of-headers
-    (error "ghub: url-http-end-of-headers is nil when it shouldn't"))
-  (goto-char (1+ url-http-end-of-headers)))
+    (setq ghub-response-headers (nreverse headers))
+    (unless url-http-end-of-headers
+      (error "ghub: url-http-end-of-headers is nil when it shouldn't"))
+    (goto-char (1+ url-http-end-of-headers))
+    headers))
 
 (defun ghub--handle-response-body (reader)
   (funcall (or reader 'ghub--read-json-response)
