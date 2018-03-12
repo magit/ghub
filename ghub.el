@@ -259,6 +259,8 @@ URL is intended for internal use only.  If it is non-nil, then
       (setq resource (concat "/" resource)))
     (unless host
       (setq host (ghub--host forge)))
+    (unless (or username (stringp auth) (eq auth 'none))
+      (setq username (ghub--username host forge)))
     (cond ((not params))
           ((member method '("GET" "HEAD"))
            (when query
