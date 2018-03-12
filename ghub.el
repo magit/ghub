@@ -210,7 +210,7 @@ If UNPAGINATE is t, then make as many requests as necessary to
 If NOERROR is non-nil, then do not raise an error if the request
   fails and return nil instead.
 If READER is non-nil, then it is used to read and return from the
-  response buffer.  The default is `ghub--read-json-response'.
+  response buffer.  The default is `ghub--read-json-payload'.
   For the very few resources that do not return json, you might
   want to use `ghub--read-raw-response'.
 
@@ -374,10 +374,10 @@ in `ghub-response-headers'."
     headers))
 
 (defun ghub--handle-response-body (reader)
-  (funcall (or reader 'ghub--read-json-response)
+  (funcall (or reader 'ghub--read-json-payload)
            url-http-response-status))
 
-(defun ghub--read-json-response (status)
+(defun ghub--read-json-payload (status)
   (let ((raw (ghub--read-raw-response)))
     (and raw
          (condition-case nil
