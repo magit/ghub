@@ -212,7 +212,7 @@ If NOERROR is non-nil, then do not raise an error if the request
 If READER is non-nil, then it is used to read and return from the
   response buffer.  The default is `ghub--read-json-payload'.
   For the very few resources that do not return json, you might
-  want to use `ghub--read-raw-response'.
+  want to use `ghub--decode-payload'.
 
 If USERNAME is non-nil, then make a request on behalf of that
   user.  It is better to specify the user using the Git variable
@@ -378,7 +378,7 @@ in `ghub-response-headers'."
            url-http-response-status))
 
 (defun ghub--read-json-payload (status)
-  (let ((raw (ghub--read-raw-response)))
+  (let ((raw (ghub--decode-payload)))
     (and raw
          (condition-case err
              (let ((json-object-type 'alist)
@@ -392,7 +392,7 @@ in `ghub-response-headers'."
                 nil
               (signal (car err) (cdr err))))))))
 
-(defun ghub--read-raw-response (&optional _status)
+(defun ghub--decode-payload (&optional _status)
   (and (not (eobp))
        (setq ghub-raw-response-body
              (decode-coding-string
