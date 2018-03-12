@@ -380,7 +380,7 @@ in `ghub-response-headers'."
 (defun ghub--read-json-payload (status)
   (let ((raw (ghub--read-raw-response)))
     (and raw
-         (condition-case nil
+         (condition-case err
              (let ((json-object-type 'alist)
                    (json-array-type  'list)
                    (json-key-type    'symbol)
@@ -388,7 +388,9 @@ in `ghub-response-headers'."
                    (json-null        nil))
                (json-read-from-string raw))
            (json-readable-error
-            (ghub--handle-invalid-response status raw))))))
+            (if (= status 500)
+                nil
+              (signal (car err) (cdr err))))))))
 
 (defun ghub--read-raw-response (&optional _status)
   (and (not (eobp))
@@ -396,22 +398,6 @@ in `ghub-response-headers'."
              (decode-coding-string
               (buffer-substring-no-properties (point) (point-max))
               'utf-8))))
-
-(defun ghub--handle-invalid-response (status body)
-  (let ((html-p (string-prefix-p "<!DOCTYPE html>" body))
-        content)
-    (when html-p
-      (with-temp-buffer
-        (save-excursion (insert body))
-        (while (re-search-forward "<p>\\(?:<strong>\\)?\\([^<]+\\)" nil t)
-          (push (match-string 1) content)))
-      (when content
-        (setq content (mapconcat #'identity (reverse content) " "))))
-    `((http_status      . ,status)
-      (invalid_response . "Github failed to deliver Json.")
-      (invalid_is_html  . ,html-p)
-      (invalid_comment  . "Message consists of strings found in the html.")
-      (message          . ,content))))
 
 (defun ghub--url-encode-params (params)
   (mapconcat (lambda (param)
