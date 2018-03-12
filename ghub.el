@@ -597,11 +597,11 @@ has to provide several values including their password."
   Package: %s
 
   Scopes requested in `%s-github-token-scopes':\n%s
-  Store locally according to `auth-sources':\n    %S
   Store on Github as:\n    %S
-
-WARNING: If you have enabled two-factor authentication then
-         you have to abort and create the token manually.
+  Store locally according to option `auth-sources':\n    %S
+%s
+WARNING: If you have enabled two-factor authentication,
+         then you have to abort and create the token manually.
 
 If in doubt, then abort and first view the section of the Ghub
 documentation called \"Manually Creating and Storing a Token\".
@@ -614,7 +614,14 @@ really want to save the token.
 Create and store such a token? "
             host username package package
             (mapconcat (lambda (scope) (format "    %s" scope)) scopes "\n")
-            auth-sources ident)))
+            ident auth-sources
+            (if (and (stringp (car auth-sources))
+                     (not (string-suffix-p ".gpg" (car auth-sources))))
+                (format "
+WARNING: The token will be stored unencrypted in %S.
+         If you don't want that, you have to abort and customize
+         the `auth-sources' option.\n" (car auth-sources))
+              ""))))
         (progn
           (when (ghub--get-token-id host username package)
             (if (yes-or-no-p

@@ -7,7 +7,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 1.3.0 (v1.3.0-65-gcfe3cc1+1)
+#+SUBTITLE: for version 1.3.0 (v1.3.0-66-gc204a16+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -31,7 +31,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-65-gcfe3cc1+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-66-gc204a16+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -229,10 +229,10 @@ then the setup wizard will first ask you something like this:
 
     Scopes requested in `PACKAGE-github-token-scopes':
       repo
-    Store locally according to `auth-sources':
-      ("~/.authinfo" "~/.authinfo.gpg" "~/.netrc")
     Store on Github as:
       "Emacs package PACKAGE @ LOCAL-MACHINE"
+    Store locally according to option `auth-sources':
+      ("~/.authinfo" "~/.authinfo.gpg" "~/.netrc")
 
   WARNING: If you have enabled two-factor authentication
            then you have to create the token manually.
@@ -292,7 +292,9 @@ of the doubts that you might have:
   unexpected, Ghub additionally displays a warning when appropriate.
 
   #+BEGIN_EXAMPLE
-    WARNING: ... unencrypted ... TODO implement ...
+    WARNING: The token will be stored unencrypted in "~/.authinfo".
+             If you don't want that, you have to abort and customize
+             the `auth-sources' option.\n\n" (car auth-sources))
   #+END_EXAMPLE
 
   Whether that is something that needs fixing, is up to you.  If your

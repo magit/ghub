@@ -30,7 +30,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 1.3.0 (v1.3.0-65-gcfe3cc1+1)
+@subtitle for version 1.3.0 (v1.3.0-66-gc204a16+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -61,7 +61,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-65-gcfe3cc1+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-66-gc204a16+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -325,10 +325,10 @@ Such a Github API token is not available:
 
   Scopes requested in `PACKAGE-github-token-scopes':
     repo
-  Store locally according to `auth-sources':
-    ("~/.authinfo" "~/.authinfo.gpg" "~/.netrc")
   Store on Github as:
     "Emacs package PACKAGE @@ LOCAL-MACHINE"
+  Store locally according to option `auth-sources':
+    ("~/.authinfo" "~/.authinfo.gpg" "~/.netrc")
 
 WARNING: If you have enabled two-factor authentication
          then you have to create the token manually.
@@ -400,7 +400,9 @@ secrets to be stored in plain text.  Because this might be
 unexpected, Ghub additionally displays a warning when appropriate.
 
 @example
-WARNING: ... unencrypted ... TODO implement ...
+WARNING: The token will be stored unencrypted in "~/.authinfo".
+         If you don't want that, you have to abort and customize
+         the `auth-sources' option.\n\n" (car auth-sources))
 @end example
 
 Whether that is something that needs fixing, is up to you.  If your
