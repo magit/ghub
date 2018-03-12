@@ -279,42 +279,24 @@ URL is intended for internal use only.  If it is non-nil, then
     (setq url
           (concat "https://" host resource
                   (and query (concat "?" (ghub--url-encode-params query))))))
-  (let ((buf (let ((url-request-extra-headers
-                    `(("Content-Type" . "application/json")
-                      ,@(and (not (eq auth 'none))
-                             (list (ghub--auth host auth username forge)))
-                      ,@headers))
-                   ;; Encode in case caller used (symbol-name 'GET).  #35
-                   (url-request-method method)
-                   (url-request-data payload))
-               (url-retrieve-synchronously url))))
-    (unwind-protect
-        (with-current-buffer buf
-          (set-buffer-multibyte t)
-          (let ((resp-headers (ghub--handle-response-headers))
-                (value (ghub--handle-response-payload reader))
-                (err (plist-get (car url-callback-arguments) :error)))
-            (when err
-              (if noerror
-                  (setq value nil)
-                (signal (car err) (cdr err))))
-            (if (and unpaginate
-                     (or (eq unpaginate t)
-                         (>  unpaginate 1)))
-                (let ((next (cdr (assq 'next (ghub-response-link-relations
-                                              resp-headers)))))
-                  (when (numberp unpaginate)
-                    (cl-decf unpaginate))
-                  (if next
-                      (nconc value
-                             (ghub-request
-                              method nil nil :url next
-                              :headers headers :unpaginate unpaginate
-                              :noerror noerror :reader reader
-                              :username username :auth auth :host host))
-                    value))
-              value)))
-      (kill-buffer buf))))
+  (let ((url-request-extra-headers
+         `(("Content-Type" . "application/json")
+           ,@(and (not (eq auth 'none))
+                  (list (ghub--auth host auth username forge)))
+           ,@headers))
+        (url-request-method method)
+        (url-request-data payload)
+        (args (list :method     method
+                    :headers    headers
+                    :unpaginate unpaginate
+                    :noerror    noerror
+                    :reader     reader
+                    :username   username
+                    :auth       auth
+                    :host       host
+                    )))
+    (with-current-buffer (url-retrieve-synchronously url)
+      (ghub--handle-response args))))
 
 (defun ghub-wait (resource &optional username auth host duration)
   "Busy-wait up to DURATION seconds for RESOURCE to become available.
@@ -356,6 +338,43 @@ in `ghub-response-headers'."
 
 ;;;; Internal
 
+(defun ghub--handle-response (args)
+  (let ((buffer (current-buffer)))
+    (unwind-protect
+        (progn
+          (set-buffer-multibyte t)
+          (let* ((unpaginate (plist-get args :unpaginate))
+                 (headers    (ghub--handle-response-headers))
+                 (value      (ghub--handle-response-payload args))
+                 (err (plist-get (car url-callback-arguments) :error)))
+            (when err
+              (if (plist-get args :noerror)
+                  (setq value nil)
+                (signal (car err) (cdr err))))
+            (if (and unpaginate
+                     (or (eq unpaginate t)
+                         (>  unpaginate 1)))
+                (let ((next (cdr (assq 'next (ghub-response-link-relations
+                                              headers)))))
+                  (when (numberp unpaginate)
+                    (cl-decf unpaginate))
+                  (if next
+                      (nconc value
+                             (ghub-request
+                              (plist-get args :method)
+                              nil nil
+                              :url        next
+                              :headers    (plist-get args :headers)
+                              :unpaginate unpaginate
+                              :noerror    (plist-get args :noerror)
+                              :reader     (plist-get args :reader)
+                              :username   (plist-get args :username)
+                              :auth       (plist-get args :auth)
+                              :host       (plist-get args :host)))
+                    value))
+              value)))
+      (kill-buffer buffer))))
+
 (defun ghub--handle-response-headers ()
   (goto-char (point-min))
   (let (headers)
@@ -371,8 +390,9 @@ in `ghub-response-headers'."
     (setq ghub-response-headers headers)
     headers))
 
-(defun ghub--handle-response-payload (reader)
-  (funcall (or reader 'ghub--read-json-payload)
+(defun ghub--handle-response-payload (args)
+  (funcall (or (plist-get args :reader)
+               'ghub--read-json-payload)
            url-http-response-status))
 
 (defun ghub--read-json-payload (status)
