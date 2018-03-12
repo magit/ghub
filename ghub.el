@@ -292,7 +292,7 @@ URL is intended for internal use only.  If it is non-nil, then
         (with-current-buffer buf
           (set-buffer-multibyte t)
           (let ((resp-headers (ghub--handle-response-headers))
-                (value (ghub--handle-response-body reader))
+                (value (ghub--handle-response-payload reader))
                 (err (plist-get (car url-callback-arguments) :error)))
             (when err
               (if noerror
@@ -371,7 +371,7 @@ in `ghub-response-headers'."
     (setq ghub-response-headers headers)
     headers))
 
-(defun ghub--handle-response-body (reader)
+(defun ghub--handle-response-payload (reader)
   (funcall (or reader 'ghub--read-json-payload)
            url-http-response-status))
 
