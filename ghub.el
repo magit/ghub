@@ -293,8 +293,8 @@ URL is intended for internal use only.  If it is non-nil, then
     (unwind-protect
         (with-current-buffer buf
           (set-buffer-multibyte t)
-          (let ((headers (ghub--handle-response-headers))
-                (value   (ghub--handle-response-body reader))
+          (let ((resp-headers (ghub--handle-response-headers))
+                (value (ghub--handle-response-body reader))
                 (err (plist-get (car url-callback-arguments) :error)))
             (when err
               (if noerror
@@ -304,7 +304,7 @@ URL is intended for internal use only.  If it is non-nil, then
                      (or (eq unpaginate t)
                          (>  unpaginate 1)))
                 (let ((next (cdr (assq 'next (ghub-response-link-relations
-                                              headers)))))
+                                              resp-headers)))))
                   (when (numberp unpaginate)
                     (cl-decf unpaginate))
                   (if next
@@ -366,10 +366,11 @@ in `ghub-response-headers'."
       (push (cons (match-string 1)
                   (match-string 2))
             headers))
-    (setq ghub-response-headers (nreverse headers))
+    (setq headers (nreverse headers))
     (unless url-http-end-of-headers
       (error "ghub: url-http-end-of-headers is nil when it shouldn't"))
     (goto-char (1+ url-http-end-of-headers))
+    (setq ghub-response-headers headers)
     headers))
 
 (defun ghub--handle-response-body (reader)
