@@ -51,6 +51,7 @@
 
 (eval-when-compile (require 'subr-x))
 
+(defvar url-callback-arguments)
 (defvar url-http-end-of-headers)
 (defvar url-http-response-status)
 
@@ -172,19 +173,6 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
                 :unpaginate unpaginate :noerror noerror :reader reader
                 :username username :auth auth :host host))
 
-(define-error 'ghub-error "Ghub Error")
-(define-error 'ghub-http-error "HTTP Error" 'ghub-error)
-(define-error 'ghub-301 "Moved Permanently" 'ghub-http-error)
-(define-error 'ghub-400 "Bad Request" 'ghub-http-error)
-(define-error 'ghub-401 "Unauthorized" 'ghub-http-error)
-(define-error 'ghub-403 "Forbidden" 'ghub-http-error)
-(define-error 'ghub-404 "Not Found" 'ghub-http-error)
-(define-error 'ghub-405 "Method Not Allowed" 'ghub-http-error) ; gitlab only
-(define-error 'ghub-409 "Conflict" 'ghub-http-error)
-(define-error 'ghub-412 "Precondition Failed" 'ghub-http-error) ; gitlab only
-(define-error 'ghub-422 "Unprocessable Entity" 'ghub-http-error)
-(define-error 'ghub-500 "Internal Server Error" 'ghub-http-error)
-
 (cl-defun ghub-request (method resource &optional params
                                &key query payload headers
                                unpaginate noerror reader
@@ -302,8 +290,12 @@ URL is intended for internal use only.  If it is non-nil, then
         (with-current-buffer buf
           (set-buffer-multibyte t)
           (ghub--handle-response-headers)
-          (let ((value (ghub--handle-response-body reader)))
-            (ghub--handle-response-status noerror method url payload value)
+          (let ((value (ghub--handle-response-body reader))
+                (err (plist-get (car url-callback-arguments) :error)))
+            (when err
+              (if noerror
+                  (setq value nil)
+                (signal (car err) (cdr err))))
             (if (and unpaginate
                      (or (eq unpaginate t)
                          (>  unpaginate 1)))
@@ -341,9 +333,7 @@ See `ghub-request' for information about the other arguments."
                                            :host host)))
         (message "Waited (%3ss of %ss) for %s..." total duration resource)
         (if (= total duration)
-            (signal 'ghub-error
-                    (list (format "Github is taking too long to create %s"
-                                  resource)))
+            (error "Github is taking too long to create %s" resource)
           (if (> total 0)
               (let ((wait (min total (- duration total))))
                 (sit-for wait)
@@ -413,25 +403,6 @@ See `ghub-request' for information about the other arguments."
       (invalid_is_html  . ,html-p)
       (invalid_comment  . "Message consists of strings found in the html.")
       (message          . ,content))))
-
-(defun ghub--handle-response-status (noerror method url payload value)
-  (unless (or noerror
-              (= (/ url-http-response-status 100) 2)
-              (= url-http-response-status 304)) ; gitlab only
-    (let ((data (list method url payload value)))
-      (pcase url-http-response-status
-        (301 (signal 'ghub-301 data))
-        (400 (signal 'ghub-400 data))
-        (401 (signal 'ghub-401 data))
-        (403 (signal 'ghub-403 data))
-        (404 (signal 'ghub-404 data))
-        (405 (signal 'ghub-405 data)) ; gitlab only
-        (409 (signal 'ghub-409 data))
-        (412 (signal 'ghub-412 data)) ; gitlab only
-        (422 (signal 'ghub-422 data))
-        (500 (signal 'ghub-500 data))
-        (_   (signal 'ghub-http-error
-                     (cons url-http-response-status data)))))))
 
 (defun ghub--url-encode-params (params)
   (mapconcat (lambda (param)
