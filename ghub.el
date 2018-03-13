@@ -181,7 +181,8 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
                                &key query payload headers
                                unpaginate noerror reader
                                username auth host forge
-                               url)
+                               url value
+                               ((:method method*)))
   "Make a request for RESOURCE and return the response body.
 
 Also place the response header in `ghub-response-headers'.
@@ -259,7 +260,8 @@ If FORGE is `gitlab', then connect to Gitlab.com or, depending
 URL is intended for internal use only.  If it is non-nil, then
   some other arguments are ignored or expected to be nil."
   (cl-assert (or (booleanp unpaginate) (natnump unpaginate)))
-  (unless url
+  (if url
+      (setq method method*)
     ;; #35: Encode in case caller used (symbol-name 'GET).
     (setq method (encode-coding-string method 'utf-8))
     (unless (string-prefix-p "/" resource)
@@ -301,9 +303,16 @@ URL is intended for internal use only.  If it is non-nil, then
                     :username   username
                     :auth       auth
                     :host       host
+                    :forge      forge
+                    :url        url
+                    :value      value
                     )))
     (with-current-buffer (url-retrieve-synchronously url)
       (ghub--handle-response (car url-callback-arguments) args))))
+
+(defun ghub-continue (args)
+  (and (assq 'next (ghub-response-link-relations))
+       (or (apply #'ghub-request nil nil nil args) t)))
 
 (defun ghub-wait (resource &optional username auth host duration)
   "Busy-wait up to DURATION seconds for RESOURCE to become available.
@@ -354,27 +363,19 @@ in `ghub-response-headers'."
                  (headers    (ghub--handle-response-headers status))
                  (payload    (ghub--handle-response-payload args))
                  (payload    (ghub--handle-response-error status payload args))
-                 (value      payload)
+                 (value      (nconc (plist-get args :value) payload))
                  (next       (cdr (assq 'next (ghub-response-link-relations
                                                headers)))))
             (when (numberp unpaginate)
               (cl-decf unpaginate))
+            (plist-put args :url next)
+            (plist-put args :value value)
+            (plist-put args :unpaginate unpaginate)
             (or (and next
                      unpaginate
                      (or (eq unpaginate t)
                          (>  unpaginate 0))
-                     (nconc value
-                            (ghub-request
-                             (plist-get args :method)
-                             nil nil
-                             :url        next
-                             :headers    (plist-get args :headers)
-                             :unpaginate unpaginate
-                             :noerror    (plist-get args :noerror)
-                             :reader     (plist-get args :reader)
-                             :username   (plist-get args :username)
-                             :auth       (plist-get args :auth)
-                             :host       (plist-get args :host))))
+                     (ghub-continue args))
                 value)))
       (kill-buffer buffer))))
 
