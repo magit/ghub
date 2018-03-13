@@ -296,7 +296,7 @@ URL is intended for internal use only.  If it is non-nil, then
                     :host       host
                     )))
     (with-current-buffer (url-retrieve-synchronously url)
-      (ghub--handle-response args))))
+      (ghub--handle-response (car url-callback-arguments) args))))
 
 (defun ghub-wait (resource &optional username auth host duration)
   "Busy-wait up to DURATION seconds for RESOURCE to become available.
@@ -338,13 +338,13 @@ in `ghub-response-headers'."
 
 ;;;; Internal
 
-(defun ghub--handle-response (args)
+(defun ghub--handle-response (status args)
   (let ((buffer (current-buffer)))
     (unwind-protect
         (progn
           (set-buffer-multibyte t)
           (let* ((unpaginate (plist-get args :unpaginate))
-                 (headers    (ghub--handle-response-headers))
+                 (headers    (ghub--handle-response-headers status))
                  (value      (ghub--handle-response-payload args))
                  (err (plist-get (car url-callback-arguments) :error)))
             (when err
@@ -375,7 +375,7 @@ in `ghub-response-headers'."
               value)))
       (kill-buffer buffer))))
 
-(defun ghub--handle-response-headers ()
+(defun ghub--handle-response-headers (status)
   (goto-char (point-min))
   (let (headers)
     (while (re-search-forward "^\\([^:]*\\): \\(.+\\)"
@@ -385,7 +385,7 @@ in `ghub-response-headers'."
             headers))
     (setq headers (nreverse headers))
     (unless url-http-end-of-headers
-      (error "ghub: url-http-end-of-headers is nil when it shouldn't"))
+      (error "BUG: missing headers %s" (plist-get status :error)))
     (goto-char (1+ url-http-end-of-headers))
     (setq ghub-response-headers headers)
     headers))
