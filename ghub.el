@@ -354,29 +354,28 @@ in `ghub-response-headers'."
                  (headers    (ghub--handle-response-headers status))
                  (payload    (ghub--handle-response-payload args))
                  (payload    (ghub--handle-response-error status payload args))
-                 (value      payload))
-            (if (and unpaginate
+                 (value      payload)
+                 (next       (cdr (assq 'next (ghub-response-link-relations
+                                               headers)))))
+            (when (numberp unpaginate)
+              (cl-decf unpaginate))
+            (or (and next
+                     unpaginate
                      (or (eq unpaginate t)
-                         (>  unpaginate 1)))
-                (let ((next (cdr (assq 'next (ghub-response-link-relations
-                                              headers)))))
-                  (when (numberp unpaginate)
-                    (cl-decf unpaginate))
-                  (if next
-                      (nconc value
-                             (ghub-request
-                              (plist-get args :method)
-                              nil nil
-                              :url        next
-                              :headers    (plist-get args :headers)
-                              :unpaginate unpaginate
-                              :noerror    (plist-get args :noerror)
-                              :reader     (plist-get args :reader)
-                              :username   (plist-get args :username)
-                              :auth       (plist-get args :auth)
-                              :host       (plist-get args :host)))
-                    value))
-              value)))
+                         (>  unpaginate 0))
+                     (nconc value
+                            (ghub-request
+                             (plist-get args :method)
+                             nil nil
+                             :url        next
+                             :headers    (plist-get args :headers)
+                             :unpaginate unpaginate
+                             :noerror    (plist-get args :noerror)
+                             :reader     (plist-get args :reader)
+                             :username   (plist-get args :username)
+                             :auth       (plist-get args :auth)
+                             :host       (plist-get args :host))))
+                value)))
       (kill-buffer buffer))))
 
 (defun ghub--handle-response-headers (status)
