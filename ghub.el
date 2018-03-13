@@ -48,6 +48,7 @@
 (require 'let-alist)
 (require 'url)
 (require 'url-auth)
+(require 'url-http)
 
 (eval-when-compile (require 'subr-x))
 
@@ -87,12 +88,17 @@ used instead.")
 ;;; Request
 ;;;; API
 
+(define-error 'ghub-error "Ghub/Url Error" 'error)
+(define-error 'ghub-http-error "HTTP Error" 'ghub-error)
+
 (defvar ghub-response-headers nil
   "The headers returned in response to the last request.
 `ghub-request' returns the response body and stores the
 response header in this variable.")
 
-(cl-defun ghub-graphql (graphql &optional variables &key username auth host)
+(cl-defun ghub-graphql (graphql &optional variables
+                                &key username auth host
+                                callback)
   "Make a GraphQL request using GRAPHQL and VARIABLES.
 Return the response as a json-like alist.  Even if the response
 contains `errors', do not raise an error.  GRAPHQL is a GraphQL
@@ -392,8 +398,19 @@ in `ghub-response-headers'."
         (err (plist-get status :error)))
     (if err
         (if noerror
-            nil
-          (signal (car err) (cdr err)))
+            (progn
+              (setcdr (last err) (list payload))
+              nil)
+          (pcase-let ((`(,symb . ,data) err))
+            (if (eq symb 'error)
+                (if (eq (car-safe data) 'http)
+                    (signal 'ghub-http-error
+                            (let ((code (car (cdr-safe data))))
+                              (list code
+                                    (nth 2 (assq code url-http-codes))
+                                    payload)))
+                  (signal 'ghub-error data))
+              (signal symb data))))
       payload)))
 
 (defun ghub--handle-response-payload (args)
