@@ -374,10 +374,11 @@ See `ghub-request' for information about the other arguments."
     (setq duration 64))
   (with-local-quit
     (let ((total 0))
-      (while (not (ignore-errors (ghub-get resource nil
-                                           :username username
-                                           :auth auth
-                                           :host host)))
+      (while (not (ghub-get resource nil
+                            :noerror t
+                            :username username
+                            :auth auth
+                            :host host))
         (message "Waited (%3ss of %ss) for %s..." total duration resource)
         (if (= total duration)
             (error "Github is taking too long to create %s" resource)
