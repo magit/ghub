@@ -109,7 +109,8 @@ behave like for `ghub-request' (which see)."
   (ghub-request "POST" "/graphql" nil :payload
                 (json-encode `(("query" . ,graphql)
                                ,@(and variables `(("variables" ,@variables)))))
-                :username username :auth auth :host host))
+                :username username :auth auth :host host
+                :callback callback))
 
 (cl-defun ghub-head (resource &optional params
                               &key query payload headers
@@ -125,13 +126,15 @@ Like calling `ghub-request' (which see) with \"HEAD\" as METHOD."
 (cl-defun ghub-get (resource &optional params
                              &key query payload headers
                              unpaginate noerror reader
-                             username auth host)
+                             username auth host
+                             callback)
   "Make a `GET' request for RESOURCE, with optional query PARAMS.
 Like calling `ghub-request' (which see) with \"GET\" as METHOD."
   (ghub-request "GET" resource params
                 :query query :payload payload :headers headers
                 :unpaginate unpaginate :noerror noerror :reader reader
-                :username username :auth auth :host host))
+                :username username :auth auth :host host
+                :callback callback))
 
 (cl-defun ghub-put (resource &optional params
                              &key query payload headers
@@ -181,7 +184,7 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
                                &key query payload headers
                                unpaginate noerror reader
                                username auth host forge
-                               url value
+                               callback url value error extra
                                ((:method method*)))
   "Make a request for RESOURCE and return the response body.
 
@@ -257,8 +260,18 @@ If FORGE is `gitlab', then connect to Gitlab.com or, depending
   internal use.  Instead of using this argument you should use
   function `glab-request' and other `glab-*' functions.
 
-URL is intended for internal use only.  If it is non-nil, then
-  some other arguments are ignored or expected to be nil."
+If CALLBACK is non-nil, then make one or more asynchronous
+  requests and call CALLBACK when finished.  CALLBACK is called
+  with four arguments VALUE, HEADERS, STATUS and ARGS.  VALUE is
+  the cominbined value of all requests, HEADERS are the headers
+  of the last request, STATUS is a plist with status information
+  provided by `url-retrive'.  The `:error' property is non-nil
+  if an error occured.  You have to consult that if you want to
+  handle errors; when making asynchronous requests, then no
+  errors are signaled, regardless of the value of NOERROR.
+
+The remaining arguments are intended for internal use only.  They
+are provided by `ghub-continue' (which see) to fetch another page."
   (cl-assert (or (booleanp unpaginate) (natnump unpaginate)))
   (if url
       (setq method method*)
@@ -285,6 +298,8 @@ URL is intended for internal use only.  If it is non-nil, then
       (unless (stringp payload)
         (setq payload (json-encode-list payload)))
       (setq payload (encode-coding-string payload 'utf-8)))
+    (when callback
+      (setq noerror t))
     (setq url
           (concat "https://" host resource
                   (and query (concat "?" (ghub--url-encode-params query))))))
@@ -304,13 +319,44 @@ URL is intended for internal use only.  If it is non-nil, then
                     :auth       auth
                     :host       host
                     :forge      forge
+                    :callback   callback
                     :url        url
                     :value      value
-                    )))
-    (with-current-buffer (url-retrieve-synchronously url)
-      (ghub--handle-response (car url-callback-arguments) args))))
+                    :error      error
+                    :extra      extra)))
+    (if callback
+        (url-retrieve url 'ghub--handle-response (list args))
+      (with-current-buffer (url-retrieve-synchronously url)
+        (ghub--handle-response (car url-callback-arguments) args)))))
 
 (defun ghub-continue (args)
+  "If there is a next page, then retrieve that.
+
+This function is only intended to be called from callbacks.
+If there is a next page, then retrieve that and return the
+buffer that the result will be loaded into, or t if the
+process has already completed.  Otherwise return nil.
+
+Callbacks are called with four arguments (see `ghub-request').
+The forth argument is a plist and its value should be used as
+the argument to this function.  The plist contains most but
+not all of the keyword arguments of `ghub-request' and a few
+additional properties.
+
+`:url' is the URL for the next page and is retrieved from the
+  previous response header.  It replaces the optional RESOURCE,
+  PARAMS and QUERY arguments.  This keyword argument is more
+  important than the others in that it signals to `ghub-request'
+  that it is being called recursively, in which case it ignores
+  some of its the other arguments, using the ones describe here
+  instead.
+`:method' replaces `ghub-request's mandatory METHOD argument.
+`:value' contains the value that was collected so far.
+`:extra' can be used to pass additional information from one
+  callback to its next incarnation.  This is the only property
+  whose value callbacks may change.  Callback must not add any
+  additional properties.  Setting `:extra' (and only that) in
+  the initial call to `ghub-request' is allowed."
   (and (assq 'next (ghub-response-link-relations))
        (or (apply #'ghub-request nil nil nil args) t)))
 
@@ -360,7 +406,8 @@ in `ghub-response-headers'."
         (progn
           (set-buffer-multibyte t)
           (let* ((unpaginate (plist-get args :unpaginate))
-                 (headers    (ghub--handle-response-headers status))
+                 (callback   (plist-get args :callback))
+                 (headers    (ghub--handle-response-headers status args))
                  (payload    (ghub--handle-response-payload args))
                  (payload    (ghub--handle-response-error status payload args))
                  (value      (nconc (plist-get args :value) payload))
@@ -376,10 +423,13 @@ in `ghub-response-headers'."
                      (or (eq unpaginate t)
                          (>  unpaginate 0))
                      (ghub-continue args))
-                value)))
-      (kill-buffer buffer))))
+                (if callback
+                    (funcall callback value headers status args)
+                  value))))
+      (when (buffer-live-p buffer)
+        (kill-buffer buffer)))))
 
-(defun ghub--handle-response-headers (status)
+(defun ghub--handle-response-headers (status args)
   (goto-char (point-min))
   (let (headers)
     (while (re-search-forward "^\\([^:]*\\): \\(.+\\)"
@@ -391,7 +441,9 @@ in `ghub-response-headers'."
     (unless url-http-end-of-headers
       (error "BUG: missing headers %s" (plist-get status :error)))
     (goto-char (1+ url-http-end-of-headers))
-    (setq ghub-response-headers headers)
+    (if (plist-get args :callback)
+        (setq-local ghub-response-headers headers)
+      (setq-default ghub-response-headers headers))
     headers))
 
 (defun ghub--handle-response-error (status payload args)
