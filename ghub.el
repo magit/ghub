@@ -345,12 +345,9 @@ in `ghub-response-headers'."
           (set-buffer-multibyte t)
           (let* ((unpaginate (plist-get args :unpaginate))
                  (headers    (ghub--handle-response-headers status))
-                 (value      (ghub--handle-response-payload args))
-                 (err (plist-get (car url-callback-arguments) :error)))
-            (when err
-              (if (plist-get args :noerror)
-                  (setq value nil)
-                (signal (car err) (cdr err))))
+                 (payload    (ghub--handle-response-payload args))
+                 (payload    (ghub--handle-response-error status payload args))
+                 (value      payload))
             (if (and unpaginate
                      (or (eq unpaginate t)
                          (>  unpaginate 1)))
@@ -389,6 +386,15 @@ in `ghub-response-headers'."
     (goto-char (1+ url-http-end-of-headers))
     (setq ghub-response-headers headers)
     headers))
+
+(defun ghub--handle-response-error (status payload args)
+  (let ((noerror (plist-get args :noerror))
+        (err (plist-get status :error)))
+    (if err
+        (if noerror
+            nil
+          (signal (car err) (cdr err)))
+      payload)))
 
 (defun ghub--handle-response-payload (args)
   (funcall (or (plist-get args :reader)
