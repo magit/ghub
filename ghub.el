@@ -212,7 +212,8 @@ If UNPAGINATE is t, then make as many requests as necessary to
   at most that many pages.  For any other non-nil value raise
   an error.
 If NOERROR is non-nil, then do not raise an error if the request
-  fails and return nil instead.
+  fails and return nil instead.  If NOERROR is `return', then
+  return the error payload instead of nil.
 If READER is non-nil, then it is used to read and return from the
   response buffer.  The default is `ghub--read-json-payload'.
   For the very few resources that do not return json, you might
@@ -398,7 +399,8 @@ in `ghub-response-headers'."
         (err (plist-get status :error)))
     (if err
         (if noerror
-            (progn
+            (if (eq noerror 'return)
+                payload
               (setcdr (last err) (list payload))
               nil)
           (pcase-let ((`(,symb . ,data) err))
