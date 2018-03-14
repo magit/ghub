@@ -7,7 +7,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 1.3.0 (v1.3.0-89-gb901b5d+1)
+#+SUBTITLE: for version 1.3.0 (v1.3.0-90-g79bc717+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -31,7 +31,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-89-gb901b5d+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-90-g79bc717+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -657,7 +657,7 @@ latter is documented at https://developer.github.com/v3.
   itself is treated like any other package.  Also see [[*Using Ghub in a
   Package]].
 
-- Function: ghub-head resource &optional params &key query payload headers unpaginate noerror reader username auth host
+- Function: ghub-head resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
 - Function: ghub-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
 
   These functions are simple wrappers around ~ghub-request~.  Their
@@ -670,10 +670,10 @@ latter is documented at https://developer.github.com/v3.
   as the query or the payload.  For the "HEAD" and "GET" methods it
   is used as the query.
 
-- Function: ghub-put resource &optional params &key query payload headers unpaginate noerror reader username auth host
-- Function: ghub-post resource &optional params &key query payload headers unpaginate noerror reader username auth host
-- Function: ghub-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host
-- Function: ghub-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host
+- Function: ghub-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
+- Function: ghub-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
+- Function: ghub-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
+- Function: ghub-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
 
   These functions are simple wrappers around ~ghub-request~.  Their
   signature is identical to that of the latter, except that they do

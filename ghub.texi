@@ -30,7 +30,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 1.3.0 (v1.3.0-89-gb901b5d+1)
+@subtitle for version 1.3.0 (v1.3.0-90-g79bc717+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -61,7 +61,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-89-gb901b5d+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-90-g79bc717+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -831,7 +831,7 @@ package PACKAGE given by the first word in the variable name.  @code{ghub}
 itself is treated like any other package.  Also see @ref{Using Ghub in a Package}.
 @end defvar
 
-@defun ghub-head resource &optional params &key query payload headers unpaginate noerror reader username auth host
+@defun ghub-head resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
 @end defun
 @defun ghub-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
 
@@ -846,13 +846,13 @@ as the query or the payload.  For the "HEAD" and "GET" methods it
 is used as the query.
 @end defun
 
-@defun ghub-put resource &optional params &key query payload headers unpaginate noerror reader username auth host
+@defun ghub-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
 @end defun
-@defun ghub-post resource &optional params &key query payload headers unpaginate noerror reader username auth host
+@defun ghub-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
 @end defun
-@defun ghub-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host
+@defun ghub-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
 @end defun
-@defun ghub-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host
+@defun ghub-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
 
 These functions are simple wrappers around @code{ghub-request}.  Their
 signature is identical to that of the latter, except that they do

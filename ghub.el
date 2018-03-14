@@ -115,13 +115,15 @@ behave like for `ghub-request' (which see)."
 (cl-defun ghub-head (resource &optional params
                               &key query payload headers
                               unpaginate noerror reader
-                              username auth host)
+                              username auth host
+                              callback)
   "Make a `HEAD' request for RESOURCE, with optional query PARAMS.
 Like calling `ghub-request' (which see) with \"HEAD\" as METHOD."
   (ghub-request "HEAD" resource params
                 :query query :payload payload :headers headers
                 :unpaginate unpaginate :noerror noerror :reader reader
-                :username username :auth auth :host host))
+                :username username :auth auth :host host
+                :callback callback))
 
 (cl-defun ghub-get (resource &optional params
                              &key query payload headers
@@ -139,46 +141,54 @@ Like calling `ghub-request' (which see) with \"GET\" as METHOD."
 (cl-defun ghub-put (resource &optional params
                              &key query payload headers
                              unpaginate noerror reader
-                             username auth host)
+                             username auth host
+                             callback)
   "Make a `PUT' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"PUT\" as METHOD."
   (ghub-request "PUT" resource params
                 :query query :payload payload :headers headers
                 :unpaginate unpaginate :noerror noerror :reader reader
-                :username username :auth auth :host host))
+                :username username :auth auth :host host
+                :callback callback))
 
 (cl-defun ghub-post (resource &optional params
                               &key query payload headers
                               unpaginate noerror reader
-                              username auth host)
+                              username auth host
+                              callback)
   "Make a `POST' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"POST\" as METHOD."
   (ghub-request "POST" resource params
                 :query query :payload payload :headers headers
                 :unpaginate unpaginate :noerror noerror :reader reader
-                :username username :auth auth :host host))
+                :username username :auth auth :host host
+                :callback callback))
 
 (cl-defun ghub-patch (resource &optional params
                                &key query payload headers
                                unpaginate noerror reader
-                               username auth host)
+                               username auth host
+                               callback)
   "Make a `PATCH' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"PATCH\" as METHOD."
   (ghub-request "PATCH" resource params
                 :query query :payload payload :headers headers
                 :unpaginate unpaginate :noerror noerror :reader reader
-                :username username :auth auth :host host))
+                :username username :auth auth :host host
+                :callback callback))
 
 (cl-defun ghub-delete (resource &optional params
                                 &key query payload headers
                                 unpaginate noerror reader
-                                username auth host)
+                                username auth host
+                                callback)
   "Make a `DELETE' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
   (ghub-request "DELETE" resource params
                 :query query :payload payload :headers headers
                 :unpaginate unpaginate :noerror noerror :reader reader
-                :username username :auth auth :host host))
+                :username username :auth auth :host host
+                :callback callback))
 
 (cl-defun ghub-request (method resource &optional params
                                &key query payload headers
