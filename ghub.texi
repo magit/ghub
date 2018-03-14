@@ -30,7 +30,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 1.3.0 (v1.3.0-86-gbccfad8+1)
+@subtitle for version 1.3.0 (v1.3.0-89-gb901b5d+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -61,7 +61,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-86-gbccfad8+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-89-gb901b5d+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -621,7 +621,7 @@ latter is documented at @uref{https://developer.github.com/v3}.
 @node Making Requests
 @section Making Requests
 
-@defun ghub-request method resource &optional params &key query payload headers unpaginate noerror reader username auth host
+@defun ghub-request method resource &optional params &key query payload headers unpaginate noerror reader username auth host callback url value error extra method*
 
 This function makes a request for RESOURCE using METHOD.  PARAMS,
 QUERY, PAYLOAD and/or HEADERS are alists holding additional request
@@ -757,7 +757,7 @@ The remaining arguments are intended for internal use only.  They
 are provided by @code{ghub-continue} (which see) to fetch another page.
 @end defun
 
-@defun ghub--continue args
+@defun ghub-continue args
 
 If there is a next page, then this function retrieves that.
 
@@ -833,7 +833,7 @@ itself is treated like any other package.  Also see @ref{Using Ghub in a Package
 
 @defun ghub-head resource &optional params &key query payload headers unpaginate noerror reader username auth host
 @end defun
-@defun ghub-get resource &optional params &key query payload headers unpaginate noerror reader username auth host
+@defun ghub-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
 
 These functions are simple wrappers around @code{ghub-request}.  Their
 signature is identical to that of the latter, except that they do
@@ -865,7 +865,7 @@ as the query or the payload.  For the "PUT", "POST", "PATCH" and
 "DELETE" methods it is used as the payload.
 @end defun
 
-@defun ghub-wait resource &optional username auth host duration
+@defun ghub-wait resource &optional duration &key username auth host
 
 Some API requests result in an immediate successful response even
 when the requested action has not actually been carried out yet.
@@ -896,7 +896,7 @@ See @code{ghub-request}'s documentation above for information about the
 other arguments.
 @end defun
 
-@defun ghub-graphql graphql &optional variables &key username auth host
+@defun ghub-graphql graphql &optional variables &key username auth host callback
 
 This function makes a GraphQL request using GRAPHQL and VARIABLES as
 inputs.  GRAPHQL is a GraphQL string.  VARIABLES is a JSON-like

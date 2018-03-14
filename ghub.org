@@ -7,7 +7,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 1.3.0 (v1.3.0-86-gbccfad8+1)
+#+SUBTITLE: for version 1.3.0 (v1.3.0-89-gb901b5d+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -31,7 +31,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-86-gbccfad8+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-89-gb901b5d+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -496,7 +496,7 @@ latter is documented at https://developer.github.com/v3.
 
 ** Making Requests
 
-- Function: ghub-request method resource &optional params &key query payload headers unpaginate noerror reader username auth host
+- Function: ghub-request method resource &optional params &key query payload headers unpaginate noerror reader username auth host callback url value error extra method*
 
   This function makes a request for RESOURCE using METHOD.  PARAMS,
   QUERY, PAYLOAD and/or HEADERS are alists holding additional request
@@ -597,7 +597,7 @@ latter is documented at https://developer.github.com/v3.
   The remaining arguments are intended for internal use only.  They
   are provided by ~ghub-continue~ (which see) to fetch another page.
 
-- Function: ghub--continue args
+- Function: ghub-continue args
 
   If there is a next page, then this function retrieves that.
 
@@ -658,7 +658,7 @@ latter is documented at https://developer.github.com/v3.
   Package]].
 
 - Function: ghub-head resource &optional params &key query payload headers unpaginate noerror reader username auth host
-- Function: ghub-get resource &optional params &key query payload headers unpaginate noerror reader username auth host
+- Function: ghub-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
 
   These functions are simple wrappers around ~ghub-request~.  Their
   signature is identical to that of the latter, except that they do
@@ -685,7 +685,7 @@ latter is documented at https://developer.github.com/v3.
   as the query or the payload.  For the "PUT", "POST", "PATCH" and
   "DELETE" methods it is used as the payload.
 
-- Function: ghub-wait resource &optional username auth host duration
+- Function: ghub-wait resource &optional duration &key username auth host
 
   Some API requests result in an immediate successful response even
   when the requested action has not actually been carried out yet.
@@ -715,7 +715,7 @@ latter is documented at https://developer.github.com/v3.
   See ~ghub-request~'s documentation above for information about the
   other arguments.
 
-- Function: ghub-graphql graphql &optional variables &key username auth host
+- Function: ghub-graphql graphql &optional variables &key username auth host callback
 
   This function makes a GraphQL request using GRAPHQL and VARIABLES as
   inputs.  GRAPHQL is a GraphQL string.  VARIABLES is a JSON-like
