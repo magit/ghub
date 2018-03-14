@@ -252,8 +252,8 @@ Each package that uses `ghub' should use its own token. If AUTH
   Some symbols have a special meaning.  `none' means to make an
   unauthorized request.  `basic' means to make a password based
   request.  If the value is a string, then it is assumed to be
-  a valid token.  `basic' and an explicit token string are only
-  intended for internal and debugging uses.
+  a valid token or two-factor authentication code.  `basic' and
+  strings are only intended for internal and debugging uses.
 
   If AUTH is a package symbol, then the scopes are specified
   using the variable `AUTH-github-token-scopes'.  It is an error
@@ -325,7 +325,7 @@ are provided by `ghub-continue' (which see) to fetch another page."
   (let ((url-request-extra-headers
          `(("Content-Type" . "application/json")
            ,@(and (not (eq auth 'none))
-                  (list (ghub--auth host auth username forge)))
+                  (ghub--auth host auth username forge))
            ,@headers))
         (url-request-method method)
         (url-request-data payload)
@@ -531,13 +531,14 @@ in `ghub-response-headers'."
 ;;;; API
 
 ;;;###autoload
-(defun ghub-create-token (host username package scopes)
+(defun ghub-create-token (host username package scopes &optional 2fa)
   "Create, store and return a new token.
 
 HOST is the Github instance, usually \"api.github.com\".
 USERNAME is the name of a user on that instance.
 PACKAGE is the package that will use the token.
-SCOPES are the scopes the token is given access to."
+SCOPES are the scopes the token is given access to.
+2FA is the two-factor authentication code, if any."
   (interactive
    (pcase-let ((`(,host ,username ,package)
                 (ghub--read-triplet)))
@@ -549,7 +550,8 @@ SCOPES are the scopes the token is given access to."
                         (symbol-value
                          (intern (format "%s-github-token-scopes" package)))
                         ","))
-            "," t "[\s\t]+"))))
+            "," t "[\s\t]+")
+           (ghub--read-2fa-code))))
   (let ((user (ghub--ident username package)))
     (cl-destructuring-bind (_save token)
         (ghub--auth-source-get (list :save-function :secret)
@@ -560,7 +562,7 @@ SCOPES are the scopes the token is given access to."
                       "/authorizations"
                       `((scopes . ,scopes)
                         (note   . ,(ghub--ident-github package)))
-                      :username username :auth 'basic :host host))))
+                      :username username :auth (or 2fa 'basic) :host host))))
       ;; If the Auth-Source cache contains the information that there
       ;; is no value, then setting the value does not invalidate that
       ;; now incorrect information.
@@ -591,20 +593,21 @@ has to provide several values including their password."
   (if (eq auth 'basic)
       (if (eq forge 'gitlab)
           (error "Gitlab does not support basic authentication")
-        (cons "Authorization" (ghub--basic-auth host username)))
-    (cons (if (eq forge 'gitlab)
-              "Private-Token"
-            "Authorization")
-          (concat
-           (and (not (eq forge 'gitlab)) "token ")
-           (encode-coding-string
-            (cl-typecase auth
-              (string auth)
-              (null   (ghub--token host username 'ghub nil forge))
-              (symbol (ghub--token host username auth  nil forge))
-              (t (signal 'wrong-type-argument
-                         `((or stringp symbolp) ,auth))))
-            'utf-8)))))
+        `(("Authorization" . ,(ghub--basic-auth host username))))
+    `((,(cons (if (eq forge 'gitlab) "Private-Token" "Authorization")
+              (concat
+               (and (not (eq forge 'gitlab)) "token ")
+               (encode-coding-string
+                (cl-typecase auth
+                  (string auth)
+                  (null   (ghub--token host username 'ghub nil forge))
+                  (symbol (ghub--token host username auth  nil forge))
+                  (t (signal 'wrong-type-argument
+                             `((or stringp symbolp) ,auth))))
+                'utf-8))))
+      ,@(and (stringp auth)
+             (= (length auth) 6)
+             `(("X-Github-OTP" . ,(encode-coding-string auth 'utf-8)))))))
 
 (defun ghub--basic-auth (host username)
   (let ((url (url-generic-parse-url (concat "https://" host))))
@@ -683,9 +686,6 @@ has to provide several values including their password."
   Store on Github as:\n    %S
   Store locally according to option `auth-sources':\n    %S
 %s
-WARNING: If you have enabled two-factor authentication,
-         then you have to abort and create the token manually.
-
 If in doubt, then abort and first view the section of the Ghub
 documentation called \"Manually Creating and Storing a Token\".
 
@@ -705,41 +705,64 @@ WARNING: The token will be stored unencrypted in %S.
          If you don't want that, you have to abort and customize
          the `auth-sources' option.\n" (car auth-sources))
               ""))))
-        (progn
-          (when (ghub--get-token-id host username package)
+        (let ((2fa (ghub--read-2fa-code)))
+          (when (ghub--get-token-id host username package 2fa)
             (if (yes-or-no-p
                  (format
                   "A token named %S\nalready exists on Github.  Replace it?"
                   ident))
-                (ghub--delete-token host username package)
+                (progn
+                  (when 2fa ; might already have expired
+                    (setq 2fa (ghub--read-2fa-code
+                               "Two-factor authentication code")))
+                  (ghub--delete-token host username package 2fa))
               (user-error "Abort")))
-          (ghub-create-token host username package scopes))
+          (ghub-create-token host username package scopes 2fa))
       (user-error "Abort"))))
 
-(defun ghub--get-token-id (host username package)
+(defun ghub--get-token-id (host username package &optional 2fa)
   (let ((ident (ghub--ident-github package)))
     (cl-some (lambda (x)
                (let-alist x
                  (and (equal .app.name ident) .id)))
-             (ghub-get "/authorizations" nil
-                       :unpaginate t
-                       :username username :auth 'basic :host host))))
+             (ghub-get "/authorizations"
+                       nil :username username :auth (or 2fa 'basic) :host host
+                       :unpaginate t))))
 
-(defun ghub--get-token-plist (host username package)
+(defun ghub--get-token-plist (host username package &optional 2fa)
   (ghub-get (format "/authorizations/%s"
                     (ghub--get-token-id host username package))
-            nil :username username :auth 'basic :host host))
+            nil :username username :auth (or 2fa 'basic) :host host))
 
-(defun ghub--delete-token (host username package)
+(defun ghub--delete-token (host username package &optional 2fa)
   (ghub-delete (format "/authorizations/%s"
                        (ghub--get-token-id host username package))
-               nil :username username :auth 'basic :host host))
+               nil :username username :auth (or 2fa 'basic) :host host))
 
 (defun ghub--read-triplet ()
   (let ((host (read-string "Host: " (ghub--host))))
     (list host
           (read-string "Username: " (ghub--username host))
           (intern (read-string "Package: " "ghub")))))
+
+(defun ghub--read-2fa-code (&optional prompt)
+  (let* ((prompt1 (or prompt "\
+If, and only if, you have enabled two-factor authentication, then
+provide the code now (otherwise just press `RET' with no input)"))
+         (prompt2 "\
+.\n\nPlease try again.  (Such codes are six digits long.)")
+         (prompt prompt1)
+         valid abort)
+    (while (and (not valid)
+                (not abort))
+      (let ((input (read-string (concat prompt ": "))))
+        (cond ((equal input "")
+               (setq abort t))
+              ((string-match-p "\\`[0-9]\\{6\\}\\'" input)
+               (setq valid input))
+              (t
+               (setq prompt (concat prompt1 prompt2))))))
+    valid))
 
 (defun ghub--auth-source-get (key:s &rest spec)
   (declare (indent 1))
