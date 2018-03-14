@@ -380,7 +380,7 @@ additional properties.
   (and (assq 'next (ghub-response-link-relations))
        (or (apply #'ghub-request nil nil nil args) t)))
 
-(defun ghub-wait (resource &optional duration &key username auth host)
+(cl-defun ghub-wait (resource &optional duration &key username auth host)
   "Busy-wait up to DURATION seconds for RESOURCE to become available.
 
 DURATION specifies how many seconds to wait at most.  It defaults
