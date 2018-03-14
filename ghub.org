@@ -7,7 +7,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 1.3.0 (v1.3.0-90-g79bc717+1)
+#+SUBTITLE: for version 1.3.0 (v1.3.0-91-gb7515c1+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -31,7 +31,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-90-g79bc717+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-91-gb7515c1+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -496,7 +496,7 @@ latter is documented at https://developer.github.com/v3.
 
 ** Making Requests
 
-- Function: ghub-request method resource &optional params &key query payload headers unpaginate noerror reader username auth host callback url value error extra method*
+- Function: ghub-request method resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback url value error extra method*
 
   This function makes a request for RESOURCE using METHOD.  PARAMS,
   QUERY, PAYLOAD and/or HEADERS are alists holding additional request
@@ -580,19 +580,24 @@ latter is documented at https://developer.github.com/v3.
     internal use.  Instead of using this argument you should use
     function ~glab-request~ and other ~glab-*~ functions.
 
-  - URL is intended for internal use only.  If it is non-nil, then
-    some other arguments are ignored or expected to be nil.
+  - If CALLBACK and/or ERRORBACK is non-nil, then this function makes
+    one or more asynchronous requests and calls CALLBACK or ERRORBACK
+    when finished.  If an error occurred, then it calls ERRORBACK, or
+    if that is ~nil~, then CALLBACK.  When no error occurred then it
+    calls CALLBACK.  When making asynchronous requests, then no errors
+    are signaled, regardless of the value of NOERROR.
 
-  - If CALLBACK is non-nil, then this function makes one or more
-    asynchronous requests and calls CALLBACK when finished.
+    Both callbacks are called with four arguments.
 
-    CALLBACK is called with four arguments VALUE, HEADERS, STATUS and
-    ARGS.  VALUE is the cominbined value of all requests, HEADERS are
-    the headers of the last request, STATUS is a plist with status
-    information provided by `url-retrive'.  The ~:error~ property is
-    non-nil if an error occured.  You have to consult that if you want
-    to handle errors; when making asynchronous requests, then no
-    errors are signaled, regardless of the value of NOERROR.
+    1. For CALLBACK, the combined value of the retrieved pages.
+       For ERRORBACk, the error that occured when retrieving the
+       last page.
+    2. The headers of the last page as an alist.
+    3. Status information provided by ~url-retrieve~. Its ~:error~
+       property holds the same information as ERRORBACK's first
+       argument.
+    4. A plist containing arguments that have to be passed to
+       ~ghub-continue~ (which see) to retrieve the next page.
 
   The remaining arguments are intended for internal use only.  They
   are provided by ~ghub-continue~ (which see) to fetch another page.
@@ -657,8 +662,8 @@ latter is documented at https://developer.github.com/v3.
   itself is treated like any other package.  Also see [[*Using Ghub in a
   Package]].
 
-- Function: ghub-head resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
-- Function: ghub-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
+- Function: ghub-head resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
+- Function: ghub-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
 
   These functions are simple wrappers around ~ghub-request~.  Their
   signature is identical to that of the latter, except that they do
@@ -670,10 +675,10 @@ latter is documented at https://developer.github.com/v3.
   as the query or the payload.  For the "HEAD" and "GET" methods it
   is used as the query.
 
-- Function: ghub-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
-- Function: ghub-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
-- Function: ghub-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
-- Function: ghub-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
+- Function: ghub-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
+- Function: ghub-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
+- Function: ghub-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
+- Function: ghub-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
 
   These functions are simple wrappers around ~ghub-request~.  Their
   signature is identical to that of the latter, except that they do

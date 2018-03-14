@@ -30,7 +30,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 1.3.0 (v1.3.0-90-g79bc717+1)
+@subtitle for version 1.3.0 (v1.3.0-91-gb7515c1+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -61,7 +61,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-90-g79bc717+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-91-gb7515c1+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -621,7 +621,7 @@ latter is documented at @uref{https://developer.github.com/v3}.
 @node Making Requests
 @section Making Requests
 
-@defun ghub-request method resource &optional params &key query payload headers unpaginate noerror reader username auth host callback url value error extra method*
+@defun ghub-request method resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback url value error extra method*
 
 This function makes a request for RESOURCE using METHOD.  PARAMS,
 QUERY, PAYLOAD and/or HEADERS are alists holding additional request
@@ -736,21 +736,33 @@ function @code{glab-request} and other @code{glab-*} functions.
 
 
 @item
-URL is intended for internal use only.  If it is non-nil, then
-some other arguments are ignored or expected to be nil.
+If CALLBACK and/or ERRORBACK is non-nil, then this function makes
+one or more asynchronous requests and calls CALLBACK or ERRORBACK
+when finished.  If an error occurred, then it calls ERRORBACK, or
+if that is @code{nil}, then CALLBACK.  When no error occurred then it
+calls CALLBACK.  When making asynchronous requests, then no errors
+are signaled, regardless of the value of NOERROR.
 
+Both callbacks are called with four arguments.
+
+@itemize
+@item
+For CALLBACK, the combined value of the retrieved pages.
+For ERRORBACk, the error that occured when retrieving the
+last page.
 
 @item
-If CALLBACK is non-nil, then this function makes one or more
-asynchronous requests and calls CALLBACK when finished.
+The headers of the last page as an alist.
 
-CALLBACK is called with four arguments VALUE, HEADERS, STATUS and
-ARGS.  VALUE is the cominbined value of all requests, HEADERS are
-the headers of the last request, STATUS is a plist with status
-information provided by `url-retrive'.  The @code{:error} property is
-non-nil if an error occured.  You have to consult that if you want
-to handle errors; when making asynchronous requests, then no
-errors are signaled, regardless of the value of NOERROR.
+@item
+Status information provided by @code{url-retrieve}. Its @code{:error}
+property holds the same information as ERRORBACK's first
+argument.
+
+@item
+A plist containing arguments that have to be passed to
+@code{ghub-continue} (which see) to retrieve the next page.
+@end itemize
 @end itemize
 
 The remaining arguments are intended for internal use only.  They
@@ -831,9 +843,9 @@ package PACKAGE given by the first word in the variable name.  @code{ghub}
 itself is treated like any other package.  Also see @ref{Using Ghub in a Package}.
 @end defvar
 
-@defun ghub-head resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
+@defun ghub-head resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
 @end defun
-@defun ghub-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
+@defun ghub-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
 
 These functions are simple wrappers around @code{ghub-request}.  Their
 signature is identical to that of the latter, except that they do
@@ -846,13 +858,13 @@ as the query or the payload.  For the "HEAD" and "GET" methods it
 is used as the query.
 @end defun
 
-@defun ghub-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
+@defun ghub-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
 @end defun
-@defun ghub-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
+@defun ghub-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
 @end defun
-@defun ghub-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
+@defun ghub-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
 @end defun
-@defun ghub-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback
+@defun ghub-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
 
 These functions are simple wrappers around @code{ghub-request}.  Their
 signature is identical to that of the latter, except that they do
