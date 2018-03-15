@@ -30,7 +30,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 1.3.0 (v1.3.0-97-gc6d73b7+1)
+@subtitle for version 1.3.0 (v1.3.0-98-gf4b5c8a+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -61,7 +61,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-97-gc6d73b7+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-98-gf4b5c8a+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -80,7 +80,6 @@ General Public License for more details.
 
 @menu
 * Introduction::
-* Limitations::
 * Getting Started::
 * Using Ghub in Personal Scripts::
 * Using Ghub in a Package::
@@ -153,91 +152,6 @@ token is not available yet, then the user is guided through the
 process of creating and storing a new token, and at the end of that
 process the request is carried out as if the token had been available
 to begin with.
-
-@node Limitations
-@chapter Limitations
-
-As mentioned, Ghub restricts itself to provide core functionality and
-leaves it to other libraries to do opinionated things on top of that.
-But currently there also are some limitations that concern the core
-parts.  Obviously these limitations have to be lifted to maximize
-adoption and so they will.
-
-These secondary features already exist (just mentioning them, so you
-don't assume that they don't):
-
-@itemize
-@item
-Support for synchronous and asynchronous requests.
-
-
-@item
-Support for Github Enterprise instances.
-
-
-@item
-Support for token scope validation.
-
-
-@item
-Basic support for GraphQL.
-
-
-@item
-Support for Gitlab is implemented in the @code{glab.el} library, which is
-maintained in the same repository as @code{ghub.el} but distributed as a
-separate package.
-@end itemize
-
-These features will likely never be implemented in Ghub itself:
-
-@itemize
-@item
-Functions for particular resources.
-
-See @code{ghub+.el} for a package that provides such functionality.
-It is built on top of @code{ghub.el}.
-
-
-@item
-Returning objects instead of JSON-like alists.
-
-Implementing such functionality on top of @code{ghub.el} should be easy
-though.
-
-
-@item
-A GraphQL DSL.
-
-See @code{graphql.el} for a package that provides such functionality.
-It can be used along-side @code{ghub.el}.
-
-
-@item
-Retrieving an existing token.  Github does not support it so we
-cannot do it either.  If you lose your local copy of a token, then
-you have to replace it with a new one.
-@end itemize
-
-These features are not supported yet:
-
-@itemize
-@item
-If a request fails due to a missing scope, then that isn't handled
-by @code{ghub-request} yet.  For now package authors just have to hope that
-users don't mess with scopes or handle such errors themselves.
-
-Likewise, other errors too should be handled by Ghub.
-
-
-@item
-Packages cannot request additional scopes.
-
-Once a token has been created a package cannot request new scopes
-that it previously did not need.  I am not quite sure yet whether
-Ghub should support that.  An alternative would be to let packages
-at least invalidate their own tokens.
-@end itemize
 
 @node Getting Started
 @chapter Getting Started

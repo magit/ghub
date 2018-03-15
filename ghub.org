@@ -7,7 +7,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 1.3.0 (v1.3.0-97-gc6d73b7+1)
+#+SUBTITLE: for version 1.3.0 (v1.3.0-98-gf4b5c8a+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -31,7 +31,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-97-gc6d73b7+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-98-gf4b5c8a+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -93,65 +93,6 @@ token is not available yet, then the user is guided through the
 process of creating and storing a new token, and at the end of that
 process the request is carried out as if the token had been available
 to begin with.
-
-* Limitations
-
-As mentioned, Ghub restricts itself to provide core functionality and
-leaves it to other libraries to do opinionated things on top of that.
-But currently there also are some limitations that concern the core
-parts.  Obviously these limitations have to be lifted to maximize
-adoption and so they will.
-
-These secondary features already exist (just mentioning them, so you
-don't assume that they don't):
-
-- Support for synchronous and asynchronous requests.
-
-- Support for Github Enterprise instances.
-
-- Support for token scope validation.
-
-- Basic support for GraphQL.
-
-- Support for Gitlab is implemented in the ~glab.el~ library, which is
-  maintained in the same repository as ~ghub.el~ but distributed as a
-  separate package.
-
-These features will likely never be implemented in Ghub itself:
-
-- Functions for particular resources.
-
-  See ~ghub+.el~ for a package that provides such functionality.
-  It is built on top of ~ghub.el~.
-
-- Returning objects instead of JSON-like alists.
-
-  Implementing such functionality on top of ~ghub.el~ should be easy
-  though.
-
-- A GraphQL DSL.
-
-  See ~graphql.el~ for a package that provides such functionality.
-  It can be used along-side ~ghub.el~.
-
-- Retrieving an existing token.  Github does not support it so we
-  cannot do it either.  If you lose your local copy of a token, then
-  you have to replace it with a new one.
-
-These features are not supported yet:
-
-- If a request fails due to a missing scope, then that isn't handled
-  by ~ghub-request~ yet.  For now package authors just have to hope that
-  users don't mess with scopes or handle such errors themselves.
-
-  Likewise, other errors too should be handled by Ghub.
-
-- Packages cannot request additional scopes.
-
-  Once a token has been created a package cannot request new scopes
-  that it previously did not need.  I am not quite sure yet whether
-  Ghub should support that.  An alternative would be to let packages
-  at least invalidate their own tokens.
 
 * Getting Started
 
