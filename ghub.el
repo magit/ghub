@@ -54,6 +54,7 @@
 
 (defvar url-callback-arguments)
 (defvar url-http-end-of-headers)
+(defvar url-http-extra-headers)
 (defvar url-http-response-status)
 
 ;;; Settings
@@ -346,7 +347,10 @@ are provided by `ghub-continue' (which see) to fetch another page."
                     :extra      extra)))
     (if (or callback errorback)
         (url-retrieve url 'ghub--handle-response (list args))
-      (with-current-buffer (url-retrieve-synchronously url)
+      (with-current-buffer
+          (let ((url-registered-auth-schemes
+                 '(("basic" ghub--basic-auth-errorback . 10))))
+            (url-retrieve-synchronously url))
         (ghub--handle-response (car url-callback-arguments) args)))))
 
 (defun ghub-continue (args)
@@ -612,6 +616,29 @@ has to provide several values including their password."
     (setf (url-user url) username)
     (url-basic-auth url t)))
 
+(defun ghub--basic-auth-errorback (url &optional prompt _overwrite _realm _args)
+  ;; This gets called twice.  Do nothing the first time,
+  ;; when PROMPT is nil.  See `url-get-authentication'.
+  (when prompt
+    (let ((otp (assoc "X-GitHub-OTP" (ghub--handle-response-headers nil nil))))
+      (if otp
+          (progn
+            (setq url-http-extra-headers
+                  `(("Content-Type" . "application/json")
+                    ("X-GitHub-OTP" . ,(ghub--read-2fa-code))
+                    ;; Without "Content-Type" and "Authorization".
+                    ;; The latter gets re-added from the return value.
+                    ,@(cddr url-http-extra-headers)))
+            ;; Return the cached values, they are correct.
+            (url-basic-auth url nil nil nil))
+        ;; Remove the invalid cached values and fail, which
+        ;; is better than the invalid values sticking around.
+        (setq url-http-real-basic-auth-storage
+              (cl-delete (format "%s:%d" (url-host url) (url-port url))
+                         url-http-real-basic-auth-storage
+                         :test #'equal :key #'car))
+        nil))))
+
 (defun ghub--token (host username package &optional nocreate forge)
   (let ((user (ghub--ident username package)))
     (or (ghub--auth-source-get :secret :host host :user user)
@@ -684,9 +711,6 @@ has to provide several values including their password."
   Store on Github as:\n    %S
   Store locally according to option `auth-sources':\n    %S
 %s
-WARNING: If you have enabled two-factor authentication,
-         then you have to abort and create the token manually.
-
 If in doubt, then abort and first view the section of the Ghub
 documentation called \"Manually Creating and Storing a Token\".
 
@@ -722,7 +746,8 @@ WARNING: The token will be stored unencrypted in %S.
     (cl-some (lambda (x)
                (let-alist x
                  (and (equal .app.name ident) .id)))
-             (ghub-get "/authorizations" nil
+             (ghub-get "/authorizations"
+                       '((per_page . 100))
                        :unpaginate t
                        :username username :auth 'basic :host host))))
 
@@ -741,6 +766,19 @@ WARNING: The token will be stored unencrypted in %S.
     (list host
           (read-string "Username: " (ghub--username host))
           (intern (read-string "Package: " "ghub")))))
+
+(defvar ghub--2fa-cache nil)
+
+(defun ghub--read-2fa-code ()
+  (let ((code (read-number "Two-factor authentication code: "
+                           (and ghub--2fa-cache
+                                (< (float-time (time-subtract
+                                                (current-time)
+                                                (cdr ghub--2fa-cache)))
+                                   25)
+                                (car ghub--2fa-cache)))))
+    (setq ghub--2fa-cache (cons code (current-time)))
+    (number-to-string code)))
 
 (defun ghub--auth-source-get (key:s &rest spec)
   (declare (indent 1))

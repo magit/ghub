@@ -30,7 +30,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 1.3.0 (v1.3.0-91-gb7515c1+1)
+@subtitle for version 1.3.0 (v1.3.0-97-gc6d73b7+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -61,7 +61,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-91-gb7515c1+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-97-gc6d73b7+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -309,10 +309,6 @@ yourself and can just make a request.  Note however that you don't
 have to use the setup wizard described below.  Alternatively you can
 perform the setup manually as described in the next section.
 
-Unfortunately the wizard does not work (yet?) if you have enabled
-two-factor authentication, in which case the token has to be created
-and stored manually.
-
 If you make a request and the required token is not available yet,
 then the setup wizard will first ask you something like this:
 
@@ -330,9 +326,6 @@ Such a Github API token is not available:
   Store locally according to option `auth-sources':
     ("~/.authinfo" "~/.authinfo.gpg" "~/.netrc")
 
-WARNING: If you have enabled two-factor authentication
-         then you have to create the token manually.
-
 If in doubt, then abort and first view the section of the Ghub
 documentation called "Manually Creating and Storing a Token".
 
@@ -343,19 +336,6 @@ If you don't have any doubts, then answer "yes".  Lets address some
 of the doubts that you might have:
 
 @itemize
-@item
-Unfortunately Ghub cannot know whether you have enabled two-factor
-authentication without making a request using basic (password)
-authentication, which it cannot do if you have enabled two-factor
-authentication.  It also cannot determine whether you have enabled
-two-factor authentication depending on whether a request fails or
-not because there are other reasons why a request might fail.
-
-So this warning is always displayed and if you have enabled
-two-factor authentication, then you are expected to abort and follow
-the instructions in @ref{Manually Creating and Storing a Token}.
-
-
 @item
 @code{Host} usually is "api.github.com" and that is usually what you want.
 If you are trying to access a Github Enterprise instance, then it
@@ -445,12 +425,14 @@ The former is recommended and also easier to do, using the variable
 details.
 @end itemize
 
+After the above prompt you are also asked for you username and
+password.  If you have enabled two-factor authentication, then you
+also have to provide the authentication code at least twice.  If you
+make sure the code is still good for a while when asked for it first,
+then you can just press @code{RET} at the later prompt(s).
+
 @node Manually Creating and Storing a Token
 @section Manually Creating and Storing a Token
-
-If you have enabled two-factor authentication, then you have to create
-and store access tokens yourself.  You might also prefers to always do
-it manually to have more control than when relying on the setup wizard.
 
 If you cannot or don't want to use the wizard then you have to (1)
 figure out what scopes a package wants, (2) create such a token using
