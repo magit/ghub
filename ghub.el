@@ -508,7 +508,7 @@ in `ghub-response-headers'."
                    (json-null        nil))
                (json-read-from-string raw))
            (json-readtable-error
-            (if (= status 500)
+            (if (memq status (list 400 422 500))
                 nil
               (signal (car err) (cdr err))))))))
 
