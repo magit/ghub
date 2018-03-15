@@ -509,7 +509,7 @@ in `ghub-response-headers'."
                (json-read-from-string raw))
            (json-readtable-error
             (if (memq status (list 400 422 500))
-                nil
+                "and Github didn't return JSON"
               (signal (car err) (cdr err))))))))
 
 (defun ghub--decode-payload (&optional _status)
