@@ -456,6 +456,7 @@ in `ghub-response-headers'."
 
 (defun ghub--handle-response-headers (status args)
   (goto-char (point-min))
+  (forward-line 1)
   (let (headers)
     (while (re-search-forward "^\\([^:]*\\): \\(.+\\)"
                               url-http-end-of-headers t)
