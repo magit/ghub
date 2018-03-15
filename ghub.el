@@ -195,9 +195,7 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
                                &key query payload headers
                                unpaginate noerror reader
                                username auth host forge
-                               callback errorback
-                               url value error extra
-                               ((:method method*)))
+                               callback errorback)
   "Make a request for RESOURCE and return the response body.
 
 Also place the response header in `ghub-response-headers'.
@@ -288,70 +286,50 @@ Both callbacks are called with four arguments.
      property holds the same information as ERRORBACK's first
      argument.
   4. A plist containing arguments that have to be passed to
-     `ghub-continue' (which see) to retrieve the next page.
-
-The remaining arguments are intended for internal use only.  They
-are provided by `ghub-continue' (which see) to fetch another page."
+     `ghub-continue' (which see) to retrieve the next page."
   (cl-assert (or (booleanp unpaginate) (natnump unpaginate)))
-  (if url
-      (setq method method*)
-    ;; #35: Encode in case caller used (symbol-name 'GET).
-    (setq method (encode-coding-string method 'utf-8))
-    (unless (string-prefix-p "/" resource)
-      (setq resource (concat "/" resource)))
-    (unless host
-      (setq host (ghub--host forge)))
-    (unless (or username (stringp auth) (eq auth 'none))
-      (setq username (ghub--username host forge)))
-    (cond ((not params))
-          ((member method '("GET" "HEAD"))
-           (when query
-             (error "PARAMS and QUERY are mutually exclusive for METHOD %S"
-                    method))
-           (setq query params))
-          (t
-           (when payload
-             (error "PARAMS and PAYLOAD are mutually exclusive for METHOD %S"
-                    method))
-           (setq payload params)))
-    (when payload
-      (unless (stringp payload)
-        (setq payload (json-encode-list payload)))
-      (setq payload (encode-coding-string payload 'utf-8)))
-    (when (or callback errorback)
-      (setq noerror t))
-    (setq url
-          (concat "https://" host resource
-                  (and query (concat "?" (ghub--url-encode-params query))))))
-  (let ((url-request-extra-headers
-         `(("Content-Type" . "application/json")
-           ,@(and (not (eq auth 'none))
-                  (list (ghub--auth host auth username forge)))
-           ,@headers))
-        (url-request-method method)
-        (url-request-data payload)
-        (args (list :method     method
-                    :headers    headers
-                    :unpaginate unpaginate
-                    :noerror    noerror
-                    :reader     reader
-                    :username   username
-                    :auth       auth
-                    :host       host
-                    :forge      forge
-                    :callback   callback
-                    :errorback  errorback
-                    :url        url
-                    :value      value
-                    :error      error
-                    :extra      extra)))
-    (if (or callback errorback)
-        (url-retrieve url 'ghub--handle-response (list args))
-      (with-current-buffer
-          (let ((url-registered-auth-schemes
-                 '(("basic" ghub--basic-auth-errorback . 10))))
-            (url-retrieve-synchronously url))
-        (ghub--handle-response (car url-callback-arguments) args)))))
+  (unless (string-prefix-p "/" resource)
+    (setq resource (concat "/" resource)))
+  (unless host
+    (setq host (ghub--host forge)))
+  (unless (or username (stringp auth) (eq auth 'none))
+    (setq username (ghub--username host forge)))
+  (cond ((not params))
+        ((member method '("GET" "HEAD"))
+         (when query
+           (error "PARAMS and QUERY are mutually exclusive for METHOD %S"
+                  method))
+         (setq query params))
+        (t
+         (when payload
+           (error "PARAMS and PAYLOAD are mutually exclusive for METHOD %S"
+                  method))
+         (setq payload params)))
+  (when payload
+    (unless (stringp payload)
+      (setq payload (json-encode-list payload)))
+    (setq payload (encode-coding-string payload 'utf-8)))
+  (when (or callback errorback)
+    (setq noerror t))
+  (ghub--retrieve
+   payload
+   ;; #35: Encode in case caller used (symbol-name 'GET).
+   (list :method     (encode-coding-string method 'utf-8)
+         :headers    headers
+         :unpaginate unpaginate
+         :noerror    noerror
+         :reader     reader
+         :username   username
+         :auth       auth
+         :host       host
+         :forge      forge
+         :callback   callback
+         :errorback  errorback
+         :url (concat "https://" host resource
+                      (and query (concat "?" (ghub--url-encode-params query))))
+         :value nil
+         :error nil
+         :extra nil)))
 
 (defun ghub-continue (args)
   "If there is a next page, then retrieve that.
@@ -369,12 +347,8 @@ additional properties.
 
 `:url' is the URL for the next page and is retrieved from the
   previous response header.  It replaces the optional RESOURCE,
-  PARAMS and QUERY arguments.  This keyword argument is more
-  important than the others in that it signals to `ghub-request'
-  that it is being called recursively, in which case it ignores
-  some of its the other arguments, using the ones describe here
-  instead.
-`:method' replaces `ghub-request's mandatory METHOD argument.
+  PARAMS and QUERY arguments.
+`:method' replaces `ghub-request's non-keyword METHOD argument.
 `:value' contains the value that was collected so far.
 `:extra' can be used to pass additional information from one
   callback to its next incarnation.  This is the only property
@@ -382,7 +356,7 @@ additional properties.
   additional properties.  Setting `:extra' (and only that) in
   the initial call to `ghub-request' is allowed."
   (and (assq 'next (ghub-response-link-relations))
-       (or (apply #'ghub-request nil nil nil args) t)))
+       (or (ghub--retrieve nil args) t)))
 
 (cl-defun ghub-wait (resource &optional duration &key username auth host)
   "Busy-wait up to DURATION seconds for RESOURCE to become available.
@@ -424,6 +398,25 @@ in `ghub-response-headers'."
                       (split-string rels ", ")))))
 
 ;;;; Internal
+
+(cl-defun ghub--retrieve (payload (&rest args &key method headers
+                                         username auth host forge
+                                         callback errorback url
+                                         &allow-other-keys))
+  (let ((url-request-extra-headers
+         `(("Content-Type" . "application/json")
+           ,@(and (not (eq auth 'none))
+                  (list (ghub--auth host auth username forge)))
+           ,@headers))
+        (url-request-method method)
+        (url-request-data payload))
+    (if (or callback errorback)
+        (url-retrieve url 'ghub--handle-response (list args))
+      (with-current-buffer
+          (let ((url-registered-auth-schemes
+                 '(("basic" ghub--basic-auth-errorback . 10))))
+            (url-retrieve-synchronously url))
+        (ghub--handle-response (car url-callback-arguments) args)))))
 
 (defun ghub--handle-response (status args)
   (let ((buffer (current-buffer)))

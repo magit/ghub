@@ -7,7 +7,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 1.3.0 (v1.3.0-98-gf4b5c8a+1)
+#+SUBTITLE: for version 1.3.0 (v1.3.0-99-g60069a0+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -31,7 +31,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-98-gf4b5c8a+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-99-g60069a0+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -524,9 +524,6 @@ latter is documented at https://developer.github.com/v3.
     4. A plist containing arguments that have to be passed to
        ~ghub-continue~ (which see) to retrieve the next page.
 
-  The remaining arguments are intended for internal use only.  They
-  are provided by ~ghub-continue~ (which see) to fetch another page.
-
 - Function: ghub-continue args
 
   If there is a next page, then this function retrieves that.
@@ -540,22 +537,15 @@ latter is documented at https://developer.github.com/v3.
   The forth argument is a plist and its value should be used as
   the argument to this function.  The plist contains most but
   not all of the keyword arguments of ~ghub-request~ and a few
-  additional properties.
+  additional properties required by internal ~ghub--retrieve~.
 
   - ~:url~ is the URL for the next page and is retrieved from the
     previous response header.  It replaces the optional RESOURCE,
-    PARAMS and QUERY arguments.  This keyword argument is more
-    important than the others in that it signals to ~ghub-request~
-    that it is being called recursively, in which case it ignores
-    some of its the other arguments, using the ones describe here
-    instead.
-  - ~:method~ replaces ~ghub-request~'s mandatory METHOD argument.
+    PARAMS and QUERY arguments.
+  - ~:method~ replaces ~ghub-request~'s non-keyword METHOD argument.
   - ~:value~ contains the value that was collected so far.
   - ~:extra~ can be used to pass additional information from one
-    callback to its next incarnation.  This is the only property
-    whose value callbacks may change.  Callback must not add any
-    additional properties.  Setting ~:extra~ (and only that) in
-    the initial call to `ghub-request' is allowed."
+    callback to its next incarnation.
 
 - Variable: ghub-response-headers
 

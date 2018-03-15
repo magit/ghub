@@ -30,7 +30,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 1.3.0 (v1.3.0-98-gf4b5c8a+1)
+@subtitle for version 1.3.0 (v1.3.0-99-g60069a0+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -61,7 +61,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-98-gf4b5c8a+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-99-g60069a0+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -660,9 +660,6 @@ A plist containing arguments that have to be passed to
 @code{ghub-continue} (which see) to retrieve the next page.
 @end itemize
 @end itemize
-
-The remaining arguments are intended for internal use only.  They
-are provided by @code{ghub-continue} (which see) to fetch another page.
 @end defun
 
 @defun ghub-continue args
@@ -678,30 +675,23 @@ Callbacks are called with four arguments (see @code{ghub-request}).
 The forth argument is a plist and its value should be used as
 the argument to this function.  The plist contains most but
 not all of the keyword arguments of @code{ghub-request} and a few
-additional properties.
+additional properties required by internal @code{ghub--retrieve}.
 
 @itemize
 @item
 @code{:url} is the URL for the next page and is retrieved from the
 previous response header.  It replaces the optional RESOURCE,
-PARAMS and QUERY arguments.  This keyword argument is more
-important than the others in that it signals to @code{ghub-request}
-that it is being called recursively, in which case it ignores
-some of its the other arguments, using the ones describe here
-instead.
+PARAMS and QUERY arguments.
 
 @item
-@code{:method} replaces @code{ghub-request}'s mandatory METHOD argument.
+@code{:method} replaces @code{ghub-request}'s non-keyword METHOD argument.
 
 @item
 @code{:value} contains the value that was collected so far.
 
 @item
 @code{:extra} can be used to pass additional information from one
-callback to its next incarnation.  This is the only property
-whose value callbacks may change.  Callback must not add any
-additional properties.  Setting @code{:extra} (and only that) in
-the initial call to `ghub-request' is allowed."
+callback to its next incarnation.
 @end itemize
 @end defun
 
