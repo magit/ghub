@@ -30,7 +30,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 1.3.0 (v1.3.0-99-g60069a0+1)
+@subtitle for version 1.3.0 (v1.3.0-101-g1c7df7e+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -61,7 +61,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-99-g60069a0+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-101-g1c7df7e+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -656,8 +656,8 @@ property holds the same information as ERRORBACK's first
 argument.
 
 @item
-A plist containing arguments that have to be passed to
-@code{ghub-continue} (which see) to retrieve the next page.
+A @code{ghub--req} struct, which can be passed to @code{ghub-continue}
+(which see) to retrieve the next page, if any.
 @end itemize
 @end itemize
 @end defun
@@ -672,27 +672,42 @@ the result will be loaded into is returned, or t if the process
 has already completed.  Otherwise nil is returned.
 
 Callbacks are called with four arguments (see @code{ghub-request}).
-The forth argument is a plist and its value should be used as
-the argument to this function.  The plist contains most but
-not all of the keyword arguments of @code{ghub-request} and a few
-additional properties required by internal @code{ghub--retrieve}.
+The forth argument is a @code{ghub--req} struct, intended to be passed
+to this function.  A callbacks may use the struct's @code{extra} slot
+to pass additional information to the callback that will be called
+after the next request.  Use the function @code{ghub-req-extra} to get
+and set the value of that slot.
 
-@itemize
-@item
-@code{:url} is the URL for the next page and is retrieved from the
-previous response header.  It replaces the optional RESOURCE,
-PARAMS and QUERY arguments.
+As an example, using @code{ghub-continue} in a callback like so:
 
-@item
-@code{:method} replaces @code{ghub-request}'s non-keyword METHOD argument.
+@lisp
+(ghub-get "/users/tarsius/repos" nil
+          :callback (lambda (value _headers _status req)
+                      (unless (ghub-continue req)
+                        (setq my-value value))))
+@end lisp
 
-@item
-@code{:value} contains the value that was collected so far.
+is equivalent to:
 
-@item
-@code{:extra} can be used to pass additional information from one
-callback to its next incarnation.
-@end itemize
+@lisp
+(ghub-get "/users/tarsius/repos" nil
+          :unpaginate t
+          :callback (lambda (value _headers _status _req)
+                      (setq my-value value)))
+@end lisp
+
+To demonstrate how to pass information from one callback to the
+next, here we record when we start fetching each page:
+
+@lisp
+(ghub-get "/users/tarsius/repos" nil
+          :extra (list (current-time))
+          :callback (lambda (value _headers _status req)
+                      (push (current-time) (ghub-req-extra req))
+                      (unless (ghub-continue req)
+                        (setq my-times (ghub-req-extra req))
+                        (setq my-value value))))
+@end lisp
 @end defun
 
 @defvar ghub-response-headers
