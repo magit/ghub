@@ -315,14 +315,10 @@ Both callbacks are called with four arguments.
    payload
    ;; #35: Encode in case caller used (symbol-name 'GET).
    (list :method     (encode-coding-string method 'utf-8)
-         :headers    headers
+         :headers    (ghub--headers headers host auth username forge)
          :unpaginate unpaginate
          :noerror    noerror
          :reader     reader
-         :username   username
-         :auth       auth
-         :host       host
-         :forge      forge
          :callback   callback
          :errorback  errorback
          :url (concat "https://" host resource
@@ -400,14 +396,11 @@ in `ghub-response-headers'."
 ;;;; Internal
 
 (cl-defun ghub--retrieve (payload (&rest args &key method headers
-                                         username auth host forge
                                          callback errorback url
                                          &allow-other-keys))
   (let ((url-request-extra-headers
-         `(("Content-Type" . "application/json")
-           ,@(and (not (eq auth 'none))
-                  (list (ghub--auth host auth username forge)))
-           ,@headers))
+         (let ((headers (ghub--req-headers req)))
+           (if (functionp headers) (funcall headers) headers)))
         (url-request-method method)
         (url-request-data payload))
     (if (or callback errorback)
@@ -490,8 +483,8 @@ in `ghub-response-headers'."
               (signal symb data))))
       payload)))
 
-(defun ghub--handle-response-payload (args)
-  (funcall (or (plist-get args :reader)
+(defun ghub--handle-response-payload (req)
+  (funcall (or (ghub--req-reader req)
                'ghub--read-json-payload)
            url-http-response-status))
 
@@ -549,7 +542,7 @@ SCOPES are the scopes the token is given access to."
                         ","))
             "," t "[\s\t]+"))))
   (let ((user (ghub--ident username package)))
-    (cl-destructuring-bind (_save token)
+    (cl-destructuring-bind (save token)
         (ghub--auth-source-get (list :save-function :secret)
           :create t :host host :user user
           :secret
@@ -559,6 +552,7 @@ SCOPES are the scopes the token is given access to."
                       `((scopes . ,scopes)
                         (note   . ,(ghub--ident-github package)))
                       :username username :auth 'basic :host host))))
+      (funcall save)
       ;; If the Auth-Source cache contains the information that there
       ;; is no value, then setting the value does not invalidate that
       ;; now incorrect information.
@@ -582,6 +576,20 @@ has to provide several values including their password."
     scopes))
 
 ;;;; Internal
+
+(defun ghub--headers (headers host auth username forge)
+  (push (cons "Content-Type" "application/json") headers)
+  (if (eq auth 'none)
+      headers
+    (unless (or username (stringp auth))
+      (setq username (ghub--username host forge)))
+    (lambda ()
+      (if (eq auth 'basic)
+          (if (eq forge 'gitlab)
+              (error "Gitlab does not support basic authentication")
+            (cons (cons "Authorization" (ghub--basic-auth host username))
+                  headers))
+        (cons (ghub--auth host auth username forge) headers)))))
 
 (defun ghub--auth (host auth &optional username forge)
   (unless username
@@ -633,8 +641,10 @@ has to provide several values including their password."
         nil))))
 
 (defun ghub--token (host username package &optional nocreate forge)
-  (let ((user (ghub--ident username package)))
-    (or (ghub--auth-source-get :secret :host host :user user)
+  (let* ((user (ghub--ident username package))
+         (token (car (ghub--auth-source-get (list :secret)
+                       :host host :user user))))
+    (or (if (functionp token) (funcall token) token)
         (progn
           ;; Auth-Source caches the information that there is no
           ;; value, but in our case that is a situation that needs
@@ -773,14 +783,12 @@ WARNING: The token will be stored unencrypted in %S.
     (setq ghub--2fa-cache (cons code (current-time)))
     (number-to-string code)))
 
-(defun ghub--auth-source-get (key:s &rest spec)
+(defun ghub--auth-source-get (keys &rest spec)
   (declare (indent 1))
   (let ((plist (car (apply #'auth-source-search :max 1 spec))))
-    (cl-flet ((value (k) (let ((v (plist-get plist k)))
-                           (if (functionp v) (funcall v) v))))
-      (if (listp key:s)
-          (mapcar #'value key:s)
-        (value key:s)))))
+    (mapcar (lambda (k)
+              (plist-get plist k))
+            keys)))
 
 (advice-add 'auth-source-netrc-parse-next-interesting :around
             'auth-source-netrc-parse-next-interesting@save-match-data)
