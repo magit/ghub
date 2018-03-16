@@ -123,6 +123,7 @@ response header in this variable.")
 
 (cl-defun ghub-graphql (graphql &optional variables
                                 &key username auth host
+                                silent
                                 callback errorback extra)
   "Make a GraphQL request using GRAPHQL and VARIABLES.
 Return the response as a json-like alist.  Even if the response
@@ -134,90 +135,97 @@ behave like for `ghub-request' (which see)."
   (ghub-request "POST" "/graphql" nil :payload
                 (json-encode `(("query" . ,graphql)
                                ,@(and variables `(("variables" ,@variables)))))
+                :silent silent
                 :username username :auth auth :host host
                 :callback callback :errorback errorback :extra extra))
 
 (cl-defun ghub-head (resource &optional params
                               &key query payload headers
-                              unpaginate noerror reader
+                              silent unpaginate noerror reader
                               username auth host
                              callback errorback extra)
   "Make a `HEAD' request for RESOURCE, with optional query PARAMS.
 Like calling `ghub-request' (which see) with \"HEAD\" as METHOD."
   (ghub-request "HEAD" resource params
                 :query query :payload payload :headers headers
-                :unpaginate unpaginate :noerror noerror :reader reader
+                :silent silent :unpaginate unpaginate
+                :noerror noerror :reader reader
                 :username username :auth auth :host host
                 :callback callback :errorback errorback :extra extra))
 
 (cl-defun ghub-get (resource &optional params
                              &key query payload headers
-                             unpaginate noerror reader
+                             silent unpaginate noerror reader
                              username auth host
                              callback errorback extra)
   "Make a `GET' request for RESOURCE, with optional query PARAMS.
 Like calling `ghub-request' (which see) with \"GET\" as METHOD."
   (ghub-request "GET" resource params
                 :query query :payload payload :headers headers
-                :unpaginate unpaginate :noerror noerror :reader reader
+                :silent silent :unpaginate unpaginate
+                :noerror noerror :reader reader
                 :username username :auth auth :host host
                 :callback callback :errorback errorback :extra extra))
 
 (cl-defun ghub-put (resource &optional params
                              &key query payload headers
-                             unpaginate noerror reader
+                             silent unpaginate noerror reader
                              username auth host
                              callback errorback extra)
   "Make a `PUT' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"PUT\" as METHOD."
   (ghub-request "PUT" resource params
                 :query query :payload payload :headers headers
-                :unpaginate unpaginate :noerror noerror :reader reader
+                :silent silent :unpaginate unpaginate
+                :noerror noerror :reader reader
                 :username username :auth auth :host host
                 :callback callback :errorback errorback :extra extra))
 
 (cl-defun ghub-post (resource &optional params
                               &key query payload headers
-                              unpaginate noerror reader
+                              silent unpaginate noerror reader
                               username auth host
                               callback errorback extra)
   "Make a `POST' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"POST\" as METHOD."
   (ghub-request "POST" resource params
                 :query query :payload payload :headers headers
-                :unpaginate unpaginate :noerror noerror :reader reader
+                :silent silent :unpaginate unpaginate
+                :noerror noerror :reader reader
                 :username username :auth auth :host host
                 :callback callback :errorback errorback :extra extra))
 
 (cl-defun ghub-patch (resource &optional params
                                &key query payload headers
-                               unpaginate noerror reader
+                               silent unpaginate noerror reader
                                username auth host
                                callback errorback extra)
   "Make a `PATCH' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"PATCH\" as METHOD."
   (ghub-request "PATCH" resource params
                 :query query :payload payload :headers headers
-                :unpaginate unpaginate :noerror noerror :reader reader
+                :silent silent :unpaginate unpaginate
+                :noerror noerror :reader reader
                 :username username :auth auth :host host
                 :callback callback :errorback errorback :extra extra))
 
 (cl-defun ghub-delete (resource &optional params
                                 &key query payload headers
-                                unpaginate noerror reader
+                                silent unpaginate noerror reader
                                 username auth host
                                 callback errorback extra)
   "Make a `DELETE' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
   (ghub-request "DELETE" resource params
                 :query query :payload payload :headers headers
-                :unpaginate unpaginate :noerror noerror :reader reader
+                :silent silent :unpaginate unpaginate
+                :noerror noerror :reader reader
                 :username username :auth auth :host host
                 :callback callback :errorback errorback :extra extra))
 
 (cl-defun ghub-request (method resource &optional params
                                &key query payload headers
-                               unpaginate noerror reader
+                               silent unpaginate noerror reader
                                username auth host forge
                                callback errorback extra)
   "Make a request for RESOURCE and return the response body.
@@ -244,6 +252,9 @@ Use HEADERS for those rare resources that require that the data
   is transmitted as headers instead of as a query or payload.
   When that is the case, then the API documentation usually
   mentions it explicitly.
+
+If SILENT is non-nil, then don't message progress reports and
+  the like.
 
 If UNPAGINATE is t, then make as many requests as necessary to
   get all values.  If UNPAGINATE is a natural number, then get
@@ -340,6 +351,7 @@ Both callbacks are called with four arguments.
    (let ((req (ghub--make-req
                :type         "https"
                :fullness     t
+               :silent       silent
                :asynchronous t
                ;; Encode in case caller used (symbol-name 'GET). #35
                :method       (encode-coding-string method 'utf-8)

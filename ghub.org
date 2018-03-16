@@ -7,7 +7,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 1.3.0 (v1.3.0-101-g1c7df7e+1)
+#+SUBTITLE: for version 1.3.0 (v1.3.0-102-g4819141+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -31,7 +31,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-101-g1c7df7e+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-102-g4819141+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -455,6 +455,9 @@ latter is documented at https://developer.github.com/v3.
       is transmitted as headers instead of as a query or payload.
       When that is the case, then the Github API documentation usually
       mentions it explicitly.
+
+  - If SILENT is non-nil, then progress reports and the like are not
+    messaged.
 
   - If UNPAGINATE is t, then this function make as many requests as
     necessary to get all values.  If UNPAGINATE is a natural number,
