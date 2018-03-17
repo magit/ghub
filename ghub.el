@@ -465,11 +465,11 @@ in `ghub-response-headers'."
                 (let ((callback  (ghub--req-callback req))
                       (errorback (ghub--req-errorback req))
                       (err       (plist-get status :error)))
-                  (if (or callback errorback)
-                      (if (and err errorback)
-                          (funcall errorback err headers status req)
-                        (funcall callback  value headers status req))
-                    value)))))
+                  (cond ((and err errorback)
+                         (funcall errorback err headers status req))
+                        (callback
+                         (funcall callback value headers status req))
+                        (t value))))))
       (when (buffer-live-p buffer)
         (kill-buffer buffer)))))
 
