@@ -89,9 +89,11 @@ used instead.")
 ;;; Request
 ;;;; Object
 
-(cl-defstruct (ghub--req (:include url)
-                         (:constructor ghub--make-req)
-                         (:copier nil))
+(cl-defstruct (ghub--req
+               (:constructor ghub--make-req)
+               (:copier nil))
+  (url        nil :read-only nil)
+  (silent     nil :read-only t)
   (method     nil :read-only t)
   (headers    nil :read-only t)
   (unpaginate nil :read-only nil)
@@ -103,13 +105,6 @@ used instead.")
   (extra      nil :read-only nil))
 
 (defalias 'ghub-req-extra 'ghub--req-extra)
-
-(defun ghub--req-set-url (req url)
-  (setq url (url-generic-parse-url url))
-  (setf (url-host req)
-        (url-host url))
-  (setf (url-filename req)
-        (url-filename url)))
 
 ;;;; API
 
@@ -348,24 +343,20 @@ Both callbacks are called with four arguments.
     (setq noerror t))
   (ghub--retrieve
    payload
-   (let ((req (ghub--make-req
-               :type         "https"
-               :fullness     t
-               :silent       silent
-               :asynchronous t
-               ;; Encode in case caller used (symbol-name 'GET). #35
-               :method       (encode-coding-string method 'utf-8)
-               :headers      (ghub--headers headers host auth username forge)
-               :unpaginate   unpaginate
-               :noerror      noerror
-               :reader       reader
-               :callback     callback
-               :errorback    errorback
-               :extra        extra)))
-     (ghub--req-set-url
-      req (concat "https://" host resource
+   (ghub--make-req
+    :url (url-generic-parse-url
+          (concat "https://" host resource
                   (and query (concat "?" (ghub--url-encode-params query)))))
-     req)))
+    :silent silent
+    ;; Encode in case caller used (symbol-name 'GET). #35
+    :method     (encode-coding-string method 'utf-8)
+    :headers    (ghub--headers headers host auth username forge)
+    :unpaginate unpaginate
+    :noerror    noerror
+    :reader     reader
+    :callback   callback
+    :errorback  errorback
+    :extra      extra)))
 
 (defun ghub-continue (req)
   "If there is a next page, then retrieve that.
@@ -431,14 +422,15 @@ in `ghub-response-headers'."
            (if (functionp headers) (funcall headers) headers)))
         (url-request-method (ghub--req-method req))
         (url-request-data payload)
+        (url (ghub--req-url req))
         (silent (ghub--req-silent req)))
     (if (or (ghub--req-callback  req)
             (ghub--req-errorback req))
-        (url-retrieve req 'ghub--handle-response (list req) silent)
+        (url-retrieve url 'ghub--handle-response (list req) silent)
       (with-current-buffer
           (let ((url-registered-auth-schemes
                  '(("basic" ghub--basic-auth-errorback . 10))))
-            (url-retrieve-synchronously req silent))
+            (url-retrieve-synchronously url silent))
         (ghub--handle-response (car url-callback-arguments) req)))))
 
 (defun ghub--handle-response (status req)
@@ -455,7 +447,8 @@ in `ghub-response-headers'."
                                                headers)))))
             (when (numberp unpaginate)
               (cl-decf unpaginate))
-            (ghub--req-set-url req next)
+            (setf (ghub--req-url req)
+                  (url-generic-parse-url next))
             (setf (ghub--req-value req) value)
             (setf (ghub--req-unpaginate req) unpaginate)
             (or (and next
@@ -487,7 +480,7 @@ in `ghub-response-headers'."
     (unless url-http-end-of-headers
       (error "BUG: missing headers %s" (plist-get status :error)))
     (goto-char (1+ url-http-end-of-headers))
-    (if (url-asynchronous req)
+    (if (url-asynchronous (ghub--req-url req))
         (setq-local ghub-response-headers headers)
       (setq-default ghub-response-headers headers))
     headers))
