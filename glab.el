@@ -121,7 +121,7 @@ Like calling `ghub-request' (which see) with `gitlab' as FORGE."
                 :unpaginate unpaginate :noerror noerror :reader reader
                 :username username :auth auth :host host))
 
-;;; glab.el ends soon
+;;; _
 (provide 'glab)
 ;; Local Variables:
 ;; indent-tabs-mode: nil

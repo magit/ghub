@@ -822,7 +822,7 @@ won't see the secret from a line that is followed by a commented
 line."
   (save-match-data (funcall fn)))
 
-;;; ghub.el ends soon
+;;; _
 (provide 'ghub)
 ;; Local Variables:
 ;; indent-tabs-mode: nil
