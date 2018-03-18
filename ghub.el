@@ -138,7 +138,7 @@ behave like for `ghub-request' (which see)."
                               &key query payload headers
                               silent unpaginate noerror reader
                               username auth host
-                             callback errorback extra)
+                              callback errorback extra)
   "Make a `HEAD' request for RESOURCE, with optional query PARAMS.
 Like calling `ghub-request' (which see) with \"HEAD\" as METHOD."
   (ghub-request "HEAD" resource params
