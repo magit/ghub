@@ -430,14 +430,15 @@ in `ghub-response-headers'."
          (let ((headers (ghub--req-headers req)))
            (if (functionp headers) (funcall headers) headers)))
         (url-request-method (ghub--req-method req))
-        (url-request-data payload))
+        (url-request-data payload)
+        (silent (ghub--req-silent req)))
     (if (or (ghub--req-callback  req)
             (ghub--req-errorback req))
-        (url-retrieve req 'ghub--handle-response (list req))
+        (url-retrieve req 'ghub--handle-response (list req) silent)
       (with-current-buffer
           (let ((url-registered-auth-schemes
                  '(("basic" ghub--basic-auth-errorback . 10))))
-            (url-retrieve-synchronously req))
+            (url-retrieve-synchronously req silent))
         (ghub--handle-response (car url-callback-arguments) req)))))
 
 (defun ghub--handle-response (status req)
