@@ -40,86 +40,107 @@
 
 (cl-defun glab-head (resource &optional params
                               &key query payload headers
-                              unpaginate noerror reader
-                              username auth host)
+                              silent unpaginate noerror reader
+                              username auth host
+                              callback errorback extra)
   "Make a `HEAD' request for RESOURCE, with optional query PARAMS.
 Like calling `ghub-request' (which see) with \"HEAD\" as METHOD
 and `gitlab' as FORGE."
   (ghub-request "HEAD" resource params :forge 'gitlab
                 :query query :payload payload :headers headers
-                :unpaginate unpaginate :noerror noerror :reader reader
-                :username username :auth auth :host host))
+                :silent silent :unpaginate unpaginate
+                :noerror noerror :reader reader
+                :username username :auth auth :host host
+                :callback callback :errorback errorback :extra extra))
 
 (cl-defun glab-get (resource &optional params
                              &key query payload headers
-                             unpaginate noerror reader
-                             username auth host)
+                             silent unpaginate noerror reader
+                             username auth host
+                             callback errorback extra)
   "Make a `GET' request for RESOURCE, with optional query PARAMS.
 Like calling `ghub-request' (which see) with \"GET\" as METHOD
 and `gitlab' as FORGE."
   (ghub-request "GET" resource params :forge 'gitlab
                 :query query :payload payload :headers headers
-                :unpaginate unpaginate :noerror noerror :reader reader
-                :username username :auth auth :host host))
+                :silent silent :unpaginate unpaginate
+                :noerror noerror :reader reader
+                :username username :auth auth :host host
+                :callback callback :errorback errorback :extra extra))
 
 (cl-defun glab-put (resource &optional params
                              &key query payload headers
-                             unpaginate noerror reader
-                             username auth host)
+                             silent unpaginate noerror reader
+                             username auth host
+                             callback errorback extra)
   "Make a `PUT' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"PUT\" as METHOD
 and `gitlab' as FORGE."
   (ghub-request "PUT" resource params :forge 'gitlab
                 :query query :payload payload :headers headers
-                :unpaginate unpaginate :noerror noerror :reader reader
-                :username username :auth auth :host host))
+                :silent silent :unpaginate unpaginate
+                :noerror noerror :reader reader
+                :username username :auth auth :host host
+                :callback callback :errorback errorback :extra extra))
 
 (cl-defun glab-post (resource &optional params
                               &key query payload headers
-                              unpaginate noerror reader
-                              username auth host)
+                              silent unpaginate noerror reader
+                              username auth host
+                              callback errorback extra)
   "Make a `POST' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"POST\" as METHOD
 and `gitlab' as FORGE."
   (ghub-request "POST" resource params :forge 'gitlab
                 :query query :payload payload :headers headers
-                :unpaginate unpaginate :noerror noerror :reader reader
-                :username username :auth auth :host host))
+                :silent silent :unpaginate unpaginate
+                :noerror noerror :reader reader
+                :username username :auth auth :host host
+                :callback callback :errorback errorback :extra extra))
 
 (cl-defun glab-patch (resource &optional params
                                &key query payload headers
-                               unpaginate noerror reader
-                               username auth host)
+                               silent unpaginate noerror reader
+                               username auth host
+                               callback errorback extra)
   "Make a `PATCH' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"PATCH\" as METHOD
 and `gitlab' as FORGE."
   (ghub-request "PATCH" resource params :forge 'gitlab
                 :query query :payload payload :headers headers
-                :unpaginate unpaginate :noerror noerror :reader reader
-                :username username :auth auth :host host))
+                :silent silent :unpaginate unpaginate
+                :noerror noerror :reader reader
+                :username username :auth auth :host host
+                :callback callback :errorback errorback :extra extra))
 
 (cl-defun glab-delete (resource &optional params
                                 &key query payload headers
-                                unpaginate noerror reader
-                                username auth host)
+                                silent unpaginate noerror reader
+                                username auth host
+                                callback errorback extra)
   "Make a `DELETE' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"DELETE\" as METHOD
 and `gitlab' as FORGE."
   (ghub-request "DELETE" resource params :forge 'gitlab
                 :query query :payload payload :headers headers
-                :unpaginate unpaginate :noerror noerror :reader reader
-                :username username :auth auth :host host))
+                :silent silent :unpaginate unpaginate
+                :noerror noerror :reader reader
+                :username username :auth auth :host host
+                :callback callback :errorback errorback :extra extra))
 
 (cl-defun glab-request (method resource &optional params
                                &key query payload headers
-                               unpaginate noerror reader
-                               username auth host)
+                               silent unpaginate noerror reader
+                               username auth host forge
+                               callback errorback extra)
   "Make a request for RESOURCE and return the response body.
 Like calling `ghub-request' (which see) with `gitlab' as FORGE."
   (ghub-request method resource params :forge 'gitlab
                 :query query :payload payload :headers headers
-                :unpaginate unpaginate :noerror noerror :reader reader
-                :username username :auth auth :host host))
+                :silent silent :unpaginate unpaginate
+                :noerror noerror :reader reader
+                :username username :auth auth :host host
+                :callback callback :errorback errorback :extra extra))
 
 ;;; _
 (provide 'glab)
