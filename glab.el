@@ -131,7 +131,7 @@ and `gitlab' as FORGE."
 (cl-defun glab-request (method resource &optional params
                                &key query payload headers
                                silent unpaginate noerror reader
-                               username auth host forge
+                               username auth host
                                callback errorback extra)
   "Make a request for RESOURCE and return the response body.
 Like calling `ghub-request' (which see) with `gitlab' as FORGE."
