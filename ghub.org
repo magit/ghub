@@ -7,7 +7,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 1.3.0 (v1.3.0-113-g041d3ad+1)
+#+SUBTITLE: for version 1.3.0 (v1.3.0-114-g4213132+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -31,7 +31,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-113-g041d3ad+1).
+This manual is for Ghub version 1.3.0 (v1.3.0-114-g4213132+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -793,9 +793,9 @@ maintained in the same repository, but it is distributed as a separate
 package.
 
 When accessing Gitlab.com or another Gitlab instance, use ~glab-request~
-instead of ~ghub-request~, ~glab-get~ instead of ~ghub-request~, etc.
-Likewise use the Git variables in the ~gitlab~ group instead of those in
-the ~github~ group, i.e.  ~gitlab.user~, ~gitlab.HOST.user~ and ~gitlab.host~.
+instead of ~ghub-request~, ~glab-get~ instead of ~ghub-get~, etc.  Likewise
+use the Git variables in the ~gitlab~ group instead of those in the
+~github~ group, i.e.  ~gitlab.user~, ~gitlab.HOST.user~ and ~gitlab.host~.
 
 The Gitlab API cannot be used to create tokens, so Glab cannot provide
 a setup wizard like Ghub does.  As a consequence if the user makes a
