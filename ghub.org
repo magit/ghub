@@ -7,7 +7,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 2.0.0
+#+SUBTITLE: for version 2.0.0 (v2.0.0+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -31,7 +31,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 2.0.0.
+This manual is for Ghub version 2.0.0 (v2.0.0+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -472,9 +472,9 @@ latter is documented at https://developer.github.com/v3.
     error payload is returned instead of ~nil~.
 
   - If READER is non-nil, then it is used to read and return from the
-    response buffer.  The default is ~ghub--read-json-response~.  For
-    the very few resources that do not return json, you might want to
-    use ~ghub--read-raw-response~.
+    response buffer.  The default is ~ghub--read-json-payload~.  For the
+    very few resources that do not return json, you might want to use
+    ~ghub--decode-payload~.
 
   - If USERNAME is non-nil, then the request is made on behalf of that
     user.  It is better to specify the user using the Git variable
