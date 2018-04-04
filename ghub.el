@@ -666,24 +666,25 @@ has to provide several values including their password."
 
 (defun ghub--token (host username package &optional nocreate forge)
   (let* ((user (ghub--ident username package))
-         (token (car (ghub--auth-source-get (list :secret)
-                       :host host :user user))))
-    (or (if (functionp token) (funcall token) token)
-        (progn
-          ;; Auth-Source caches the information that there is no
-          ;; value, but in our case that is a situation that needs
-          ;; fixing so we want to keep trying by invalidating that
-          ;; information.  The (:max 1) is needed for Emacs releases
-          ;; before 26.1.
-          (auth-source-forget (list :max 1 :host host :user
-          user))
-          (and (not nocreate)
-               (if (eq forge 'gitlab)
-                   (error
-                    (concat "Required Gitlab token does not exist.  See "
-                            "https://magit.vc/manual/ghub/Gitlab-Support.html "
-                            "for instructions."))
-                 (ghub--confirm-create-token host username package)))))))
+         (token
+          (or (car (ghub--auth-source-get (list :secret)
+                     :host host :user user))
+              (progn
+                ;; Auth-Source caches the information that there is no
+                ;; value, but in our case that is a situation that needs
+                ;; fixing so we want to keep trying by invalidating that
+                ;; information.  The (:max 1) is needed for Emacs releases
+                ;; before 26.1.
+                (auth-source-forget (list :max 1 :host host :user user))
+                (and (not nocreate)
+                     (if (eq forge 'gitlab)
+                         (error
+                          (concat
+                           "Required Gitlab token does not exist.  See "
+                           "https://magit.vc/manual/ghub/Gitlab-Support.html "
+                           "for instructions."))
+                       (ghub--confirm-create-token host username package)))))))
+    (if (functionp token) (funcall token) token)))
 
 (defun ghub--host (&optional forge)
   (if (eq forge 'gitlab)
