@@ -480,8 +480,8 @@ in `ghub-response-headers'."
     (unless url-http-end-of-headers
       (error "BUG: missing headers %s" (plist-get status :error)))
     (goto-char (1+ url-http-end-of-headers))
-    (if (or (ghub--req-callback req)
-            (ghub--req-errorback req))
+    (if (and req (or (ghub--req-callback req)
+                     (ghub--req-errorback req)))
         (setq-local ghub-response-headers headers)
       (setq-default ghub-response-headers headers))
     headers))
