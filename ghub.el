@@ -576,7 +576,11 @@ SCOPES are the scopes the token is given access to."
                       `((scopes . ,scopes)
                         (note   . ,(ghub--ident-github package)))
                       :username username :auth 'basic :host host))))
-      (funcall save)
+      ;; Build-in back-ends return a function that does the actual
+      ;; saving, while for some third-party back-ends ":create t"
+      ;; is enough.
+      (when (functionp save)
+        (funcall save))
       ;; If the Auth-Source cache contains the information that there
       ;; is no value, then setting the value does not invalidate that
       ;; now incorrect information.
