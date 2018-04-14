@@ -427,6 +427,13 @@ in `ghub-response-headers'."
     (if (or (ghub--req-callback  req)
             (ghub--req-errorback req))
         (url-retrieve url 'ghub--handle-response (list req) silent)
+      ;; When this function has already been called, then it is a
+      ;; no-op.  Otherwise it sets `url-registered-auth-schemes' among
+      ;; other things.  If we didn't ensure that it has been run, then
+      ;; `url-retrieve-synchronously' would do it, which would cause
+      ;; the value that we let-bind below to be overwritten, and the
+      ;; "default" value to be lost outside the let-binding.
+      (url-do-setup)
       (with-current-buffer
           (let ((url-registered-auth-schemes
                  '(("basic" ghub--basic-auth-errorback . 10))))
