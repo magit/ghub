@@ -7,7 +7,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 2.0.0 (v2.0.0+1)
+#+SUBTITLE: for version 2.0.0 (v2.0.0-4-g21c9e94+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -31,7 +31,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 2.0.0 (v2.0.0+1).
+This manual is for Ghub version 2.0.0 (v2.0.0-4-g21c9e94+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -281,8 +281,13 @@ variables should document what the various scopes are needed for.
 To create or edit a token go to https://github.com/settings/tokens.
 For Gitlab.com use https://gitlab.com/profile/personal_access_tokens.
 
-Finally store the token in a place where Ghub looks for it, as described
-in [[*How Ghub uses Auth-Source]].
+Finally store the token in a place where Ghub looks for it, as
+described in [[*How Ghub uses Auth-Source]].
+
+If you store the token in a file like ~~/.authinfo~, then note that
+~auth-source~'s parsing of that file is brittle.  Make sure the file
+ends with a newline character, that there are no empty or invalid
+lines, and that all comments are prefixed with ~#~.
 
 ** How Ghub uses Auth-Source
 

@@ -30,7 +30,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 2.0.0 (v2.0.0+1)
+@subtitle for version 2.0.0 (v2.0.0-4-g21c9e94+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -61,7 +61,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 @noindent
-This manual is for Ghub version 2.0.0 (v2.0.0+1).
+This manual is for Ghub version 2.0.0 (v2.0.0-4-g21c9e94+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -363,8 +363,13 @@ variables should document what the various scopes are needed for.
 To create or edit a token go to @uref{https://github.com/settings/tokens}.
 For Gitlab.com use @uref{https://gitlab.com/profile/personal_access_tokens}.
 
-Finally store the token in a place where Ghub looks for it, as described
-in @ref{How Ghub uses Auth-Source}.
+Finally store the token in a place where Ghub looks for it, as
+described in @ref{How Ghub uses Auth-Source}.
+
+If you store the token in a file like @code{~/.authinfo}, then note that
+@code{auth-source}'s parsing of that file is brittle.  Make sure the file
+ends with a newline character, that there are no empty or invalid
+lines, and that all comments are prefixed with @code{#}.
 
 @node How Ghub uses Auth-Source
 @section How Ghub uses Auth-Source
