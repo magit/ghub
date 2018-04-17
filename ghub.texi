@@ -30,7 +30,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 2.0.0 (v2.0.0-4-g21c9e94+1)
+@subtitle for version 2.0.0 (v2.0.0-7-g27e7b17+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -61,7 +61,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 @noindent
-This manual is for Ghub version 2.0.0 (v2.0.0-4-g21c9e94+1).
+This manual is for Ghub version 2.0.0 (v2.0.0-7-g27e7b17+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -159,9 +159,67 @@ to begin with.
 @node Getting Started
 @chapter Getting Started
 
-If you would like to use a package that uses this library, then just
-do so.  If the necessary information isn't available when it attempts
-to make a request, then you will be asked to provide it.
+Each package that uses Ghub uses its own token.  Despite that, changes
+are good that after successfully configuring one package you can just
+start using another package pretty much instantly.
+
+If the necessary token is not available when a package makes an API
+request, then a setup wizard pops up, and after answering a few
+questions you are good to go.  Even the request that caused the wizard
+to be summoned should succeed and for most users this should be true
+even when configuring the very first token.
+
+However, in some situations some manual configuration is necessary
+@strong{before} using the wizard, or the wizard cannot be used at all:
+
+@itemize
+@item
+If you don't want to use the wizard then you don't have to and can
+create tokens manually as describe in @ref{Manually Creating and Storing a Token}.
+
+
+@item
+If you want to access Gitlab.com or another Gitlab instance, then
+you have to create the token manually as describe in @ref{Manually Creating and Storing a Token}.
+
+
+@item
+If you want to access a Github Enterprise instance, then you have
+to tell Ghub about that before the wizard makes its appearance by
+setting the Git variable @code{github.host}.  You also have to tell Ghub
+your username for that instance using the variable @code{github.HOST.user}
+even if it is the same as on Github.com.
+
+
+@item
+If the variable @code{github.user} (or @code{github.HOST.user} for an Enterprise
+instance) is unset when the wizard is first summoned, then you are
+asked to provide your username.  That value is then stored @strong{globally}
+to avoid having to ask you that question once per repository.  If
+you have multiple accounts on Github.com (or an Enterprise
+instance), then you have to explicitly tell Ghub about that.  This
+can be done by setting the repository-local values of the
+appropriate variable @strong{before} the wizard is invoked.
+
+
+@item
+You might forget to do the above, which is why it is important to
+carefully read the output of the wizard.  If it turns out that you
+forgot to set a variable, then you must abort, set the variable, and
+repeat the request to trigger the wizard again.
+
+
+@item
+The setup wizard should work even if you have enabled two-factor
+authentication.  However it your Github Enterprise instance enforces
+Single Sign-On as an additional security measure, then you are out
+of luck and have to create the token manually as describe in
+@ref{Manually Creating and Storing a Token}.
+@end itemize
+
+The variables mentioned above — and others — are documented in
+@ref{Configuration Variables} and the setup wizard is documented in
+@ref{Interactively Creating and Storing a Token}.
 
 @menu
 * Setting the Username::
@@ -256,15 +314,16 @@ of the doubts that you might have:
 @item
 @code{Host} usually is "api.github.com" and that is usually what you want.
 If you are trying to access a Github Enterprise instance, then it
-should be something else and you have to set the value manually as
-described in the next section.
+should be something else and you have to set the value manually
+before the setup wizard is summoned, as described in the parent
+section.
 
 
 @item
 @code{User} should be your Github.com (or Github Enterprise instance)
-username.  If it is something else, then you made a mistake at the
-first prompt or during the step described in the previous section
-and have to refer to that in order to fix this issue.
+username.  If it is something else and it doesn't look like a simple
+typo, then you should read the parent section again.  In either case
+you have to abort.
 
 
 @item
