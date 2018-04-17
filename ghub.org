@@ -7,7 +7,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 2.0.0 (v2.0.0-7-g27e7b17+1)
+#+SUBTITLE: for version 2.0.0 (v2.0.0-8-g7f23879+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -31,7 +31,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 2.0.0 (v2.0.0-7-g27e7b17+1).
+This manual is for Ghub version 2.0.0 (v2.0.0-8-g7f23879+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -118,7 +118,7 @@ However, in some situations some manual configuration is necessary
 
 - If you want to access Gitlab.com or another Gitlab instance, then
   you have to create the token manually as describe in [[*Manually
-  Creating and Storing a Token]].
+  Creating and Storing a Token]].  Also see [[*Gitlab Support]].
 
 - If you want to access a Github Enterprise instance, then you have
   to tell Ghub about that before the wizard makes its appearance by
@@ -861,7 +861,7 @@ or the equivalent URL for another Gitlab instance.  To store the token
 locally, follow the instructions in [[*Manually Creating and Storing a
 Token]] and [[*How Ghub uses Auth-Source]].
 
-Packages can that use Glab, can define ~PACKAGE-gitlab-token-scopes~ for
+Packages that use Glab, can define ~PACKAGE-gitlab-token-scopes~ for
 documentation purposes.  But unlike ~PACKAGE-github-token-scopes~, which
 is used by the setup wizard this is optional.
 

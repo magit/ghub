@@ -30,7 +30,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 2.0.0 (v2.0.0-7-g27e7b17+1)
+@subtitle for version 2.0.0 (v2.0.0-8-g7f23879+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -61,7 +61,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 @noindent
-This manual is for Ghub version 2.0.0 (v2.0.0-7-g27e7b17+1).
+This manual is for Ghub version 2.0.0 (v2.0.0-8-g7f23879+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -180,7 +180,7 @@ create tokens manually as describe in @ref{Manually Creating and Storing a Token
 
 @item
 If you want to access Gitlab.com or another Gitlab instance, then
-you have to create the token manually as describe in @ref{Manually Creating and Storing a Token}.
+you have to create the token manually as describe in @ref{Manually Creating and Storing a Token}.  Also see @ref{Gitlab Support}.
 
 
 @item
@@ -1035,7 +1035,7 @@ can be created at @uref{https://gitlab.com/profile/personal_access_tokens},
 or the equivalent URL for another Gitlab instance.  To store the token
 locally, follow the instructions in @ref{Manually Creating and Storing a Token} and @ref{How Ghub uses Auth-Source}.
 
-Packages can that use Glab, can define @code{PACKAGE-gitlab-token-scopes} for
+Packages that use Glab, can define @code{PACKAGE-gitlab-token-scopes} for
 documentation purposes.  But unlike @code{PACKAGE-github-token-scopes}, which
 is used by the setup wizard this is optional.
 
