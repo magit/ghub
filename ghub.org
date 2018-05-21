@@ -70,10 +70,10 @@ Fancier interfaces can be implemented on top of Ghub, and one such
 wrapper — named simply Ghub+ — has already been implemented.  The
 benefit of basing various opinionated interfaces on top of a single
 library that provides only the core functionality is that choosing the
-programming interface does no longer also dictate how access tokens
-are handled.  Users can then use multiple packages that access the
-Github API without having to learn the various incompatible ways
-packages expect the appropriate token to be made available to them.
+programming interface no longer dictates how access tokens are
+handled.  Users can then use multiple packages that access the Github
+API without having to learn the various incompatible ways packages
+expect the appropriate token to be made available to them.
 
 Ghub uses the built-in ~auth-source~ library to store access tokens.
 That library is very flexible and supports multiple backends, which
@@ -90,12 +90,11 @@ of sharing a single token between all packages that rely on it.  That
 means that users cannot configure Ghub once and later start using a
 new package without any additional setup.  But Ghub helps with that.
 
-When the user invokes some command defined in some package and that
-ultimately results in ~ghub-request~ being called and the appropriate
-token is not available yet, then the user is guided through the
-process of creating and storing a new token, and at the end of that
-process the request is carried out as if the token had been available
-to begin with.
+When the user invokes some command that ultimately results in
+~ghub-request~ being called and the appropriate token is not available
+yet, then the user is guided through the process of creating and
+storing a new token, and at the end of that process the request is
+carried out as if the token had been available to begin with.
 
 * Getting Started
 
@@ -420,7 +419,7 @@ package not to do unwanted things.
 
 The scopes used by PACKAGE have to be defined using the variable
 ~PACKAGE-github-token-scopes~, and you have to tell ~ghub-request~ on
-behalf of what package a request is being made by passing the symbol
+behalf of which package a request is being made by passing the symbol
 PACKAGE as the value of its AUTH argument.
 
 #+BEGIN_SRC emacs-lisp
@@ -460,9 +459,9 @@ PACKAGE as the value of its AUTH argument.
   and to then post the output.
 
   It is to be expected that users will occasionally mess that up so
-  this command does not only output the scopes but also the user input
-  so that you can have greater confidence in the validity of the
-  user's answer.
+  this command outputs not only the scopes but also the user input so
+  that you can have greater confidence in the validity of the user's
+  answer.
 
   #+BEGIN_EXAMPLE
     Scopes for USERNAME^PACKAGE@HOST: (SCOPE...)
@@ -491,8 +490,8 @@ latter is documented at https://developer.github.com/v3.
   - PARAMS, QUERY, PAYLOAD and HEADERS are alists and are used to
     specify request data.  All these arguments are alists that
     resemble the json expected and returned by the Github API.  The
-    keys are symbols and the values are stored in the ~cdr~ (not the
-    ~cadr~) and can be strings, integers and lists of strings and
+    keys are symbols and the values stored in the ~cdr~ (not the
+    ~cadr~) can be strings, integers, or lists of strings and
     integers.
 
     The Github API documentation is vague on how data has to be
@@ -541,8 +540,8 @@ latter is documented at https://developer.github.com/v3.
     identify itself, using a symbol matching its name.
 
     Package authors who find this inconvenient should write a wrapper
-    around this function and possibly for the method specific
-    functions also.
+    around this function and possibly for the method-specific
+    functions as well.
 
     Beside ~nil~, some other symbols have a special meaning too.  ~none~
     means to make an unauthorized request.  ~basic~ means to make a
@@ -706,14 +705,14 @@ latter is documented at https://developer.github.com/v3.
 
   RESOURCE specifies the resource that this function waits for.
 
-  DURATION specifies for how many seconds to wait at most, defaulting
-  to 64 seconds.  Emacs will block during that time, but the user can
-  abort using ~C-g~.
+  DURATION specifies the maximum number of seconds to wait for,
+  defaulting to 64 seconds.  Emacs will block during that time, but
+  the user can abort using ~C-g~.
 
-  The first attempt is made immediately and often that will actually
-  succeed.  If not, then another attempt is made after two seconds,
-  and each subsequent attempt is made after waiting as long as we
-  already waited between all preceding attempts combined.
+  The first attempt is made immediately and will often succeed.  If
+  not, then another attempt is made after two seconds, and each
+  subsequent attempt is made after waiting as long as we already
+  waited between all preceding attempts combined.
 
   See ~ghub-request~'s documentation above for information about the
   other arguments.
@@ -747,16 +746,16 @@ latter is documented at https://developer.github.com/v3.
   the desired adjustments — that is easier.)
 
   This command reads, in order, the HOST (Github instance), the
-  USERNAME, the PACKAGE and the SCOPES in the minibuffer, providing
+  USERNAME, the PACKAGE, and the SCOPES in the minibuffer, providing
   reasonable default choices.  SCOPES defaults to the scopes that
   PACKAGE requests using the variable ~PACKAGE-github-token-scopes~.
 
 - Command: ghub-token-scopes
 
   Users are free to give a token access to fewer scopes than what the
-  respective package requested.  That can of course lead to issues and
-  package maintainers have to be able to quickly determine if such a
-  (mis-)configuration is the root cause when users report issues.
+  respective package requested.  That can, of course, lead to issues,
+  and package maintainers have to be able to quickly determine if such
+  a (mis-)configuration is the root cause when users report issues.
 
   This command reads the required values in the minibuffer and then
   shows a message containing these values along with the scopes of the
@@ -818,8 +817,8 @@ local machine, which is done using a lisp variable.
   . LOCAL-MACHINE)` there can only be one token identified by "Emacs
   package PACKAGE @ LOCAL-MACHINE"; Github does not allow multiple
   tokens with the same description because it uses the description as
-  the identifier.  (It could use some hash instead, but alas it does
-  not.)
+  the identifier (it could use some hash instead, but alas it does
+  not).
 
   If you have multiple machines and some of them have the same name,
   then you should probably change that as this is not how things ought

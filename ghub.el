@@ -275,8 +275,8 @@ Each package that uses `ghub' should use its own token. If AUTH
   to identify itself, using a symbol matching its name.
 
   Package authors who find this inconvenient should write a
-  wrapper around this function and possibly for the method
-  specific functions also.
+  wrapper around this function and possibly for the
+  method-specific functions as well.
 
   Some symbols have a special meaning.  `none' means to make an
   unauthorized request.  `basic' means to make a password based
