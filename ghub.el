@@ -121,9 +121,9 @@ response headers in this variable.")
                                 silent
                                 callback errorback extra)
   "Make a GraphQL request using GRAPHQL and VARIABLES.
-Return the response as a json-like alist.  Even if the response
+Return the response as a JSON-like alist.  Even if the response
 contains `errors', do not raise an error.  GRAPHQL is a GraphQL
-string.  VARIABLES is a json-like alist.  The other arguments
+string.  VARIABLES is a JSON-like alist.  The other arguments
 behave as for `ghub-request' (which see)."
   (cl-assert (stringp graphql))
   (cl-assert (not (stringp variables)))
@@ -227,7 +227,7 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
 
 Also place the response header in `ghub-response-headers'.
 
-METHOD is the http method, given as a string.
+METHOD is the HTTP method, given as a string.
 RESOURCE is the resource to access, given as a string beginning
   with a slash.
 
@@ -260,7 +260,7 @@ If NOERROR is non-nil, then do not raise an error if the request
   return the error payload instead of nil.
 If READER is non-nil, then it is used to read and return from the
   response buffer.  The default is `ghub--read-json-payload'.
-  For the very few resources that do not return json, you might
+  For the very few resources that do not return JSON, you might
   want to use `ghub--decode-payload'.
 
 If USERNAME is non-nil, then make a request on behalf of that

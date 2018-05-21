@@ -483,13 +483,13 @@ latter is documented at https://developer.github.com/v3.
   data.  The response body is returned and the response header is
   stored in the variable ~ghub-response-headers~.
 
-  - METHOD is the http method, given as a string.
+  - METHOD is the HTTP method, given as a string.
   - RESOURCE is the resource to access, given as a string beginning
     with a slash.
 
   - PARAMS, QUERY, PAYLOAD and HEADERS are alists and are used to
     specify request data.  All these arguments are alists that
-    resemble the json expected and returned by the Github API.  The
+    resemble the JSON expected and returned by the Github API.  The
     keys are symbols and the values stored in the ~cdr~ (not the
     ~cadr~) can be strings, integers, or lists of strings and
     integers.
@@ -525,7 +525,7 @@ latter is documented at https://developer.github.com/v3.
 
   - If READER is non-nil, then it is used to read and return from the
     response buffer.  The default is ~ghub--read-json-payload~.  For the
-    very few resources that do not return json, you might want to use
+    very few resources that do not return JSON, you might want to use
     ~ghub--decode-payload~.
 
   - If USERNAME is non-nil, then the request is made on behalf of that
@@ -664,7 +664,7 @@ latter is documented at https://developer.github.com/v3.
 
   These functions are simple wrappers around ~ghub-request~.  Their
   signature is identical to that of the latter, except that they do
-  not have an argument named METHOD.  The http method is instead
+  not have an argument named METHOD.  The HTTP method is instead
   given by the second word in the function name.
 
   As described in the documentation for ~ghub-request~, it depends on
@@ -679,7 +679,7 @@ latter is documented at https://developer.github.com/v3.
 
   These functions are simple wrappers around ~ghub-request~.  Their
   signature is identical to that of the latter, except that they do
-  not have an argument named METHOD.  The http method is instead
+  not have an argument named METHOD.  The HTTP method is instead
   given by the second word in the function name.
 
   As described in the documentation for ~ghub-request~, it depends on
@@ -897,7 +897,7 @@ General Public License for more details.
 #  LocalWords:  Gitlab Glab GraphQL LocalWords Makefile NOERROR PARAMS
 #  LocalWords:  SRC UNPAGINATE alist alists api auth authinfo
 #  LocalWords:  backend backends config customizable eval
-#  LocalWords:  featurep ghub github glab gitlab hostname http json
+#  LocalWords:  featurep ghub github glab gitlab hostname HTTP JSON
 #  LocalWords:  mis netrc noerror num params repo src texinfo toc
 #  LocalWords:  unencrypted unpaginate utils ziggy
 
