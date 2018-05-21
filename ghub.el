@@ -74,12 +74,12 @@ behalf of some private tool.
 
 By default the only requested scope is `repo' because that is
 sufficient as well as required for most common uses.  This and
-other scopes are documented at https://magit.vc/goto/2e586d36.
+other scopes are documented at URL `https://magit.vc/goto/2e586d36'.
 
 If your private tools need other scopes, then you have to add
 them here *before* creating the token.  Alternatively you can
 edit the scopes of an existing token using the web interface
-at https://github.com/settings/tokens.")
+at URL `https://github.com/settings/tokens'.")
 
 (defvar ghub-override-system-name nil
   "If non-nil, the string used to identify the local machine.
