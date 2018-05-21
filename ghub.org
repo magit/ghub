@@ -253,9 +253,9 @@ of the doubts that you might have:
   the variable ~ghub-github-token-scopes~ before triggering the wizard
   again.
 
-- Each PACKAGE has to specify the tokens that it needs using a
-  variable named ~PACKAGE-github-token-scopes~.  The doc-string of that
-  variable should document why the various scopes are needed.
+- Each ~PACKAGE~ has to specify the tokens that it needs using a
+  variable named ~PACKAGE-github-token-scopes~.  The doc-string of
+  that variable should document why the various scopes are needed.
 
   The meaning of the various scopes are documented at
   https://magit.vc/goto/f63aeb0a.
@@ -321,9 +321,9 @@ figure out what scopes a package wants, (2) create such a token using
 the web interface and (3) store the token where Ghub expects to find
 it.
 
-A package named PACKAGE has to specify the scopes that it wants in the
-variable named ~PACKAGE-ghub-token-scopes~.  The doc-string of such
-variables should document what the various scopes are needed for.
+A package named ~PACKAGE~ has to specify the scopes that it wants in
+the variable named ~PACKAGE-ghub-token-scopes~.  The doc-string of
+such variables should document what the various scopes are needed for.
 
 To create or edit a token go to https://github.com/settings/tokens.
 For Gitlab.com use https://gitlab.com/profile/personal_access_tokens.
@@ -396,7 +396,7 @@ personal scripts.
   (ghub-get "/user" nil :auth 'foobar)
 #+END_SRC
 
-When you do not specify the AUTH argument, then a request is made on
+When you do not specify the ~AUTH~ argument, then a request is made on
 behalf of the ~ghub~ package itself.  Like for any package that uses
 Ghub, ~ghub~ has to declare what scopes it needs, using, in this case,
 the variable ~ghub-github-token-scopes~.
@@ -417,10 +417,10 @@ of some package to only request access to API scopes that are actually
 needed, which in turn might make it easier for users to trust your
 package not to do unwanted things.
 
-The scopes used by PACKAGE have to be defined using the variable
+The scopes used by ~PACKAGE~ have to be defined using the variable
 ~PACKAGE-github-token-scopes~, and you have to tell ~ghub-request~ on
 behalf of which package a request is being made by passing the symbol
-PACKAGE as the value of its AUTH argument.
+~PACKAGE~ as the value of its ~AUTH~ argument.
 
 #+BEGIN_SRC emacs-lisp
   (ghub-request "GET" "/user" nil :auth 'PACKAGE)
@@ -429,10 +429,10 @@ PACKAGE as the value of its AUTH argument.
 - Variable: PACKAGE-github-token-scopes
 
   This variable defines the token scopes requested by the package
-  named PACKAGE.  The doc-string should explain what the various
-  scopes are needed for to prevent users from giving PACKAGE fewer
+  named ~PACKAGE~.  The doc-string should explain what the various
+  scopes are needed for to prevent users from giving ~PACKAGE~ fewer
   permissions than it absolutely needs and also to give them greater
-  confidence that PACKAGE is only requesting the permissions that it
+  confidence that ~PACKAGE~ is only requesting the permissions that it
   actually needs.
 
   The value of this variable does not necessarily correspond to the
@@ -455,8 +455,8 @@ PACKAGE as the value of its AUTH argument.
   correctly determine the used scopes manually.
 
   Just tell users to run ~M-x ghub-token-scopes~ and to provide the
-  correct values for the HOST, USERNAME and PACKAGE when prompted,
-  and to then post the output.
+  correct values for the ~HOST~, ~USERNAME~ and ~PACKAGE~ when
+  prompted, and to then post the output.
 
   It is to be expected that users will occasionally mess that up so
   this command outputs not only the scopes but also the user input so
@@ -478,17 +478,17 @@ latter is documented at https://developer.github.com/v3.
 
 - Function: ghub-request method resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback url value error extra method*
 
-  This function makes a request for RESOURCE using METHOD.  PARAMS,
-  QUERY, PAYLOAD and/or HEADERS are alists holding additional request
-  data.  The response body is returned and the response header is
-  stored in the variable ~ghub-response-headers~.
+  This function makes a request for ~RESOURCE~ using ~METHOD~.
+  ~PARAMS~, ~QUERY~, ~PAYLOAD~ and/or ~HEADERS~ are alists holding
+  additional request data.  The response body is returned and the
+  response header is stored in the variable ~ghub-response-headers~.
 
-  - METHOD is the HTTP method, given as a string.
-  - RESOURCE is the resource to access, given as a string beginning
+  - ~METHOD~ is the HTTP method, given as a string.
+  - ~RESOURCE~ is the resource to access, given as a string beginning
     with a slash.
 
-  - PARAMS, QUERY, PAYLOAD and HEADERS are alists and are used to
-    specify request data.  All these arguments are alists that
+  - ~PARAMS~, ~QUERY~, ~PAYLOAD~ and ~HEADERS~ are alists and are used
+    to specify request data.  All these arguments are alists that
     resemble the JSON expected and returned by the Github API.  The
     keys are symbols and the values stored in the ~cdr~ (not the
     ~cadr~) can be strings, integers, or lists of strings and
@@ -496,89 +496,91 @@ latter is documented at https://developer.github.com/v3.
 
     The Github API documentation is vague on how data has to be
     transmitted and for a particular resource usually just talks about
-    "parameters".  Generally speaking when the METHOD is "HEAD" or
+    "parameters".  Generally speaking when the ~METHOD~ is "HEAD" or
     "GET", then they have to be transmitted as a query, otherwise as a
     payload.
 
-    - Use PARAMS to automatically transmit like QUERY or PAYLOAD would
-      depending on METHOD.
-    - Use QUERY to explicitly transmit data as a query.
-    - Use PAYLOAD to explicitly transmit data as a payload.
-      Instead of an alist, PAYLOAD may also be a string, in which
-      case it gets encoded as UTF-8 but is otherwise transmitted as-is.
-    - Use HEADERS for those rare resources that require that the data
-      is transmitted as headers instead of as a query or payload.
+    - Use ~PARAMS~ to automatically transmit like ~QUERY~ or ~PAYLOAD~
+      would depending on ~METHOD~.
+    - Use ~QUERY~ to explicitly transmit data as a query.
+    - Use ~PAYLOAD~ to explicitly transmit data as a payload.  Instead
+      of an alist, ~PAYLOAD~ may also be a string, in which case it
+      gets encoded as UTF-8 but is otherwise transmitted as-is.
+    - Use ~HEADERS~ for those rare resources that require that the
+      data is transmitted as headers instead of as a query or payload.
       When that is the case, then the Github API documentation usually
       mentions it explicitly.
 
-  - If SILENT is non-nil, then progress reports and the like are not
+  - If ~SILENT~ is non-nil, then progress reports and the like are not
     messaged.
 
-  - If UNPAGINATE is t, then this function make as many requests as
-    necessary to get all values.  If UNPAGINATE is a natural number,
+  - If ~UNPAGINATE~ is t, then this function make as many requests as
+    necessary to get all values.  If ~UNPAGINATE~ is a natural number,
     then it gets at most that many pages.  For any other non-nil value
     it raises an error.
 
-  - If NOERROR is non-nil, then no error is raised if the request
-    fails and ~nil~ is returned instead.  If NOERROR is ~return~, then the
-    error payload is returned instead of ~nil~.
+  - If ~NOERROR~ is non-nil, then no error is raised if the request
+    fails and ~nil~ is returned instead.  If ~NOERROR~ is ~return~,
+    then the error payload is returned instead of ~nil~.
 
-  - If READER is non-nil, then it is used to read and return from the
-    response buffer.  The default is ~ghub--read-json-payload~.  For the
-    very few resources that do not return JSON, you might want to use
-    ~ghub--decode-payload~.
+  - If ~READER~ is non-nil, then it is used to read and return from
+    the response buffer.  The default is ~ghub--read-json-payload~.
+    For the very few resources that do not return JSON, you might want
+    to use ~ghub--decode-payload~.
 
-  - If USERNAME is non-nil, then the request is made on behalf of that
-    user.  It is better to specify the user using the Git variable
-    ~github.user~ for "api.github.com", or ~github.HOST.user~ if
-    connecting to a Github Enterprise instance.
+  - If ~USERNAME~ is non-nil, then the request is made on behalf of
+    that user.  It is better to specify the user using the Git
+    variable ~github.user~ for "api.github.com", or ~github.HOST.user~
+    if connecting to a Github Enterprise instance.
 
-  - Each package that uses Ghub should use its own token.  If AUTH is
-    ~nil~ or unspecified, then the generic ~ghub~ token is used instead.
-    This is only acceptable for personal utilities.  A packages that
-    is distributed to other users should always use this argument to
-    identify itself, using a symbol matching its name.
+  - Each package that uses Ghub should use its own token.  If ~AUTH~
+    is ~nil~ or unspecified, then the generic ~ghub~ token is used
+    instead.  This is only acceptable for personal utilities.  A
+    packages that is distributed to other users should always use this
+    argument to identify itself, using a symbol matching its name.
 
     Package authors who find this inconvenient should write a wrapper
     around this function and possibly for the method-specific
     functions as well.
 
-    Beside ~nil~, some other symbols have a special meaning too.  ~none~
-    means to make an unauthorized request.  ~basic~ means to make a
-    password based request.  If the value is a string, then it is
-    assumed to be a valid token.  ~basic~ and an explicit token string
-    are only intended for internal and debugging uses.
+    Beside ~nil~, some other symbols have a special meaning too.
+    ~none~ means to make an unauthorized request.  ~basic~ means to
+    make a password based request.  If the value is a string, then it
+    is assumed to be a valid token.  ~basic~ and an explicit token
+    string are only intended for internal and debugging uses.
 
-    If AUTH is a package symbol, then the scopes are specified using
-    the variable ~AUTH-github-token-scopes~.  It is an error if that is
-    not specified.  See ~ghub-github-token-scopes~ for an example.
+    If ~AUTH~ is a package symbol, then the scopes are specified using
+    the variable ~AUTH-github-token-scopes~.  It is an error if that
+    is not specified.  See ~ghub-github-token-scopes~ for an example.
 
-  - If HOST is non-nil, then connect to that Github instance.  This
-    defaults to "api.github.com".  When a repository is connected to
-    a Github Enterprise instance, then it is better to specify that
-    using the Git variable ~github.host~ instead of using this argument.
+  - If ~HOST~ is non-nil, then connect to that Github instance.
+    This defaults to "api.github.com".  When a repository is connected
+    to a Github Enterprise instance, then it is better to specify that
+    using the Git variable ~github.host~ instead of using this
+    argument.
 
-  - If FORGE is ~gitlab~, then connect to Gitlab.com or, depending on
-    HOST, to another Gitlab instance.  This is only intended for
+  - If ~FORGE~ is ~gitlab~, then connect to Gitlab.com or, depending
+    on ~HOST~, to another Gitlab instance.  This is only intended for
     internal use.  Instead of using this argument you should use
     function ~glab-request~ and other ~glab-*~ functions.
 
-  - If CALLBACK and/or ERRORBACK is non-nil, then this function makes
-    one or more asynchronous requests and calls CALLBACK or ERRORBACK
-    when finished.  If an error occurred, then it calls ERRORBACK, or
-    if that is ~nil~, then CALLBACK.  When no error occurred then it
-    calls CALLBACK.  When making asynchronous requests, then no errors
-    are signaled, regardless of the value of NOERROR.
+  - If ~CALLBACK~ and/or ~ERRORBACK~ is non-nil, then this function
+    makes one or more asynchronous requests and calls ~CALLBACK~ or
+    ~ERRORBACK~ when finished.  If an error occurred, then it calls
+    ~ERRORBACK~, or if that is ~nil~, then ~CALLBACK~.  When no error
+    occurred then it calls ~CALLBACK~.  When making asynchronous
+    requests, then no errors are signaled, regardless of the value of
+    ~NOERROR~.
 
     Both callbacks are called with four arguments.
 
-    1. For CALLBACK, the combined value of the retrieved pages.
-       For ERRORBACK, the error that occured when retrieving the
+    1. For ~CALLBACK~, the combined value of the retrieved pages.
+       For ~ERRORBACK~, the error that occured when retrieving the
        last page.
     2. The headers of the last page as an alist.
     3. Status information provided by ~url-retrieve~.  Its ~:error~
-       property holds the same information as ERRORBACK's first
-       argument.
+       property holds the same information as the first argument to
+       ~ERRORBACK~.
     4. A ~ghub--req~ struct, which can be passed to ~ghub-continue~
        (which see) to retrieve the next page, if any.
 
@@ -641,8 +643,8 @@ latter is documented at https://developer.github.com/v3.
 
 - Function: ghub-response-link-relations headers
 
-  This function returns an alist of the link relations in HEADERS, or
-  if optional HEADERS is nil, then those in ~ghub-response-headers~.
+  This function returns an alist of the link relations in ~HEADERS~, or
+  if optional ~HEADERS~ is nil, then those in ~ghub-response-headers~.
 
 - Variable: ghub-override-system-name
 
@@ -655,20 +657,20 @@ latter is documented at https://developer.github.com/v3.
 - Variable: PACKAGE-github-token-scopes
 
   Such a variable defines the token scopes requested by the respective
-  package PACKAGE given by the first word in the variable name.  ~ghub~
-  itself is treated like any other package.  Also see [[*Using Ghub in a
-  Package]].
+  package ~PACKAGE~ given by the first word in the variable name.
+  ~ghub~ itself is treated like any other package.  Also see [[*Using
+  Ghub in a Package]].
 
 - Function: ghub-head resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
 - Function: ghub-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
 
   These functions are simple wrappers around ~ghub-request~.  Their
   signature is identical to that of the latter, except that they do
-  not have an argument named METHOD.  The HTTP method is instead
+  not have an argument named ~METHOD~.  The HTTP method is instead
   given by the second word in the function name.
 
   As described in the documentation for ~ghub-request~, it depends on
-  the used method whether the value of the PARAMS argument is used
+  the used method whether the value of the ~PARAMS~ argument is used
   as the query or the payload.  For the "HEAD" and "GET" methods it
   is used as the query.
 
@@ -679,11 +681,11 @@ latter is documented at https://developer.github.com/v3.
 
   These functions are simple wrappers around ~ghub-request~.  Their
   signature is identical to that of the latter, except that they do
-  not have an argument named METHOD.  The HTTP method is instead
+  not have an argument named ~METHOD~.  The HTTP method is instead
   given by the second word in the function name.
 
   As described in the documentation for ~ghub-request~, it depends on
-  the used method whether the value of the PARAMS argument is used
+  the used method whether the value of the ~PARAMS~ argument is used
   as the query or the payload.  For the "PUT", "POST", "PATCH" and
   "DELETE" methods it is used as the payload.
 
@@ -703,9 +705,9 @@ latter is documented at https://developer.github.com/v3.
   or until the timeout exceeds.  In the latter case it signals
   ~ghub-error~.
 
-  RESOURCE specifies the resource that this function waits for.
+  ~RESOURCE~ specifies the resource that this function waits for.
 
-  DURATION specifies the maximum number of seconds to wait for,
+  ~DURATION~ specifies the maximum number of seconds to wait for,
   defaulting to 64 seconds.  Emacs will block during that time, but
   the user can abort using ~C-g~.
 
@@ -719,10 +721,10 @@ latter is documented at https://developer.github.com/v3.
 
 - Function: ghub-graphql graphql &optional variables &key username auth host callback
 
-  This function makes a GraphQL request using GRAPHQL and VARIABLES as
-  inputs.  GRAPHQL is a GraphQL string.  VARIABLES is a JSON-like
-  alist.  The other arguments behave as for ~ghub-request~ (which
-  see).
+  This function makes a GraphQL request using ~GRAPHQL~ and
+  ~VARIABLES~ as inputs.  ~GRAPHQL~ is a GraphQL string.  ~VARIABLES~
+  is a JSON-like alist.  The other arguments behave as for
+  ~ghub-request~ (which see).
 
   The response is returned as a JSON-like alist.  Even if the response
   contains ~errors~, this function does not raise an error.
@@ -745,10 +747,11 @@ latter is documented at https://developer.github.com/v3.
   command you can also just repeat the initial request after making
   the desired adjustments — that is easier.)
 
-  This command reads, in order, the HOST (Github instance), the
-  USERNAME, the PACKAGE, and the SCOPES in the minibuffer, providing
-  reasonable default choices.  SCOPES defaults to the scopes that
-  PACKAGE requests using the variable ~PACKAGE-github-token-scopes~.
+  This command reads, in order, the ~HOST~ (Github instance), the
+  ~USERNAME~, the ~PACKAGE~, and the ~SCOPES~ in the minibuffer,
+  providing reasonable default choices.  ~SCOPES~ defaults to the
+  scopes that ~PACKAGE~ requests using the variable
+  ~PACKAGE-github-token-scopes~.
 
 - Command: ghub-token-scopes
 
@@ -779,7 +782,7 @@ local machine, which is done using a lisp variable.
 - Variable: github.HOST.user
 
   This variable serves the same purpose as ~github.user~ but for the
-  Github Enterprise instance identified by HOST.
+  Github Enterprise instance identified by ~HOST~.
 
   The reason why separate variables are used is that this makes it
   possible to set both values globally instead of having to set one of
@@ -809,9 +812,9 @@ local machine, which is done using a lisp variable.
   A token is identified on the respective Github instance (Github.com
   or a Github Enterprise instance) using the pair ~(PACKAGE .
   LOCAL-MACHINE)~, or more precisely the string "Emacs package PACKAGE
-  @ LOCAL-MACHINE".  USERNAME and HOST do not have to be encoded
-  because the token is stored for USERNAME on HOST and cannot be used
-  by another user and/or on another instance.
+  @ LOCAL-MACHINE".  ~USERNAME~ and ~HOST~ do not have to be encoded
+  because the token is stored for ~USERNAME~ on ~HOST~ and cannot be
+  used by another user and/or on another instance.
 
   There is one potential problem though; for any given ~(PACKAGE
   . LOCAL-MACHINE)~ there can only be one token identified by "Emacs
