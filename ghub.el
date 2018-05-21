@@ -114,7 +114,7 @@ used instead.")
 (defvar ghub-response-headers nil
   "The headers returned in response to the last request.
 `ghub-request' returns the response body and stores the
-response header in this variable.")
+response headers in this variable.")
 
 (cl-defun ghub-graphql (graphql &optional variables
                                 &key username auth host
@@ -124,7 +124,7 @@ response header in this variable.")
 Return the response as a json-like alist.  Even if the response
 contains `errors', do not raise an error.  GRAPHQL is a GraphQL
 string.  VARIABLES is a json-like alist.  The other arguments
-behave like for `ghub-request' (which see)."
+behave as for `ghub-request' (which see)."
   (cl-assert (stringp graphql))
   (cl-assert (not (stringp variables)))
   (ghub-request "POST" "/graphql" nil :payload
@@ -296,7 +296,7 @@ If HOST is non-nil, then connect to that Github instance.  This
   argument.
 
 If FORGE is `gitlab', then connect to Gitlab.com or, depending
-  on HOST to another Gitlab instance.  This is only intended for
+  on HOST, to another Gitlab instance.  This is only intended for
   internal use.  Instead of using this argument you should use
   function `glab-request' and other `glab-*' functions.
 
@@ -309,7 +309,7 @@ If CALLBACK and/or ERRORBACK is non-nil, then make one or more
 
 Both callbacks are called with four arguments.
   1. For CALLBACK, the combined value of the retrieved pages.
-     For ERRORBACk, the error that occured when retrieving the
+     For ERRORBACK, the error that occured when retrieving the
      last page.
   2. The headers of the last page as an alist.
   3. Status information provided by `url-retrieve'. Its `:error'

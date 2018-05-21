@@ -66,14 +66,14 @@ wide adoption would make life easier for users and maintainers alike,
 because then all packages that talk to the Github API could be
 configured the same way.
 
-Fancier interfaces can implemented on top of Ghub, and one such
+Fancier interfaces can be implemented on top of Ghub, and one such
 wrapper — named simply Ghub+ — has already been implemented.  The
 benefit of basing various opinionated interfaces on top of a single
 library that provides only the core functionality is that choosing the
 programming interface does no longer also dictate how access tokens
 are handled.  Users can then use multiple packages that access the
 Github API without having to learn the various incompatible ways
-packages expects the appropriate token to be made available to them.
+packages expect the appropriate token to be made available to them.
 
 Ghub uses the built-in ~auth-source~ library to store access tokens.
 That library is very flexible and supports multiple backends, which
@@ -81,7 +81,7 @@ means that it is up to the user how secrets are stored.  They can,
 among other things, choose between storing secrets in plain text for
 ease of use, or encrypted for better security.
 
-Previously (as in until this library is widely adapted) it was up to
+Previously (as in until this library is widely adopted) it was up to
 package authors to decide if things should be easy or secure.  (Note
 that ~auth-source~ defaults to "easy" — you have been warned.)
 
@@ -99,7 +99,7 @@ to begin with.
 
 * Getting Started
 
-Each package that uses Ghub uses its own token.  Despite that, changes
+Each package that uses Ghub uses its own token.  Despite that, chances
 are good that after successfully configuring one package you can just
 start using another package pretty much instantly.
 
@@ -113,8 +113,8 @@ However, in some situations some manual configuration is necessary
 *before* using the wizard, or the wizard cannot be used at all:
 
 - If you don't want to use the wizard then you don't have to and can
-  create tokens manually as describe in [[*Manually Creating and Storing
-  a Token]].
+  create tokens manually as described in [[*Manually Creating and
+  Storing a Token]].
 
 - If you want to access Gitlab.com or another Gitlab instance, then
   you have to create the token manually as describe in [[*Manually
@@ -141,9 +141,9 @@ However, in some situations some manual configuration is necessary
   repeat the request to trigger the wizard again.
 
 - The setup wizard should work even if you have enabled two-factor
-  authentication.  However it your Github Enterprise instance enforces
+  authentication.  However if your Github Enterprise instance enforces
   Single Sign-On as an additional security measure, then you are out
-  of luck and have to create the token manually as describe in
+  of luck and have to create the token manually as described in
   [[*Manually Creating and Storing a Token]].
 
 The variables mentioned above — and others — are documented in
@@ -382,7 +382,7 @@ files would then look like this:
 * Using Ghub in Personal Scripts
 
 You can use ~ghub-request~ and its wrapper functions in your personal
-scripts of course.  Unlike when you use Ghub from a package that you
+scripts, of course.  Unlike when you use Ghub from a package that you
 distribute for others to use, you don't have to specify a package in
 personal scripts.
 
@@ -434,7 +434,7 @@ PACKAGE as the value of its AUTH argument.
   scopes are needed for to prevent users from giving PACKAGE fewer
   permissions than it absolutely needs and also to give them greater
   confidence that PACKAGE is only requesting the permissions that it
-  actually need.
+  actually needs.
 
   The value of this variable does not necessarily correspond to the
   scopes that the respective token actually gives access to.  There is
@@ -481,7 +481,7 @@ latter is documented at https://developer.github.com/v3.
 
   This function makes a request for RESOURCE using METHOD.  PARAMS,
   QUERY, PAYLOAD and/or HEADERS are alists holding additional request
-  data.  The response body is returned and the response header in
+  data.  The response body is returned and the response header is
   stored in the variable ~ghub-response-headers~.
 
   - METHOD is the http method, given as a string.
@@ -534,7 +534,7 @@ latter is documented at https://developer.github.com/v3.
     ~github.user~ for "api.github.com", or ~github.HOST.user~ if
     connecting to a Github Enterprise instance.
 
-  - Each package that uses Ghub should use its own token. If AUTH is
+  - Each package that uses Ghub should use its own token.  If AUTH is
     ~nil~ or unspecified, then the generic ~ghub~ token is used instead.
     This is only acceptable for personal utilities.  A packages that
     is distributed to other users should always use this argument to
@@ -560,7 +560,7 @@ latter is documented at https://developer.github.com/v3.
     using the Git variable ~github.host~ instead of using this argument.
 
   - If FORGE is ~gitlab~, then connect to Gitlab.com or, depending on
-    HOST to another Gitlab instance.  This is only intended for
+    HOST, to another Gitlab instance.  This is only intended for
     internal use.  Instead of using this argument you should use
     function ~glab-request~ and other ~glab-*~ functions.
 
@@ -574,10 +574,10 @@ latter is documented at https://developer.github.com/v3.
     Both callbacks are called with four arguments.
 
     1. For CALLBACK, the combined value of the retrieved pages.
-       For ERRORBACk, the error that occured when retrieving the
+       For ERRORBACK, the error that occured when retrieving the
        last page.
     2. The headers of the last page as an alist.
-    3. Status information provided by ~url-retrieve~. Its ~:error~
+    3. Status information provided by ~url-retrieve~.  Its ~:error~
        property holds the same information as ERRORBACK's first
        argument.
     4. A ~ghub--req~ struct, which can be passed to ~ghub-continue~
@@ -722,20 +722,20 @@ latter is documented at https://developer.github.com/v3.
 
   This function makes a GraphQL request using GRAPHQL and VARIABLES as
   inputs.  GRAPHQL is a GraphQL string.  VARIABLES is a JSON-like
-  alist.  The other arguments behave like for `ghub-request' (which
+  alist.  The other arguments behave as for ~ghub-request~ (which
   see).
 
   The response is returned as a JSON-like alist.  Even if the response
-  contains ~errors~, this function does not raise an error.  Likewise
-  cursor-handling too is left to the caller.
+  contains ~errors~, this function does not raise an error.
+  Cursor-handling is likewise left to the caller.
 
 ** Authentication
 
 - Command: ghub-create-token
 
   This command creates a new token using the values it reads from the
-  user and then stores it according to variable ~auth-sources~.  It can
-  also be called non-interactively, but you shouldn't do that
+  user and then stores it according to the variable ~auth-sources~.
+  It can also be called non-interactively, but you shouldn't do that
   yourself.
 
   This is useful if you want to fully setup things before attempting
@@ -746,7 +746,7 @@ latter is documented at https://developer.github.com/v3.
   command you can also just repeat the initial request after making
   the desired adjustments — that is easier.)
 
-  This command reads, in that order, the HOST (Github instance), the
+  This command reads, in order, the HOST (Github instance), the
   USERNAME, the PACKAGE and the SCOPES in the minibuffer, providing
   reasonable default choices.  SCOPES defaults to the scopes that
   PACKAGE requests using the variable ~PACKAGE-github-token-scopes~.
@@ -761,7 +761,7 @@ latter is documented at https://developer.github.com/v3.
   This command reads the required values in the minibuffer and then
   shows a message containing these values along with the scopes of the
   respective token.  It also returns the scopes (only) when called
-  non-interactively. Also see [[*Using Ghub in a Package]].
+  non-interactively.  Also see [[*Using Ghub in a Package]].
 
 ** Configuration Variables
 
@@ -796,15 +796,15 @@ local machine, which is done using a lisp variable.
   Enterprise instance, including those that should actually be
   connected to Github.com.
 
-  When this is undefined, then "api.github.com" is used (define in the
-  constant ~ghub-default-host-host~, which you should never attempt to
+  When this is undefined, then "api.github.com" is used (defined in
+  the constant ~ghub-default-host~, which you should never attempt to
   change.)
 
 - Variable: ghub-override-system-name
 
   Ghub uses a different token for each quadruple `(USERNAME PACKAGE
   HOST LOCAL-MACHINE)`.  Theoretically it could reuse tokens to some
-  extend but that would be more difficult to implement, less flexible,
+  extent but that would be more difficult to implement, less flexible,
   and less secure (though slightly more convenient).
 
   A token is identified on the respective Github instance (Github.com
@@ -816,23 +816,24 @@ local machine, which is done using a lisp variable.
 
   There is one potential problem though; for any given `(PACKAGE
   . LOCAL-MACHINE)` there can only be one token identified by "Emacs
-  package PACKAGE @ LOCAL-MACHINE", Github does not allow multiple
+  package PACKAGE @ LOCAL-MACHINE"; Github does not allow multiple
   tokens with the same description because it uses the description as
   the identifier.  (It could use some hash instead, but alas it does
   not.)
 
   If you have multiple machines and some of them have the same name,
-  then you should probably change that as this is not how thing ought
+  then you should probably change that as this is not how things ought
   to be.  However if you dual-boot, then it might make sense to give
   that machine the same name regardless of what operating system you
   have booted into.
 
   You could use the same token on both operating systems, but setting
   that up might be somewhat difficult because it is not possible to
-  download an existing token from Github.  You could of course locally
-  copy the token, but that is inconvenient and would make it harder to
-  only revoke the token used on your infected Windows installation
-  without also revoking it for your totally safe *BSD installation.
+  download an existing token from Github.  You could, of course,
+  locally copy the token, but that is inconvenient and would make it
+  harder to only revoke the token used on your infected Windows
+  installation without also revoking it for your totally safe *BSD
+  installation.
 
   Alternatively you can set this variable to a unique value, that will
   then be used to identify the local machine instead of the value
@@ -851,7 +852,7 @@ use the Git variables in the ~gitlab~ group instead of those in the
 ~github~ group, i.e.  ~gitlab.user~, ~gitlab.HOST.user~ and ~gitlab.host~.
 
 The Gitlab API cannot be used to create tokens, so Glab cannot provide
-a setup wizard like Ghub does.  As a consequence if the user makes a
+a setup wizard like Ghub does.  As a consequence, if the user makes a
 request and the necessary token cannot be found, then that results in
 an error.
 
@@ -861,9 +862,9 @@ or the equivalent URL for another Gitlab instance.  To store the token
 locally, follow the instructions in [[*Manually Creating and Storing a
 Token]] and [[*How Ghub uses Auth-Source]].
 
-Packages that use Glab, can define ~PACKAGE-gitlab-token-scopes~ for
-documentation purposes.  But unlike ~PACKAGE-github-token-scopes~, which
-is used by the setup wizard this is optional.
+Packages that use Glab can define ~PACKAGE-gitlab-token-scopes~ for
+documentation purposes.  But unlike ~PACKAGE-github-token-scopes~,
+which is used by the setup wizard, this is optional.
 
 And a random hint: where you would use ~user/repo~ when accessing Github,
 you have to use ~user%2Frepo~ when accessing Gitlab, e.g.:
