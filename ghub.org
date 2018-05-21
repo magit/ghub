@@ -801,20 +801,20 @@ local machine, which is done using a lisp variable.
 
 - Variable: ghub-override-system-name
 
-  Ghub uses a different token for each quadruple `(USERNAME PACKAGE
-  HOST LOCAL-MACHINE)`.  Theoretically it could reuse tokens to some
+  Ghub uses a different token for each quadruple ~(USERNAME PACKAGE
+  HOST LOCAL-MACHINE)~.  Theoretically it could reuse tokens to some
   extent but that would be more difficult to implement, less flexible,
   and less secure (though slightly more convenient).
 
   A token is identified on the respective Github instance (Github.com
-  or a Github Enterprise instance) using the pair `(PACKAGE .
-  LOCAL-MACHINE)`, or more precisely the string "Emacs package PACKAGE
+  or a Github Enterprise instance) using the pair ~(PACKAGE .
+  LOCAL-MACHINE)~, or more precisely the string "Emacs package PACKAGE
   @ LOCAL-MACHINE".  USERNAME and HOST do not have to be encoded
   because the token is stored for USERNAME on HOST and cannot be used
   by another user and/or on another instance.
 
-  There is one potential problem though; for any given `(PACKAGE
-  . LOCAL-MACHINE)` there can only be one token identified by "Emacs
+  There is one potential problem though; for any given ~(PACKAGE
+  . LOCAL-MACHINE)~ there can only be one token identified by "Emacs
   package PACKAGE @ LOCAL-MACHINE"; Github does not allow multiple
   tokens with the same description because it uses the description as
   the identifier (it could use some hash instead, but alas it does
