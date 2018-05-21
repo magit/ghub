@@ -678,7 +678,7 @@ has to provide several values including their password."
   (let* ((user (ghub--ident username package))
          (token
           (or (car (ghub--auth-source-get (list :secret)
-                     :host host :user user))
+                     :host host :user user :require '(:user)))
               (progn
                 ;; Auth-Source caches the information that there is no
                 ;; value, but in our case that is a situation that needs
