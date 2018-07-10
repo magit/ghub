@@ -422,6 +422,7 @@ in `ghub-response-headers'."
            (if (functionp headers) (funcall headers) headers)))
         (url-request-method (ghub--req-method req))
         (url-request-data payload)
+        (url-show-status nil)
         (url (ghub--req-url req))
         (silent (ghub--req-silent req)))
     (if (or (ghub--req-callback  req)
