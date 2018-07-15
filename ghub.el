@@ -364,7 +364,7 @@ Both callbacks are called with four arguments.
 This function is only intended to be called from callbacks.  If
 there is a next page, then retrieve that and return the buffer
 that the result will be loaded into, or t if the process has
-already completed.  Otherwise return nil.
+already completed.  If there is no next page, then return nil.
 
 Callbacks are called with four arguments (see `ghub-request').
 The forth argument is a `ghub--req' struct, intended to be passed

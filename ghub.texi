@@ -30,7 +30,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 2.0.1 (v2.0.1-7-g6ffc1d6+1)
+@subtitle for version 2.0.1 (v2.0.1-10-g85b5ae3+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -61,7 +61,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 @noindent
-This manual is for Ghub version 2.0.1 (v2.0.1-7-g6ffc1d6+1).
+This manual is for Ghub version 2.0.1 (v2.0.1-10-g85b5ae3+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -742,7 +742,7 @@ If there is a next page, then this function retrieves that.
 This function is only intended to be called from callbacks.  If
 there is a next page, then that is retrieve and the buffer that
 the result will be loaded into is returned, or t if the process
-has already completed.  Otherwise nil is returned.
+has already completed.  If there is no next page, then return nil.
 
 Callbacks are called with four arguments (see @code{ghub-request}).
 The forth argument is a @code{ghub--req} struct, intended to be passed
