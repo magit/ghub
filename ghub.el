@@ -520,10 +520,10 @@ in `ghub-response-headers'."
                'ghub--read-json-payload)
            url-http-response-status))
 
-(defun ghub--read-json-payload (status)
+(defun ghub--read-json-payload (_status)
   (let ((raw (ghub--decode-payload)))
     (and raw
-         (condition-case err
+         (condition-case nil
              (let ((json-object-type 'alist)
                    (json-array-type  'list)
                    (json-key-type    'symbol)
@@ -531,9 +531,15 @@ in `ghub-response-headers'."
                    (json-null        nil))
                (json-read-from-string raw))
            (json-readtable-error
-            (if (memq status (list 400 422 500))
-                "and Github didn't return JSON"
-              (signal (car err) (cdr err))))))))
+            `((message
+               . ,(if (looking-at "<!DOCTYPE html>")
+                      (if (re-search-forward
+                           "<p>\\(?:<strong>\\)?\\([^<]+\\)" nil t)
+                          (match-string 1)
+                        "error description missing")
+                    (string-trim (buffer-substring (point) (point-max)))))
+              (documentation_url
+               . "https://github.com/magit/ghub/wiki/Github-Errors")))))))
 
 (defun ghub--decode-payload (&optional _status)
   (and (not (eobp))
