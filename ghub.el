@@ -117,25 +117,6 @@ used instead.")
 `ghub-request' returns the response body and stores the
 response headers in this variable.")
 
-(cl-defun ghub-graphql (graphql &optional variables
-                                &key username auth host
-                                silent
-                                callback errorback value extra)
-  "Make a GraphQL request using GRAPHQL and VARIABLES.
-Return the response as a JSON-like alist.  Even if the response
-contains `errors', do not raise an error.  GRAPHQL is a GraphQL
-string.  VARIABLES is a JSON-like alist.  The other arguments
-behave as for `ghub-request' (which see)."
-  (cl-assert (stringp graphql))
-  (cl-assert (not (stringp variables)))
-  (ghub-request "POST" "/graphql" nil :payload
-                (json-encode `(("query" . ,graphql)
-                               ,@(and variables `(("variables" ,@variables)))))
-                :silent silent
-                :username username :auth auth :host host
-                :callback callback :errorback errorback
-                :extra extra :value value))
-
 (cl-defun ghub-head (resource &optional params
                               &key query payload headers
                               silent unpaginate noerror reader
@@ -854,4 +835,5 @@ line."
 
 ;;; _
 (provide 'ghub)
+(require 'ghub-graphql)
 ;;; ghub.el ends here
