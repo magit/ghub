@@ -335,14 +335,10 @@ Both callbacks are called with four arguments.
            (error "PARAMS and PAYLOAD are mutually exclusive for METHOD %S"
                   method))
          (setq payload params)))
-  (when payload
-    (unless (stringp payload)
-      (setq payload (json-encode-list payload)))
-    (setq payload (encode-coding-string payload 'utf-8)))
   (when (or callback errorback)
     (setq noerror t))
   (ghub--retrieve
-   payload
+   (ghub--encode-payload payload)
    (ghub--make-req
     :url (url-generic-parse-url
           (concat "https://" host resource
@@ -546,6 +542,13 @@ in `ghub-response-headers'."
        (decode-coding-string
         (buffer-substring-no-properties (point) (point-max))
         'utf-8)))
+
+(defun ghub--encode-payload (payload)
+  (and payload
+       (progn
+         (unless (stringp payload)
+           (setq payload (json-encode-list payload)))
+         (encode-coding-string payload 'utf-8))))
 
 (defun ghub--url-encode-params (params)
   (mapconcat (lambda (param)
