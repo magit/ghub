@@ -119,7 +119,7 @@ response headers in this variable.")
 (cl-defun ghub-graphql (graphql &optional variables
                                 &key username auth host
                                 silent
-                                callback errorback extra)
+                                callback errorback value extra)
   "Make a GraphQL request using GRAPHQL and VARIABLES.
 Return the response as a JSON-like alist.  Even if the response
 contains `errors', do not raise an error.  GRAPHQL is a GraphQL
@@ -132,7 +132,8 @@ behave as for `ghub-request' (which see)."
                                ,@(and variables `(("variables" ,@variables)))))
                 :silent silent
                 :username username :auth auth :host host
-                :callback callback :errorback errorback :extra extra))
+                :callback callback :errorback errorback
+                :extra extra :value value))
 
 (cl-defun ghub-head (resource &optional params
                               &key query payload headers
@@ -222,7 +223,7 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
                                &key query payload headers
                                silent unpaginate noerror reader
                                username auth host forge
-                               callback errorback extra)
+                               callback errorback value extra)
   "Make a request for RESOURCE and return the response body.
 
 Also place the response header in `ghub-response-headers'.
@@ -352,6 +353,7 @@ Both callbacks are called with four arguments.
     :reader     reader
     :callback   callback
     :errorback  errorback
+    :value      value
     :extra      extra)))
 
 (defun ghub-continue (req)
