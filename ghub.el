@@ -96,6 +96,7 @@ used instead.")
   (silent     nil :read-only t)
   (method     nil :read-only t)
   (headers    nil :read-only t)
+  (handler    nil :read-only t)
   (unpaginate nil :read-only nil)
   (noerror    nil :read-only t)
   (reader     nil :read-only t)
@@ -348,6 +349,7 @@ Both callbacks are called with four arguments.
     ;; Encode in case caller used (symbol-name 'GET). #35
     :method     (encode-coding-string method 'utf-8)
     :headers    (ghub--headers headers host auth username forge)
+    :handler    'ghub--handle-response
     :unpaginate unpaginate
     :noerror    noerror
     :reader     reader
@@ -421,11 +423,12 @@ in `ghub-response-headers'."
         (url-request-method (ghub--req-method req))
         (url-request-data payload)
         (url-show-status nil)
-        (url (ghub--req-url req))
-        (silent (ghub--req-silent req)))
+        (url     (ghub--req-url req))
+        (handler (ghub--req-handler req))
+        (silent  (ghub--req-silent req)))
     (if (or (ghub--req-callback  req)
             (ghub--req-errorback req))
-        (url-retrieve url 'ghub--handle-response (list req) silent)
+        (url-retrieve url handler (list req) silent)
       ;; When this function has already been called, then it is a
       ;; no-op.  Otherwise it sets `url-registered-auth-schemes' among
       ;; other things.  If we didn't ensure that it has been run, then
@@ -437,7 +440,7 @@ in `ghub-response-headers'."
           (let ((url-registered-auth-schemes
                  '(("basic" ghub--basic-auth-errorback . 10))))
             (url-retrieve-synchronously url silent))
-        (ghub--handle-response (car url-callback-arguments) req)))))
+        (funcall handler (car url-callback-arguments) req)))))
 
 (defun ghub--handle-response (status req)
   (let ((buffer (current-buffer)))
