@@ -144,7 +144,4 @@ Like calling `ghub-request' (which see) with `gitlab' as FORGE."
 
 ;;; _
 (provide 'glab)
-;; Local Variables:
-;; indent-tabs-mode: nil
-;; End:
 ;;; glab.el ends here

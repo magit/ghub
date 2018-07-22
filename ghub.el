@@ -854,7 +854,4 @@ line."
 
 ;;; _
 (provide 'ghub)
-;; Local Variables:
-;; indent-tabs-mode: nil
-;; End:
 ;;; ghub.el ends here
