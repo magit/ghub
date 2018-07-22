@@ -499,17 +499,20 @@ in `ghub-response-headers'."
                 payload
               (setcdr (last err) (list payload))
               nil)
-          (pcase-let ((`(,symb . ,data) err))
-            (if (eq symb 'error)
-                (if (eq (car-safe data) 'http)
-                    (signal 'ghub-http-error
-                            (let ((code (car (cdr-safe data))))
-                              (list code
-                                    (nth 2 (assq code url-http-codes))
-                                    payload)))
-                  (signal 'ghub-error data))
-              (signal symb data))))
+          (ghub--signal-error err payload))
       payload)))
+
+(defun ghub--signal-error (err &optional payload)
+  (pcase-let ((`(,symb . ,data) err))
+    (if (eq symb 'error)
+        (if (eq (car-safe data) 'http)
+            (signal 'ghub-http-error
+                    (let ((code (car (cdr-safe data))))
+                      (list code
+                            (nth 2 (assq code url-http-codes))
+                            payload)))
+          (signal 'ghub-error data))
+      (signal symb data))))
 
 (defun ghub--handle-response-payload (req)
   (funcall (or (ghub--req-reader req)
