@@ -3,6 +3,7 @@
 PKG   = ghub
 
 ELS   = $(PKG).el
+ELS  += glab.el
 ELCS  = $(ELS:.el=.elc)
 
 DEPS  = dash
