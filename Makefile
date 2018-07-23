@@ -6,7 +6,7 @@ ELS   = $(PKG).el
 ELS  += glab.el
 ELCS  = $(ELS:.el=.elc)
 
-DEPS  = dash
+DEPS  =
 
 VERSION ?= $(shell test -e $(TOP).git && git describe --tags --abbrev=0 | cut -c2-)
 
