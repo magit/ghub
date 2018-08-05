@@ -682,9 +682,10 @@ has to provide several values including their password."
                 ;; Auth-Source caches the information that there is no
                 ;; value, but in our case that is a situation that needs
                 ;; fixing so we want to keep trying by invalidating that
-                ;; information.  The (:max 1) is needed for Emacs releases
-                ;; before 26.1.
-                (auth-source-forget (list :max 1 :host host :user user))
+                ;; information.
+                ;; The (:max 1) is needed and has to be placed at the
+                ;; end for Emacs releases before 26.1.  See #24, #64.
+                (auth-source-forget (list :host host :user user :max 1))
                 (and (not nocreate)
                      (if (eq forge 'gitlab)
                          (error
@@ -819,7 +820,8 @@ WARNING: The token will be stored unencrypted in %S.
 
 (defun ghub--auth-source-get (keys &rest spec)
   (declare (indent 1))
-  (let ((plist (car (apply #'auth-source-search :max 1 spec))))
+  (let ((plist (car (apply #'auth-source-search
+                           (append spec (list :max 1))))))
     (mapcar (lambda (k)
               (plist-get plist k))
             keys)))
