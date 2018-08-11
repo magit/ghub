@@ -52,6 +52,16 @@ behave as for `ghub-request' (which see)."
    nil
    :username username :auth auth :host host))
 
+(cl-defun ghub-repository-id (owner name &key username auth host)
+  "Return the id of the repository specified by OWNER, NAME and HOST."
+  (ghub-graphql
+   "query ($owner:String!, $name:String!) {
+      repository(owner:$owner, name:$name) { id }
+    }"
+   `((owner . ,owner)
+     (name  . ,name))
+   :username username :auth auth :host host))
+
 ;;; _
 (provide 'ghub-graphql)
 ;;; ghub-graphql.el ends here
