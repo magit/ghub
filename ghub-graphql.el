@@ -42,6 +42,16 @@ behave as for `ghub-request' (which see)."
                 :callback callback :errorback errorback
                 :extra extra :value value))
 
+(cl-defun ghub-graphql-rate-limit (&key username auth host)
+  "Return rate limit information."
+  (ghub-graphql
+   "query {
+      viewer { login }
+      rateLimit { limit cost remaining resetAt }
+    }"
+   nil
+   :username username :auth auth :host host))
+
 ;;; _
 (provide 'ghub-graphql)
 ;;; ghub-graphql.el ends here
