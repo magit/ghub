@@ -51,13 +51,14 @@ behave as for `ghub-request' (which see)."
 
 (cl-defun ghub-repository-id (owner name &key username auth host)
   "Return the id of the repository specified by OWNER, NAME and HOST."
-  (ghub-graphql
-   "query ($owner:String!, $name:String!) {
-      repository(owner:$owner, name:$name) { id }
-    }"
-   `((owner . ,owner)
-     (name  . ,name))
-   :username username :auth auth :host host))
+  (let-alist (ghub-graphql
+              "query ($owner:String!, $name:String!) {
+                 repository(owner:$owner, name:$name) { id }
+               }"
+              `((owner . ,owner)
+                (name  . ,name))
+              :username username :auth auth :host host)
+    .data.repository.id))
 
 ;;; _
 (provide 'ghub-graphql)
