@@ -142,6 +142,12 @@ Like calling `ghub-request' (which see) with `gitlab' as FORGE."
                 :username username :auth auth :host host
                 :callback callback :errorback errorback :extra extra))
 
+(cl-defun glab-repository-id (owner name &key username auth host)
+  "Return the id of the repository specified by OWNER, NAME and HOST."
+  (number-to-string
+   (cdr (assq 'id (glab-get (format "/projects/%s%%2F%s" owner name)
+                            nil :username username :auth auth :host host)))))
+
 ;;; _
 (provide 'glab)
 ;;; glab.el ends here
