@@ -609,6 +609,20 @@ has to provide several values including their password."
                host scopes))
     scopes))
 
+;;;###autoload
+(defun ghub-clear-caches ()
+  "Clear all caches that might negatively affect Ghub.
+
+If a library that is used by Ghub caches incorrect information
+such as a mistyped password, then that can prevent Ghub from
+asking the user for the correct information again.
+
+Set `url-http-real-basic-auth-storage' to nil
+and call `auth-source-forget+'."
+  (interactive)
+  (setq url-http-real-basic-auth-storage nil)
+  (auth-source-forget+))
+
 ;;;; Internal
 
 (defun ghub--headers (headers host auth username forge)
