@@ -5,6 +5,7 @@ PKG   = ghub
 ELS   = $(PKG).el
 ELS  += $(PKG)-graphql.el
 ELS  += glab.el
+ELS  += gtea.el
 ELCS  = $(ELS:.el=.elc)
 
 DEPS  =

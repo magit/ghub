@@ -643,12 +643,12 @@ and call `auth-source-forget+'."
     (setq username (ghub--username host)))
   (if (eq auth 'basic)
       (cl-ecase forge
-        ((nil github)
+        ((nil github gitea)
          (cons "Authorization" (ghub--basic-auth host username)))
         (gitlab
          (error "Gitlab does not support basic authentication")))
     (cons (cl-ecase forge
-            ((nil github)
+            ((nil github gitea)
              "Authorization")
             (gitlab
              "Private-Token"))
@@ -707,9 +707,10 @@ and call `auth-source-forget+'."
                      (cl-ecase forge
                        ((nil github)
                         (ghub--confirm-create-token host username package))
-                       (gitlab
-                        (error "Required Gitlab token does not exist.  \
-See https://magit.vc/manual/ghub/Gitlab-Support.html for instructions."))))))))
+                       ((gitlab gitea)
+                        (error "Required %s token does not exist.  \
+See https://magit.vc/manual/ghub/Gitlab-Support.html for instructions."
+                               (capitalize (symbol-name forge))))))))))
     (if (functionp token) (funcall token) token)))
 
 (defun ghub--host (&optional forge)
@@ -720,6 +721,9 @@ See https://magit.vc/manual/ghub/Gitlab-Support.html for instructions."))))))))
     (gitlab
      (or (ignore-errors (car (process-lines "git" "config" "gitlab.host")))
          (bound-and-true-p glab-default-host)))
+    (gitea
+     (or (ignore-errors (car (process-lines "git" "config" "gitea.host")))
+         (bound-and-true-p gtea-default-host)))
     ))
 
 (defun ghub--username (host &optional forge)
@@ -729,6 +733,7 @@ See https://magit.vc/manual/ghub/Gitlab-Support.html for instructions."))))))))
                     "gitlab.user")
                    ((eq forge 'github)    (format "github.%s.user"    host))
                    ((eq forge 'gitlab)    (format "gitlab.%s.user"    host))
+                   ((eq forge 'gitea)     (format "gitea.%s.user"     host))
                    )))
     (condition-case nil
         (car (process-lines "git" "config" var))
