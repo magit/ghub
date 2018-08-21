@@ -723,10 +723,13 @@ See https://magit.vc/manual/ghub/Gitlab-Support.html for instructions."))))))))
     ))
 
 (defun ghub--username (host &optional forge)
-  (let ((var (cond ((string-prefix-p "api.github.com" host) "github.user")
-                   ((string-prefix-p "gitlab.com/api" host) "gitlab.user")
-                   ((eq forge 'gitlab)     (format "gitlab.%s.user" host))
-                   (t                      (format "github.%s.user" host)))))
+  (let ((var (cond ((equal host ghub-default-host)
+                    "github.user")
+                   ((equal host (bound-and-true-p glab-default-host))
+                    "gitlab.user")
+                   ((eq forge 'github)    (format "github.%s.user"    host))
+                   ((eq forge 'gitlab)    (format "gitlab.%s.user"    host))
+                   )))
     (condition-case nil
         (car (process-lines "git" "config" var))
       (error
