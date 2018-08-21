@@ -642,12 +642,16 @@ and call `auth-source-forget+'."
   (unless username
     (setq username (ghub--username host)))
   (if (eq auth 'basic)
-      (if (eq forge 'gitlab)
-          (error "Gitlab does not support basic authentication")
-        (cons "Authorization" (ghub--basic-auth host username)))
-    (cons (if (eq forge 'gitlab)
-              "Private-Token"
-            "Authorization")
+      (cl-ecase forge
+        ((nil github)
+         (cons "Authorization" (ghub--basic-auth host username)))
+        (gitlab
+         (error "Gitlab does not support basic authentication")))
+    (cons (cl-ecase forge
+            ((nil github)
+             "Authorization")
+            (gitlab
+             "Private-Token"))
           (concat
            (and (not (eq forge 'gitlab)) "token ")
            (encode-coding-string
@@ -700,21 +704,23 @@ and call `auth-source-forget+'."
                 ;; end for Emacs releases before 26.1.  See #24, #64.
                 (auth-source-forget (list :host host :user user :max 1))
                 (and (not nocreate)
-                     (if (eq forge 'gitlab)
-                         (error
-                          (concat
-                           "Required Gitlab token does not exist.  See "
-                           "https://magit.vc/manual/ghub/Gitlab-Support.html "
-                           "for instructions."))
-                       (ghub--confirm-create-token host username package)))))))
+                     (cl-ecase forge
+                       ((nil github)
+                        (ghub--confirm-create-token host username package))
+                       (gitlab
+                        (error "Required Gitlab token does not exist.  \
+See https://magit.vc/manual/ghub/Gitlab-Support.html for instructions."))))))))
     (if (functionp token) (funcall token) token)))
 
 (defun ghub--host (&optional forge)
-  (if (eq forge 'gitlab)
-      (or (ignore-errors (car (process-lines "git" "config" "gitlab.host")))
-          (bound-and-true-p glab-default-host))
-    (or (ignore-errors (car (process-lines "git" "config" "github.host")))
-        ghub-default-host)))
+  (cl-ecase forge
+    ((nil github)
+     (or (ignore-errors (car (process-lines "git" "config" "github.host")))
+         ghub-default-host))
+    (gitlab
+     (or (ignore-errors (car (process-lines "git" "config" "gitlab.host")))
+         (bound-and-true-p glab-default-host)))
+    ))
 
 (defun ghub--username (host &optional forge)
   (let ((var (cond ((string-prefix-p "api.github.com" host) "github.user")
