@@ -59,7 +59,8 @@
 
 ;;; Settings
 
-(defconst ghub-default-host "api.github.com")
+(defconst ghub-default-host "api.github.com"
+  "The default host that is used if `ghub.host' is not set.")
 
 (defvar ghub-github-token-scopes '(repo)
   "The Github API scopes that your private tools need.
