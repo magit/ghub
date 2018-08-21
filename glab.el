@@ -5,7 +5,6 @@
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/magit/ghub
 ;; Keywords: tools
-;; Package-Requires: ((emacs "24.4") (ghub "2.0"))
 
 ;; This file is not part of GNU Emacs.
 

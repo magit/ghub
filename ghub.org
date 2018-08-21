@@ -846,8 +846,8 @@ local machine, which is done using a lisp variable.
 
 Support for Gitlab.com and other Gitlab instances is implemented in
 the library ~glab.el~.  This library is build on top of ~ghub.el~ and is
-maintained in the same repository, but it is distributed as a separate
-package.
+maintained in the same repository and because it has no additional
+dependencies it is distributed as part of the Ghub package.
 
 When accessing Gitlab.com or another Gitlab instance, use ~glab-request~
 instead of ~ghub-request~, ~glab-get~ instead of ~ghub-get~, etc.  Likewise
