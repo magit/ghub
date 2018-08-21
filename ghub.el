@@ -643,12 +643,12 @@ and call `auth-source-forget+'."
     (setq username (ghub--username host)))
   (if (eq auth 'basic)
       (cl-ecase forge
-        ((nil github gitea)
+        ((nil github gitea gogs)
          (cons "Authorization" (ghub--basic-auth host username)))
         (gitlab
          (error "Gitlab does not support basic authentication")))
     (cons (cl-ecase forge
-            ((nil github gitea)
+            ((nil github gitea gogs)
              "Authorization")
             (gitlab
              "Private-Token"))
@@ -707,7 +707,7 @@ and call `auth-source-forget+'."
                      (cl-ecase forge
                        ((nil github)
                         (ghub--confirm-create-token host username package))
-                       ((gitlab gitea)
+                       ((gitlab gitea gogs)
                         (error "Required %s token does not exist.  \
 See https://magit.vc/manual/ghub/Gitlab-Support.html for instructions."
                                (capitalize (symbol-name forge))))))))))
@@ -724,6 +724,9 @@ See https://magit.vc/manual/ghub/Gitlab-Support.html for instructions."
     (gitea
      (or (ignore-errors (car (process-lines "git" "config" "gitea.host")))
          (bound-and-true-p gtea-default-host)))
+    (gogs
+     (or (ignore-errors (car (process-lines "git" "config" "gogs.host")))
+         (bound-and-true-p gogs-default-host)))
     ))
 
 (defun ghub--username (host &optional forge)
@@ -734,7 +737,7 @@ See https://magit.vc/manual/ghub/Gitlab-Support.html for instructions."
                    ((eq forge 'github)    (format "github.%s.user"    host))
                    ((eq forge 'gitlab)    (format "gitlab.%s.user"    host))
                    ((eq forge 'gitea)     (format "gitea.%s.user"     host))
-                   )))
+                   ((eq forge 'gogs)      (format "gogs.%s.user"      host)))))
     (condition-case nil
         (car (process-lines "git" "config" var))
       (error

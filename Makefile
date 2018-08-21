@@ -6,6 +6,7 @@ ELS   = $(PKG).el
 ELS  += $(PKG)-graphql.el
 ELS  += glab.el
 ELS  += gtea.el
+ELS  += gogs.el
 ELCS  = $(ELS:.el=.elc)
 
 DEPS  =
