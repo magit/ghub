@@ -634,10 +634,8 @@ and call `auth-source-forget+'."
       (setq username (ghub--username host forge)))
     (lambda ()
       (if (eq auth 'basic)
-          (if (eq forge 'gitlab)
-              (error "Gitlab does not support basic authentication")
-            (cons (cons "Authorization" (ghub--basic-auth host username))
-                  headers))
+          (cons (cons "Authorization" (ghub--basic-auth host username))
+                headers)
         (cons (ghub--auth host auth username forge) headers)))))
 
 (defun ghub--auth (host auth &optional username forge)
