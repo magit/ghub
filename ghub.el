@@ -433,14 +433,13 @@ in `ghub-response-headers'."
                  (headers    (ghub--handle-response-headers status req))
                  (payload    (ghub--handle-response-payload req))
                  (payload    (ghub--handle-response-error status payload req))
-                 (value      (nconc (ghub--req-value req) payload))
+                 (value      (ghub--handle-response-value payload req))
                  (next       (cdr (assq 'next (ghub-response-link-relations
                                                headers)))))
             (when (numberp unpaginate)
               (cl-decf unpaginate))
             (setf (ghub--req-url req)
                   (url-generic-parse-url next))
-            (setf (ghub--req-value req) value)
             (setf (ghub--req-unpaginate req) unpaginate)
             (or (and next
                      unpaginate
@@ -500,6 +499,11 @@ in `ghub-response-headers'."
                             payload)))
           (signal 'ghub-error data))
       (signal symb data))))
+
+(defun ghub--handle-response-value (payload req)
+  (setf (ghub--req-value req)
+        (nconc (ghub--req-value req)
+               payload)))
 
 (defun ghub--handle-response-payload (req)
   (funcall (or (ghub--req-reader req)
