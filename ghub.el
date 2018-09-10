@@ -744,9 +744,10 @@ and call `auth-source-forget+'."
                        ((nil github)
                         (ghub--confirm-create-token host username package))
                        ((gitlab gitea gogs bitbucket)
-                        (error "Required %s token does not exist.  See \
-https://magit.vc/manual/ghub/Support-for-Other-Forges.html for instructions."
-                               (capitalize (symbol-name forge))))))))))
+                        (error "Required %s token (%S for %S) does not exist.
+See https://magit.vc/manual/ghub/Support-for-Other-Forges.html for instructions."
+                               (capitalize (symbol-name forge))
+                               user host))))))))
     (if (functionp token) (funcall token) token)))
 
 (defun ghub--host (&optional forge)
