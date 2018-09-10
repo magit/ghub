@@ -94,6 +94,7 @@ used instead.")
                (:constructor ghub--make-req)
                (:copier nil))
   (url        nil :read-only nil)
+  (forge      nil :read-only t)
   (silent     nil :read-only t)
   (method     nil :read-only t)
   (headers    nil :read-only t)
@@ -327,6 +328,7 @@ Both callbacks are called with four arguments.
     :url (url-generic-parse-url
           (concat "https://" host resource
                   (and query (concat "?" (ghub--url-encode-params query)))))
+    :forge forge
     :silent silent
     ;; Encode in case caller used (symbol-name 'GET). #35
     :method     (encode-coding-string method 'utf-8)
