@@ -30,7 +30,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 2.0.1 (v2.0.1-10-g85b5ae3+1)
+@subtitle for version 2.0.1 (v2.0.1-38-g86a5c13+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -61,7 +61,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 @noindent
-This manual is for Ghub version 2.0.1 (v2.0.1-10-g85b5ae3+1).
+This manual is for Ghub version 2.0.1 (v2.0.1-38-g86a5c13+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -794,10 +794,16 @@ To access the response headers use this variable after @code{ghub-request}
 has returned.
 @end defvar
 
-@defun ghub-response-link-relations headers
+@defun ghub-response-link-relations req headers payload
 
 This function returns an alist of the link relations in @code{HEADERS}, or
 if optional @code{HEADERS} is nil, then those in @code{ghub-response-headers}.
+
+When accessing a Bitbucket instance then the link relations are in
+@code{PAYLOAD} instead of @code{HEADERS}, making their API merely RESTish and
+forcing this function to append those relations to the value of
+@code{ghub-response-headers}, for later use when this function is called
+with @code{nil} for @code{PAYLOAD}.
 @end defun
 
 @defvar ghub-override-system-name
@@ -1020,8 +1026,8 @@ returned by @code{system-name}.
 
 Support for Gitlab.com and other Gitlab instances is implemented in
 the library @code{glab.el}.  This library is build on top of @code{ghub.el} and is
-maintained in the same repository, but it is distributed as a separate
-package.
+maintained in the same repository and because it has no additional
+dependencies it is distributed as part of the Ghub package.
 
 When accessing Gitlab.com or another Gitlab instance, use @code{glab-request}
 instead of @code{ghub-request}, @code{glab-get} instead of @code{ghub-get}, etc.  Likewise

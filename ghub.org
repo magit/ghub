@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 2.0.1 (v2.0.1-10-g85b5ae3+1)
+#+SUBTITLE: for version 2.0.1 (v2.0.1-38-g86a5c13+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -32,7 +32,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 2.0.1 (v2.0.1-10-g85b5ae3+1).
+This manual is for Ghub version 2.0.1 (v2.0.1-38-g86a5c13+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -642,10 +642,16 @@ latter is documented at https://developer.github.com/v3.
   To access the response headers use this variable after ~ghub-request~
   has returned.
 
-- Function: ghub-response-link-relations headers
+- Function: ghub-response-link-relations req headers payload
 
   This function returns an alist of the link relations in ~HEADERS~, or
   if optional ~HEADERS~ is nil, then those in ~ghub-response-headers~.
+
+  When accessing a Bitbucket instance then the link relations are in
+  ~PAYLOAD~ instead of ~HEADERS~, making their API merely RESTish and
+  forcing this function to append those relations to the value of
+  ~ghub-response-headers~, for later use when this function is called
+  with ~nil~ for ~PAYLOAD~.
 
 - Variable: ghub-override-system-name
 

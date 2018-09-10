@@ -356,7 +356,7 @@ to this function.  A callbacks may use the struct's `extra' slot
 to pass additional information to the callback that will be
 called after the next request has finished.  Use the function
 `ghub-req-extra' to get and set the value of this slot."
-  (and (assq 'next (ghub-response-link-relations))
+  (and (assq 'next (ghub-response-link-relations req))
        (or (ghub--retrieve nil req) t)))
 
 (cl-defun ghub-wait (resource &optional duration &key username auth host)
@@ -387,16 +387,35 @@ See `ghub-request' for information about the other arguments."
                 (cl-incf total wait))
             (sit-for (setq total 2))))))))
 
-(defun ghub-response-link-relations (&optional headers)
+(defun ghub-response-link-relations (req &optional headers payload)
   "Return an alist of link relations in HEADERS.
-If optional HEADERS is nil, then return those
-in `ghub-response-headers'."
+If optional HEADERS is nil, then return those that were
+previously stored in the variable `ghub-response-headers'.
+
+When accessing a Bitbucket instance then the link relations
+are in PAYLOAD instead of HEADERS, making their API merely
+RESTish and forcing this function to append those relations
+to the value of `ghub-response-headers', for later use when
+this function is called with nil for PAYLOAD."
+  (if (eq (ghub--req-forge req) 'bitbucket)
+      (if payload
+          (let* ((page (cl-mapcan (lambda (key)
+                                    (when-let ((elt (assq key payload)))
+                                      (list elt)))
+                                  '(size page pagelen next previous)))
+                 (headers (cons (cons 'link-alist page) headers)))
+            (if (and req (or (ghub--req-callback req)
+                             (ghub--req-errorback req)))
+                (setq-local ghub-response-headers headers)
+              (setq-default ghub-response-headers headers))
+            page)
+        (cdr (assq 'link-alist ghub-response-headers)))
   (when-let ((rels (cdr (assoc "Link" (or headers ghub-response-headers)))))
     (mapcar (lambda (elt)
               (pcase-let ((`(,url ,rel) (split-string elt "; ")))
                 (cons (intern (substring rel 5 -1))
                       (substring url 1 -1))))
-            (split-string rels ", "))))
+            (split-string rels ", ")))))
 
 ;;;; Internal
 
@@ -437,7 +456,7 @@ in `ghub-response-headers'."
                  (payload    (ghub--handle-response-error status payload req))
                  (value      (ghub--handle-response-value payload req))
                  (next       (cdr (assq 'next (ghub-response-link-relations
-                                               headers)))))
+                                               req headers payload)))))
             (when (numberp unpaginate)
               (cl-decf unpaginate))
             (setf (ghub--req-url req)
@@ -505,7 +524,10 @@ in `ghub-response-headers'."
 (defun ghub--handle-response-value (payload req)
   (setf (ghub--req-value req)
         (nconc (ghub--req-value req)
-               payload)))
+               (if-let ((nested (and (eq (ghub--req-forge req) 'bitbucket)
+                                     (assq 'values payload))))
+                   (cdr nested)
+                 payload))))
 
 (defun ghub--handle-response-payload (req)
   (funcall (or (ghub--req-reader req)
@@ -649,12 +671,12 @@ and call `auth-source-forget+'."
     (setq username (ghub--username host)))
   (if (eq auth 'basic)
       (cl-ecase forge
-        ((nil github gitea gogs)
+        ((nil github gitea gogs bitbucket)
          (cons "Authorization" (ghub--basic-auth host username)))
         (gitlab
          (error "Gitlab does not support basic authentication")))
     (cons (cl-ecase forge
-            ((nil github gitea gogs)
+            ((nil github gitea gogs bitbucket)
              "Authorization")
             (gitlab
              "Private-Token"))
@@ -713,7 +735,7 @@ and call `auth-source-forget+'."
                      (cl-ecase forge
                        ((nil github)
                         (ghub--confirm-create-token host username package))
-                       ((gitlab gitea gogs)
+                       ((gitlab gitea gogs bitbucket)
                         (error "Required %s token does not exist.  \
 See https://magit.vc/manual/ghub/Gitlab-Support.html for instructions."
                                (capitalize (symbol-name forge))))))))))
@@ -733,15 +755,20 @@ See https://magit.vc/manual/ghub/Gitlab-Support.html for instructions."
     (gogs
      (or (ignore-errors (car (process-lines "git" "config" "gogs.host")))
          (bound-and-true-p gogs-default-host)))
-    ))
+    (bitbucket
+     (or (ignore-errors (car (process-lines "git" "config" "bitbucket.host")))
+         (bound-and-true-p buck-default-host)))))
 
 (defun ghub--username (host &optional forge)
   (let ((var (cond ((equal host ghub-default-host)
                     "github.user")
                    ((equal host (bound-and-true-p glab-default-host))
                     "gitlab.user")
+                   ((equal host (bound-and-true-p buck-default-host))
+                    "bitbucket.user")
                    ((eq forge 'github)    (format "github.%s.user"    host))
                    ((eq forge 'gitlab)    (format "gitlab.%s.user"    host))
+                   ((eq forge 'bitbucket) (format "bitbucket.%s.user" host))
                    ((eq forge 'gitea)     (format "gitea.%s.user"     host))
                    ((eq forge 'gogs)      (format "gogs.%s.user"      host)))))
     (condition-case nil
