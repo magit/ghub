@@ -389,12 +389,12 @@ See `ghub-request' for information about the other arguments."
   "Return an alist of link relations in HEADERS.
 If optional HEADERS is nil, then return those
 in `ghub-response-headers'."
-  (let ((rels (cdr (assoc "Link" (or headers ghub-response-headers)))))
-    (and rels (mapcar (lambda (elt)
-                        (pcase-let ((`(,url ,rel) (split-string elt "; ")))
-                          (cons (intern (substring rel 5 -1))
-                                (substring url 1 -1))))
-                      (split-string rels ", ")))))
+  (when-let ((rels (cdr (assoc "Link" (or headers ghub-response-headers)))))
+    (mapcar (lambda (elt)
+              (pcase-let ((`(,url ,rel) (split-string elt "; ")))
+                (cons (intern (substring rel 5 -1))
+                      (substring url 1 -1))))
+            (split-string rels ", "))))
 
 ;;;; Internal
 
