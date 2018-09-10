@@ -8,31 +8,37 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 2.0.1 (v2.0.1-10-g85b5ae3+1)
-#+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
+#+SUBTITLE: for version 2.0.1 (v2.0.1-39-g52e5352+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
+#+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
-Ghub is a library that provides basic support for using the Github API
-from Emacs packages.  It abstracts access to API resources using only
-a handful of functions that are not resource-specific.
+Ghub provides basic support for using the APIs of various Git forges
+from Emacs packages.  Originally it only supported the Github REST
+API, but now it also supports the Github GraphQL API as well as the
+REST APIs of Gitlab, Gitea, Gogs and Bitbucket.
 
-Ghub handles the creation, storage and use of access tokens using a
-setup wizard to make it easier for users to get started and to reduce
-the support burden imposed on package maintainers.  It also comes with
-a comprehensive manual to address the cases when things don't just
-work as expected or in case you don't want to use the wizard.
+Ghub abstracts access to API resources using only a handful of basic
+functions such as `ghub-get`.  These are convenience wrappers around
+`ghub-request`.  Additional forge-specific wrappers like `glab-put`,
+`gtea-put`, `gogs-post` and `buck-delete` are also available.  Ghub
+does not provide any resource-specific functions, with the exception
+of `FORGE-repository-id`.
+
+When accessing Github, then Ghub handles the creation and storage of
+access tokens using a setup wizard to make it easier for users to get
+started.  The tokens for other forges have to be created manually.
 
 Ghub is intentionally limited to only provide these two essential
 features — basic request functions and guided setup — to avoid being
 too opinionated, which would hinder wide adoption.  It is assumed that
 wide adoption would make life easier for users and maintainers alike,
-because then all packages that talk to the Github API could be
-configured the same way.
+because then all packages that talk to forge APIs could be configured
+the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 2.0.1 (v2.0.1-10-g85b5ae3+1).
+This manual is for Ghub version 2.0.1 (v2.0.1-39-g52e5352+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -50,22 +56,28 @@ General Public License for more details.
 :END:
 * Introduction
 
-Ghub is a library that provides basic support for using the Github API
-from Emacs packages.  It abstracts access to API resources using only
-a handful of functions that are not resource-specific.
+Ghub provides basic support for using the APIs of various Git forges
+from Emacs packages.  Originally it only supported the Github REST
+API, but now it also supports the Github GraphQL API as well as the
+REST APIs of Gitlab, Gitea, Gogs and Bitbucket.
 
-Ghub handles the creation, storage and use of access tokens using a
-setup wizard to make it easier for users to get started and to reduce
-the support burden imposed on package maintainers.  It also comes with
-a comprehensive manual to address the cases when things don't just
-work as expected or in case you don't want to use the wizard.
+Ghub abstracts access to API resources using only a handful of basic
+functions such as `ghub-get`.  These are convenience wrappers around
+`ghub-request`.  Additional forge-specific wrappers like `glab-put`,
+`gtea-put`, `gogs-post` and `buck-delete` are also available.  Ghub
+does not provide any resource-specific functions, with the exception
+of `FORGE-repository-id`.
+
+When accessing Github, then Ghub handles the creation and storage of
+access tokens using a setup wizard to make it easier for users to get
+started.  The tokens for other forges have to be created manually.
 
 Ghub is intentionally limited to only provide these two essential
 features — basic request functions and guided setup — to avoid being
 too opinionated, which would hinder wide adoption.  It is assumed that
 wide adoption would make life easier for users and maintainers alike,
-because then all packages that talk to the Github API could be
-configured the same way.
+because then all packages that talk to forge APIs could be configured
+the same way.
 
 Fancier interfaces can be implemented on top of Ghub, and one such
 wrapper — named simply Ghub+ — has already been implemented.  The
@@ -103,11 +115,11 @@ Each package that uses Ghub uses its own token.  Despite that, chances
 are good that after successfully configuring one package you can just
 start using another package pretty much instantly.
 
-If the necessary token is not available when a package makes an API
-request, then a setup wizard pops up, and after answering a few
-questions you are good to go.  Even the request that caused the wizard
-to be summoned should succeed and for most users this should be true
-even when configuring the very first token.
+If the necessary token to access a Github instance is not available
+when a package makes an API request, then a setup wizard pops up, and
+after answering a few questions you are good to go.  Even the request
+that caused the wizard to be summoned should succeed and for most
+users this should be true even when configuring the very first token.
 
 However, in some situations some manual configuration is necessary
 *before* using the wizard, or the wizard cannot be used at all:
@@ -116,9 +128,10 @@ However, in some situations some manual configuration is necessary
   create tokens manually as described in [[*Manually Creating and
   Storing a Token]].
 
-- If you want to access Gitlab.com or another Gitlab instance, then
-  you have to create the token manually as describe in [[*Manually
-  Creating and Storing a Token]].  Also see [[*Gitlab Support]].
+- Unfortunately only Github supports the creation of tokens by using
+  the API.  If you want to access another forge, then you have to
+  create the token manually as describe in [[*Manually Creating and
+  Storing a Token]].  Also see [[*Support for Other Forges]].
 
 - If you want to access a Github Enterprise instance, then you have
   to tell Ghub about that before the wizard makes its appearance by
@@ -130,7 +143,7 @@ However, in some situations some manual configuration is necessary
   instance) is unset when the wizard is first summoned, then you are
   asked to provide your username.  That value is then stored *globally*
   to avoid having to ask you that question once per repository.  If
-  you have multiple accounts on Github.com (or an Enterprise
+  you have multiple accounts on Github.com (or a Github Enterprise
   instance), then you have to explicitly tell Ghub about that.  This
   can be done by setting the repository-local values of the
   appropriate variable *before* the wizard is invoked.
@@ -268,7 +281,7 @@ of the doubts that you might have:
   #+BEGIN_EXAMPLE
     WARNING: The token will be stored unencrypted in "~/.authinfo".
              If you don't want that, you have to abort and customize
-             the `auth-sources' option.\n\n" (car auth-sources))
+             the `auth-sources' option.
   #+END_EXAMPLE
 
   Whether that is something that needs fixing, is up to you.  If your
@@ -471,9 +484,16 @@ behalf of which package a request is being made by passing the symbol
 * API
 
 This section describes the Ghub API.  In other words it describes the
-public functions and variables provided by the Ghub library and not
-the Github API that can be accessed by using those functions.  The
-latter is documented at https://developer.github.com/v3.
+public functions and variables provided by the Ghub package and not
+the APIs of the supported forges, which can be accessed by using those
+functions.  The forge APIs are documented at:
+
+- Github: https://developer.github.com/v3
+- Gitlab: https://docs.gitlab.com/ee/api/README.html
+- Gitea: https://docs.gitea.io/en-us/api-usage and
+  https://try.gitea.io/api/swagger
+- Gogs: https://github.com/gogs/go-gogs-client/wiki
+- Bitbucket: https://developer.atlassian.com/bitbucket/api/2/reference
 
 ** Making Requests
 
@@ -596,7 +616,7 @@ latter is documented at https://developer.github.com/v3.
 
   Callbacks are called with four arguments (see ~ghub-request~).
   The forth argument is a ~ghub--req~ struct, intended to be passed
-  to this function.  A callbacks may use the struct's ~extra~ slot
+  to this function.  A callback may use the struct's ~extra~ slot
   to pass additional information to the callback that will be called
   after the next request.  Use the function ~ghub-req-extra~ to get
   and set the value of that slot.
@@ -642,10 +662,16 @@ latter is documented at https://developer.github.com/v3.
   To access the response headers use this variable after ~ghub-request~
   has returned.
 
-- Function: ghub-response-link-relations headers
+- Function: ghub-response-link-relations req headers payload
 
   This function returns an alist of the link relations in ~HEADERS~, or
   if optional ~HEADERS~ is nil, then those in ~ghub-response-headers~.
+
+  When accessing a Bitbucket instance then the link relations are in
+  ~PAYLOAD~ instead of ~HEADERS~, making their API merely RESTish and
+  forcing this function to append those relations to the value of
+  ~ghub-response-headers~, for later use when this function is called
+  with ~nil~ for ~PAYLOAD~.
 
 - Variable: ghub-override-system-name
 
@@ -842,39 +868,133 @@ local machine, which is done using a lisp variable.
   then be used to identify the local machine instead of the value
   returned by ~system-name~.
 
-* Gitlab Support
+* Support for Other Forges
+** Forge Functions and Variables
 
-Support for Gitlab.com and other Gitlab instances is implemented in
-the library ~glab.el~.  This library is build on top of ~ghub.el~ and is
-maintained in the same repository and because it has no additional
-dependencies it is distributed as part of the Ghub package.
+Originally Ghub supported only Github but now it also supports Gitlab,
+Gitea, Gogs and Bitbucket.  The function ~ghub-request~ and all the
+~ghub-METHOD~ convenience wrappers default to acting on a Github forge
+but can be told to act on another forge using their FORGE argument.
 
-When accessing Gitlab.com or another Gitlab instance, use ~glab-request~
-instead of ~ghub-request~, ~glab-get~ instead of ~ghub-get~, etc.  Likewise
-use the Git variables in the ~gitlab~ group instead of those in the
-~github~ group, i.e.  ~gitlab.user~, ~gitlab.HOST.user~ and ~gitlab.host~.
+The FORGE argument only specifies what kind of forge to act on, not
+which instance.  The HOST argument can be used to select the instance.
+For some forges a default instance is defined:
 
-The Gitlab API cannot be used to create tokens, so Glab cannot provide
-a setup wizard like Ghub does.  As a consequence, if the user makes a
-request and the necessary token cannot be found, then that results in
-an error.
+- Forge ~github~ defaults to host ~api.github.com~.
+- Forge ~gitlab~ defaults to host ~gitlab.com/api/v4~.
+- Forge ~bitbucket~ defaults to host ~api.bitbucket.org/2.0~.
+- No canonical host exists for the ~gitea~ and ~gogs~ forges and
+  ~localhost:3000/api/v1~ is used as the default host in both cases.
 
-You have to manually create and store the necessary tokens.  Tokens
-can be created at https://gitlab.com/profile/personal_access_tokens,
-or the equivalent URL for another Gitlab instance.  To store the token
-locally, follow the instructions in [[*Manually Creating and Storing a
-Token]] and [[*How Ghub uses Auth-Source]].
+Together the FORGE and HOST arguments specify the forge type and
+instance.  In addition to that, it is also necessary to specify on
+whose behalf the request is being made, which can be done using the
+USERNAME and AUTH arguments.
 
-Packages that use Glab can define ~PACKAGE-gitlab-token-scopes~ for
-documentation purposes.  But unlike ~PACKAGE-github-token-scopes~,
-which is used by the setup wizard, this is optional.
+Having to specify these arguments for every request is inconvenient.
+Additional variables and convenience functions can be used to make
+that unnecessary in most cases.
 
-And a random hint: where you would use ~user/repo~ when accessing Github,
-you have to use ~user%2Frepo~ when accessing Gitlab, e.g.:
+These variables can be set globally and/or for a specific repository
+as explained in [[*Configuration Variables]] with a focus on Github
+instances.  To summarize:
+
+- For https://github.com the Git variable ~github.user~ specifies the
+  user.
+- For another ~github~ instance the Git variable ~github.HOST.user~
+  specifies the user.  The HOST in that variable name is the same
+  as the value of the HOST argument of the called function.
+- Instead of specifying the HOST in every function call, the Git
+  variable ~github.host~ can be used.  This should only be set locally.
+
+#+TEXINFO: @noindent
+For ~gitlab~ and ~bitbucket~ forges similar variables are available:
+
+- ~gitlab.user~ specifies the https://gitlab.com user.
+- ~gitlab.HOST.user~ specifies the user for the HOST ~gitlab~ instance.
+- ~gitlab.host~ specifies the ~gitlab~ host, unless the HOST argument
+  is non-nil
+- ~bitbucket.user~ specifies the https://bitbucket.org user.
+- ~bitbucket.HOST.user~ specifies the user for the HOST ~bitbucket~
+  instance.
+- ~bitbucket.host~ specifies the ~bitbucket~ host, unless the HOST
+  argument is non-nil.
+
+For ~gitea~ and ~gogs~ forges some similar variables are available,
+however for some of the ~ghub.*~ variables no equivalent variable
+exist for these two forges:
+
+- ~gitea.user~ is *not* used because no canonical ~gitea~ instance exists.
+- ~gitea.HOST.user~ specifies the user for the HOST ~gitea~ instance.
+- ~gitea.host~ specifies the ~gitea~ host, unless the HOST argument is
+  non-nil
+- ~gogs.user~ is *not* used because no canonical ~gitea~ instance exists.
+- ~gogs.HOST.user~ specifies the user for the HOST ~gogs~ instance.
+- ~gogs.host~ specifies the ~gogs~ host, unless the HOST argument is
+  non-nil
+
+~ghub-request~ and ~ghub-METHOD~ can be used to make a request for any
+of the supported forge types, but except when making a request for
+a ~github~ instance, then that requires the use of the FORGE argument.
+
+To avoid that, functions named ~FORGE-request~ and ~FORGE-METHOD~ are also
+available.  The following forms are equivalent, for example:
 
 #+BEGIN_SRC emacs-lisp
-  (glab-get "/projects/python-mode-devs%2Fpython-mode")
+  (ghub-get ... :auth 'PACKAGE :forge 'gitlab)
+  (glab-get ... :auth 'PACKAGE)
 #+END_SRC
+
+These forms would remain equivalent even if you did not specify a
+value for the AUTH arguments — but you should not do that if you plan
+to share your code with others (see [[*Using Ghub in a Package]]).  If you
+do omit AUTH, then the request is made on behalf of the ~ghub~ package,
+*regardless* of the symbol prefix of the function you use to do so.
+
+All ~FORGE-request~ and ~FORGE-METHOD~ functions, including but not
+limited to ~ghub-METHOD~, are very simple wrappers around ~ghub-request~.
+They take fewer arguments than ~ghub-request~ and instead pass constant
+values for the arguments METHOD and/or FORGE.
+
+** Forge Limitations and Notes
+
+- The token creation wizard is only available for ~github~ forges,
+  because all other forges do not support using the API to create an
+  API token.  As a consequence, if the user makes a request and the
+  necessary token cannot be found, then that results in an error.
+  Tokens can be created at:
+
+  - Gitlab: https://gitlab.com/profile/personal_access_tokens
+  - Bitbucket: https://bitbucket.org/account/user/tarsius/app-passwords
+  - Gitea: https://localhost:3000/user/settings/applications
+  - Gogs: https://localhost:3000/user/settings/applications
+
+  Also see [[*Manually Creating and Storing a Token]] and [[*How Ghub uses
+  Auth-Source]].
+
+- As mentioned in the previous node, the variables ~gitea.host~ and
+  ~gogs.host~ are not taken into account.
+
+- Gitea and Gogs do not support limiting a token to certain scopes.
+
+- The Bitbucket API is fairly broken.  Some resources only work if a
+  slash is appended while others only work if no slash is appended.  I
+  am unable to access any private repositories and some resources
+  don't work for me at all.  Also the API is only RESTish; pagination
+  information is part of the response body instead of the header.  Due
+  to such issues it is possible that I will eventually have to remove
+  support for Bitbucket altogether.
+
+- The Gitlab API documentation is not always accurate, though I don't
+  have an example at hand.  It also isn't structured well, making it
+  occationally difficult to find the information one is looking for.
+
+- Where one would use ~user/repo~ when accessing another forge, one has
+  to use ~user%2Frepo~ when accessing Gitlab, e.g.:
+
+  #+BEGIN_SRC emacs-lisp
+    (glab-get "/projects/python-mode-devs%2Fpython-mode")
+  #+END_SRC
 
 * _ Copying
 :PROPERTIES:

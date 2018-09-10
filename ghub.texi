@@ -30,7 +30,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 2.0.1 (v2.0.1-10-g85b5ae3+1)
+@subtitle for version 2.0.1 (v2.0.1-39-g52e5352+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -43,25 +43,31 @@ General Public License for more details.
 @node Top
 @top Ghub User and Developer Manual
 
-Ghub is a library that provides basic support for using the Github API
-from Emacs packages.  It abstracts access to API resources using only
-a handful of functions that are not resource-specific.
+Ghub provides basic support for using the APIs of various Git forges
+from Emacs packages.  Originally it only supported the Github REST
+API, but now it also supports the Github GraphQL API as well as the
+REST APIs of Gitlab, Gitea, Gogs and Bitbucket.
 
-Ghub handles the creation, storage and use of access tokens using a
-setup wizard to make it easier for users to get started and to reduce
-the support burden imposed on package maintainers.  It also comes with
-a comprehensive manual to address the cases when things don't just
-work as expected or in case you don't want to use the wizard.
+Ghub abstracts access to API resources using only a handful of basic
+functions such as `ghub-get`.  These are convenience wrappers around
+`ghub-request`.  Additional forge-specific wrappers like `glab-put`,
+`gtea-put`, `gogs-post` and `buck-delete` are also available.  Ghub
+does not provide any resource-specific functions, with the exception
+of `FORGE-repository-id`.
+
+When accessing Github, then Ghub handles the creation and storage of
+access tokens using a setup wizard to make it easier for users to get
+started.  The tokens for other forges have to be created manually.
 
 Ghub is intentionally limited to only provide these two essential
 features — basic request functions and guided setup — to avoid being
 too opinionated, which would hinder wide adoption.  It is assumed that
 wide adoption would make life easier for users and maintainers alike,
-because then all packages that talk to the Github API could be
-configured the same way.
+because then all packages that talk to forge APIs could be configured
+the same way.
 
 @noindent
-This manual is for Ghub version 2.0.1 (v2.0.1-10-g85b5ae3+1).
+This manual is for Ghub version 2.0.1 (v2.0.1-39-g52e5352+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -84,7 +90,7 @@ General Public License for more details.
 * Using Ghub in Personal Scripts::
 * Using Ghub in a Package::
 * API::
-* Gitlab Support::
+* Support for Other Forges::
 
 @detailmenu
 --- The Detailed Node Listing ---
@@ -102,28 +108,39 @@ API
 * Authentication::
 * Configuration Variables::
 
+Support for Other Forges
+
+* Forge Functions and Variables::
+* Forge Limitations and Notes::
+
 @end detailmenu
 @end menu
 
 @node Introduction
 @chapter Introduction
 
-Ghub is a library that provides basic support for using the Github API
-from Emacs packages.  It abstracts access to API resources using only
-a handful of functions that are not resource-specific.
+Ghub provides basic support for using the APIs of various Git forges
+from Emacs packages.  Originally it only supported the Github REST
+API, but now it also supports the Github GraphQL API as well as the
+REST APIs of Gitlab, Gitea, Gogs and Bitbucket.
 
-Ghub handles the creation, storage and use of access tokens using a
-setup wizard to make it easier for users to get started and to reduce
-the support burden imposed on package maintainers.  It also comes with
-a comprehensive manual to address the cases when things don't just
-work as expected or in case you don't want to use the wizard.
+Ghub abstracts access to API resources using only a handful of basic
+functions such as `ghub-get`.  These are convenience wrappers around
+`ghub-request`.  Additional forge-specific wrappers like `glab-put`,
+`gtea-put`, `gogs-post` and `buck-delete` are also available.  Ghub
+does not provide any resource-specific functions, with the exception
+of `FORGE-repository-id`.
+
+When accessing Github, then Ghub handles the creation and storage of
+access tokens using a setup wizard to make it easier for users to get
+started.  The tokens for other forges have to be created manually.
 
 Ghub is intentionally limited to only provide these two essential
 features — basic request functions and guided setup — to avoid being
 too opinionated, which would hinder wide adoption.  It is assumed that
 wide adoption would make life easier for users and maintainers alike,
-because then all packages that talk to the Github API could be
-configured the same way.
+because then all packages that talk to forge APIs could be configured
+the same way.
 
 Fancier interfaces can be implemented on top of Ghub, and one such
 wrapper — named simply Ghub+ — has already been implemented.  The
@@ -162,11 +179,11 @@ Each package that uses Ghub uses its own token.  Despite that, chances
 are good that after successfully configuring one package you can just
 start using another package pretty much instantly.
 
-If the necessary token is not available when a package makes an API
-request, then a setup wizard pops up, and after answering a few
-questions you are good to go.  Even the request that caused the wizard
-to be summoned should succeed and for most users this should be true
-even when configuring the very first token.
+If the necessary token to access a Github instance is not available
+when a package makes an API request, then a setup wizard pops up, and
+after answering a few questions you are good to go.  Even the request
+that caused the wizard to be summoned should succeed and for most
+users this should be true even when configuring the very first token.
 
 However, in some situations some manual configuration is necessary
 @strong{before} using the wizard, or the wizard cannot be used at all:
@@ -178,8 +195,9 @@ create tokens manually as described in @ref{Manually Creating and Storing a Toke
 
 
 @item
-If you want to access Gitlab.com or another Gitlab instance, then
-you have to create the token manually as describe in @ref{Manually Creating and Storing a Token}.  Also see @ref{Gitlab Support}.
+Unfortunately only Github supports the creation of tokens by using
+the API@.  If you want to access another forge, then you have to
+create the token manually as describe in @ref{Manually Creating and Storing a Token}.  Also see @ref{Support for Other Forges}.
 
 
 @item
@@ -195,7 +213,7 @@ If the variable @code{github.user} (or @code{github.HOST.user} for an Enterprise
 instance) is unset when the wizard is first summoned, then you are
 asked to provide your username.  That value is then stored @strong{globally}
 to avoid having to ask you that question once per repository.  If
-you have multiple accounts on Github.com (or an Enterprise
+you have multiple accounts on Github.com (or a Github Enterprise
 instance), then you have to explicitly tell Ghub about that.  This
 can be done by setting the repository-local values of the
 appropriate variable @strong{before} the wizard is invoked.
@@ -357,7 +375,7 @@ unexpected, Ghub additionally displays a warning when appropriate.
 @example
 WARNING: The token will be stored unencrypted in "~/.authinfo".
          If you don't want that, you have to abort and customize
-         the `auth-sources' option.\n\n" (car auth-sources))
+         the `auth-sources' option.
 @end example
 
 Whether that is something that needs fixing, is up to you.  If your
@@ -570,9 +588,27 @@ Scopes for USERNAME^PACKAGE@@HOST: (SCOPE...)
 @chapter API
 
 This section describes the Ghub API@.  In other words it describes the
-public functions and variables provided by the Ghub library and not
-the Github API that can be accessed by using those functions.  The
-latter is documented at @uref{https://developer.github.com/v3}.
+public functions and variables provided by the Ghub package and not
+the APIs of the supported forges, which can be accessed by using those
+functions.  The forge APIs are documented at:
+
+@itemize
+@item
+Github: @uref{https://developer.github.com/v3}
+
+@item
+Gitlab: @uref{https://docs.gitlab.com/ee/api/README.html}
+
+@item
+Gitea: @uref{https://docs.gitea.io/en-us/api-usage} and
+@uref{https://try.gitea.io/api/swagger}
+
+@item
+Gogs: @uref{https://github.com/gogs/go-gogs-client/wiki}
+
+@item
+Bitbucket: @uref{https://developer.atlassian.com/bitbucket/api/2/reference}
+@end itemize
 
 @menu
 * Making Requests::
@@ -746,7 +782,7 @@ has already completed.  If there is no next page, then return nil.
 
 Callbacks are called with four arguments (see @code{ghub-request}).
 The forth argument is a @code{ghub--req} struct, intended to be passed
-to this function.  A callbacks may use the struct's @code{extra} slot
+to this function.  A callback may use the struct's @code{extra} slot
 to pass additional information to the callback that will be called
 after the next request.  Use the function @code{ghub-req-extra} to get
 and set the value of that slot.
@@ -794,10 +830,16 @@ To access the response headers use this variable after @code{ghub-request}
 has returned.
 @end defvar
 
-@defun ghub-response-link-relations headers
+@defun ghub-response-link-relations req headers payload
 
 This function returns an alist of the link relations in @code{HEADERS}, or
 if optional @code{HEADERS} is nil, then those in @code{ghub-response-headers}.
+
+When accessing a Bitbucket instance then the link relations are in
+@code{PAYLOAD} instead of @code{HEADERS}, making their API merely RESTish and
+forcing this function to append those relations to the value of
+@code{ghub-response-headers}, for later use when this function is called
+with @code{nil} for @code{PAYLOAD}.
 @end defun
 
 @defvar ghub-override-system-name
@@ -1015,38 +1057,204 @@ then be used to identify the local machine instead of the value
 returned by @code{system-name}.
 @end defvar
 
-@node Gitlab Support
-@chapter Gitlab Support
+@node Support for Other Forges
+@chapter Support for Other Forges
 
-Support for Gitlab.com and other Gitlab instances is implemented in
-the library @code{glab.el}.  This library is build on top of @code{ghub.el} and is
-maintained in the same repository, but it is distributed as a separate
-package.
+@menu
+* Forge Functions and Variables::
+* Forge Limitations and Notes::
+@end menu
 
-When accessing Gitlab.com or another Gitlab instance, use @code{glab-request}
-instead of @code{ghub-request}, @code{glab-get} instead of @code{ghub-get}, etc.  Likewise
-use the Git variables in the @code{gitlab} group instead of those in the
-@code{github} group, i.e.  @code{gitlab.user}, @code{gitlab.HOST.user} and @code{gitlab.host}.
+@node Forge Functions and Variables
+@section Forge Functions and Variables
 
-The Gitlab API cannot be used to create tokens, so Glab cannot provide
-a setup wizard like Ghub does.  As a consequence, if the user makes a
-request and the necessary token cannot be found, then that results in
-an error.
+Originally Ghub supported only Github but now it also supports Gitlab,
+Gitea, Gogs and Bitbucket.  The function @code{ghub-request} and all the
+@code{ghub-METHOD} convenience wrappers default to acting on a Github forge
+but can be told to act on another forge using their FORGE argument.
 
-You have to manually create and store the necessary tokens.  Tokens
-can be created at @uref{https://gitlab.com/profile/personal_access_tokens},
-or the equivalent URL for another Gitlab instance.  To store the token
-locally, follow the instructions in @ref{Manually Creating and Storing a Token} and @ref{How Ghub uses Auth-Source}.
+The FORGE argument only specifies what kind of forge to act on, not
+which instance.  The HOST argument can be used to select the instance.
+For some forges a default instance is defined:
 
-Packages that use Glab can define @code{PACKAGE-gitlab-token-scopes} for
-documentation purposes.  But unlike @code{PACKAGE-github-token-scopes},
-which is used by the setup wizard, this is optional.
+@itemize
+@item
+Forge @code{github} defaults to host @code{api.github.com}.
 
-And a random hint: where you would use @code{user/repo} when accessing Github,
-you have to use @code{user%2Frepo} when accessing Gitlab, e.g.:
+@item
+Forge @code{gitlab} defaults to host @code{gitlab.com/api/v4}.
+
+@item
+Forge @code{bitbucket} defaults to host @code{api.bitbucket.org/2.0}.
+
+@item
+No canonical host exists for the @code{gitea} and @code{gogs} forges and
+@code{localhost:3000/api/v1} is used as the default host in both cases.
+@end itemize
+
+Together the FORGE and HOST arguments specify the forge type and
+instance.  In addition to that, it is also necessary to specify on
+whose behalf the request is being made, which can be done using the
+USERNAME and AUTH arguments.
+
+Having to specify these arguments for every request is inconvenient.
+Additional variables and convenience functions can be used to make
+that unnecessary in most cases.
+
+These variables can be set globally and/or for a specific repository
+as explained in @ref{Configuration Variables} with a focus on Github
+instances.  To summarize:
+
+@itemize
+@item
+For @uref{https://github.com} the Git variable @code{github.user} specifies the
+user.
+
+@item
+For another @code{github} instance the Git variable @code{github.HOST.user}
+specifies the user.  The HOST in that variable name is the same
+as the value of the HOST argument of the called function.
+
+@item
+Instead of specifying the HOST in every function call, the Git
+variable @code{github.host} can be used.  This should only be set locally.
+@end itemize
+
+@noindent
+For @code{gitlab} and @code{bitbucket} forges similar variables are available:
+
+@itemize
+@item
+@code{gitlab.user} specifies the @uref{https://gitlab.com} user.
+
+@item
+@code{gitlab.HOST.user} specifies the user for the HOST @code{gitlab} instance.
+
+@item
+@code{gitlab.host} specifies the @code{gitlab} host, unless the HOST argument
+is non-nil
+
+@item
+@code{bitbucket.user} specifies the @uref{https://bitbucket.org} user.
+
+@item
+@code{bitbucket.HOST.user} specifies the user for the HOST @code{bitbucket}
+instance.
+
+@item
+@code{bitbucket.host} specifies the @code{bitbucket} host, unless the HOST
+argument is non-nil.
+@end itemize
+
+For @code{gitea} and @code{gogs} forges some similar variables are available,
+however for some of the @code{ghub.*} variables no equivalent variable
+exist for these two forges:
+
+@itemize
+@item
+@code{gitea.user} is @strong{not} used because no canonical @code{gitea} instance exists.
+
+@item
+@code{gitea.HOST.user} specifies the user for the HOST @code{gitea} instance.
+
+@item
+@code{gitea.host} specifies the @code{gitea} host, unless the HOST argument is
+non-nil
+
+@item
+@code{gogs.user} is @strong{not} used because no canonical @code{gitea} instance exists.
+
+@item
+@code{gogs.HOST.user} specifies the user for the HOST @code{gogs} instance.
+
+@item
+@code{gogs.host} specifies the @code{gogs} host, unless the HOST argument is
+non-nil
+@end itemize
+
+@code{ghub-request} and @code{ghub-METHOD} can be used to make a request for any
+of the supported forge types, but except when making a request for
+a @code{github} instance, then that requires the use of the FORGE argument.
+
+To avoid that, functions named @code{FORGE-request} and @code{FORGE-METHOD} are also
+available.  The following forms are equivalent, for example:
+
+@lisp
+(ghub-get ... :auth 'PACKAGE :forge 'gitlab)
+(glab-get ... :auth 'PACKAGE)
+@end lisp
+
+These forms would remain equivalent even if you did not specify a
+value for the AUTH arguments — but you should not do that if you plan
+to share your code with others (see @ref{Using Ghub in a Package}).  If you
+do omit AUTH, then the request is made on behalf of the @code{ghub} package,
+@strong{regardless} of the symbol prefix of the function you use to do so.
+
+All @code{FORGE-request} and @code{FORGE-METHOD} functions, including but not
+limited to @code{ghub-METHOD}, are very simple wrappers around @code{ghub-request}.
+They take fewer arguments than @code{ghub-request} and instead pass constant
+values for the arguments METHOD and/or FORGE@.
+
+@node Forge Limitations and Notes
+@section Forge Limitations and Notes
+
+@itemize
+@item
+The token creation wizard is only available for @code{github} forges,
+because all other forges do not support using the API to create an
+API token.  As a consequence, if the user makes a request and the
+necessary token cannot be found, then that results in an error.
+Tokens can be created at:
+
+@itemize
+@item
+Gitlab: @uref{https://gitlab.com/profile/personal_access_tokens}
+
+@item
+Bitbucket: @uref{https://bitbucket.org/account/user/tarsius/app-passwords}
+
+@item
+Gitea: @uref{https://localhost:3000/user/settings/applications}
+
+@item
+Gogs: @uref{https://localhost:3000/user/settings/applications}
+@end itemize
+
+Also see @ref{Manually Creating and Storing a Token} and @ref{How Ghub uses Auth-Source}.
+
+
+@item
+As mentioned in the previous node, the variables @code{gitea.host} and
+@code{gogs.host} are not taken into account.
+
+
+@item
+Gitea and Gogs do not support limiting a token to certain scopes.
+
+
+@item
+The Bitbucket API is fairly broken.  Some resources only work if a
+slash is appended while others only work if no slash is appended.  I
+am unable to access any private repositories and some resources
+don't work for me at all.  Also the API is only RESTish; pagination
+information is part of the response body instead of the header.  Due
+to such issues it is possible that I will eventually have to remove
+support for Bitbucket altogether.
+
+
+@item
+The Gitlab API documentation is not always accurate, though I don't
+have an example at hand.  It also isn't structured well, making it
+occationally difficult to find the information one is looking for.
+
+
+@item
+Where one would use @code{user/repo} when accessing another forge, one has
+to use @code{user%2Frepo} when accessing Gitlab, e.g.:
 
 @lisp
 (glab-get "/projects/python-mode-devs%2Fpython-mode")
 @end lisp
+@end itemize
 
 @bye
