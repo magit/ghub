@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 2.0.1 (v2.0.1-43-g4d7a092+1)
+#+SUBTITLE: for version 2.0.1 (v2.0.1-48-g87701ea+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -38,7 +38,7 @@ because then all packages that talk to forge APIs could be configured
 the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 2.0.1 (v2.0.1-43-g4d7a092+1).
+This manual is for Ghub version 2.0.1 (v2.0.1-48-g87701ea+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -911,7 +911,7 @@ able to "ask for what you need and get exactly that".  But when that
 boils down to "look, if I persist, then you are going to hand me over
 all the data anyway, so just caught it up already", then things start
 to fall apart.  If Github's GraphQL allowed pagination to be turned
-of completely, then teaching ~ghub-graphql~ about error handling would
+off completely, then teaching ~ghub-graphql~ about error handling would
 be enough.
 
 But it doesn't and when doing things as intended, then that leads to
@@ -923,7 +923,7 @@ also more opinionated.
 
 - Function: ghub--graphql-vacuum query variables callback &optional until &key narrow username auth host forge
 
-  This function is an opinionated and magic to ~ghub-graphql~.
+  This function is an opinionated alternative to ~ghub-graphql~.
   It relies and dark magic to get the job done.
 
   It makes an initial request using ~QUERY~.  It then looks for
@@ -940,18 +940,18 @@ also more opinionated.
   implementation is much more complicated because it is not possible
   to do that.
 
-  QUERY is a GraphQL query expressed as a s-expression.  The ~graphql~
+  ~QUERY~ is a GraphQL query expressed as an s-expression.  The ~graphql~
   package is used to turn that into a GraphQL query string, but the
   format is somewhat different than as documented for that package.
   Also only a subset of the GraphQL features are supported; fragments
   for example are not, and magical stuff happens to variables.  This
   is not documented yet, I am afraid.  Look at existing callers.
 
-  VARIABLES is a JSON-like alist as for ~ghub-graphql~.
+  ~VARIABLES~ is a JSON-like alist as for ~ghub-graphql~.
 
-  UNTIL is an alist ~((EDGE-until . VALUE)...)~.  When unpaginating ~EDGE~
+  ~UNTIL~ is an alist ~((EDGE-until . VALUE)...)~.  When unpaginating ~EDGE~
   try not to fetch beyond the element whose first field has the value
-  VALUE and remove that element as well as all "lesser" elements from
+  ~VALUE~ and remove that element as well as all "lesser" elements from
   the retrieved data if necessary.  Look at ~forge--pull-repository~ for
   an example.  This is only useful if you "cache" the response locally
   and want to avoid fetching data again that you already have.
