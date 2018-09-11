@@ -24,4 +24,5 @@ wide adoption would make life easier for users and maintainers alike,
 because then all packages that talk to forge APIs could be configured
 the same way.
 
-Please consult the [manual][manual-ghub] for more information.
+Please consult the [manual](https://magit.vc/manual/ghub) for more
+information.
