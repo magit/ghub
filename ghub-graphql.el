@@ -55,7 +55,7 @@ behave as for `ghub-request' (which see)."
               nil :username username :auth auth :host host)
     .data.rateLimit))
 
-(cl-defun ghub-repository-id (owner name &key username auth host)
+(cl-defun ghub--repository-id (owner name &key username auth host)
   "Return the id of the repository specified by OWNER, NAME and HOST."
   (let-alist (ghub-graphql
               "query ($owner:String!, $name:String!) {

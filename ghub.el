@@ -424,6 +424,12 @@ this function is called with nil for PAYLOAD."
                       (substring url 1 -1))))
             (split-string rels ", ")))))
 
+(cl-defun ghub-repository-id (owner name &key username auth host forge)
+  "Return the id of the specified repository."
+  (let ((fn (intern (format "%s-repository-id" (or forge 'ghub)))))
+    (funcall (if (eq fn 'ghub-repository-id) 'ghub--repository-id fn)
+             owner name :username username :auth auth :host host)))
+
 ;;;; Internal
 
 (cl-defun ghub--retrieve (payload req)
