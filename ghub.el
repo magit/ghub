@@ -774,17 +774,28 @@ See https://magit.vc/manual/ghub/Support-for-Other-Forges.html for instructions.
          (bound-and-true-p buck-default-host)))))
 
 (defun ghub--username (host &optional forge)
-  (let ((var (cond ((equal host ghub-default-host)
-                    "github.user")
-                   ((equal host (bound-and-true-p glab-default-host))
-                    "gitlab.user")
-                   ((equal host (bound-and-true-p buck-default-host))
-                    "bitbucket.user")
-                   ((eq forge 'github)    (format "github.%s.user"    host))
-                   ((eq forge 'gitlab)    (format "gitlab.%s.user"    host))
-                   ((eq forge 'bitbucket) (format "bitbucket.%s.user" host))
-                   ((eq forge 'gitea)     (format "gitea.%s.user"     host))
-                   ((eq forge 'gogs)      (format "gogs.%s.user"      host)))))
+  (let ((var
+         (cl-ecase forge
+           ((nil github)
+            (if (equal host ghub-default-host)
+                "github.user"
+              (format "github.%s.user" host)))
+           (gitlab
+            (if (equal host "gitlab.com/api/v4")
+                "gitlab.user"
+              (format "gitlab.%s.user" host)))
+           (bitbucket
+            (if (equal host "api.bitbucket.org/2.0")
+                "bitbucket.user"
+              (format "bitbucket.%s.user" host)))
+           (gitea
+            (when (zerop (call-process "git" nil nil nil "config" "gitea.host"))
+              (error "gitea.host is set but always ignored"))
+            (format "gitea.%s.user" host))
+           (gogs
+            (when (zerop (call-process "git" nil nil nil "config" "gogs.host"))
+              (error "gogs.host is set but always ignored"))
+            (format "gogs.%s.user"  host)))))
     (condition-case nil
         (car (process-lines "git" "config" var))
       (error
