@@ -103,12 +103,16 @@ behave as for `ghub-request' (which see)."
                      locked
                      (milestone id)
                      body
-                     (comments [(:edges t)]
-                               databaseId
-                               (author login)
-	                       createdAt
-	                       updatedAt
-                               body))
+                     (assignees [(:edges t)]
+                                id)
+                     (comments  [(:edges t)]
+                                databaseId
+                                (author login)
+	                        createdAt
+	                        updatedAt
+                                body)
+                     (labels    [(:edges t)]
+                                id))
      (labels         [(:edges t)
                       (:singular label id)]
                      id
@@ -136,12 +140,16 @@ behave as for `ghub-request' (which see)."
                      (headRef name
                               (repository (owner login)
                                           nameWithOwner))
-                     (comments [(:edges t)]
-                               databaseId
-                               (author login)
-                               createdAt
-	                       updatedAt
-	                       body)))))
+                     (assignees [(:edges t)]
+                                id)
+                     (comments  [(:edges t)]
+                                databaseId
+                                (author login)
+                                createdAt
+	                        updatedAt
+	                        body)
+                     (labels    [(:edges t)]
+                                id)))))
 
 (cl-defun ghub-fetch-repository (owner name callback
                                        &optional until
