@@ -90,6 +90,10 @@ behave as for `ghub-request' (which see)."
      (licenseInfo name)
      (stargazers totalCount)
      (watchers totalCount)
+     (assignableUsers [(:edges t)]
+                      id
+                      login
+                      name)
      (issues         [(:edges t)
                       (:singular issue number)
                       (orderBy ((field . UPDATED_AT) (direction . DESC)))]
