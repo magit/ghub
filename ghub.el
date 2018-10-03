@@ -880,16 +880,12 @@ WARNING: The token will be stored unencrypted in %S.
           ;; simplicity it's better to error out here and ask the user to
           ;; take action. This situation should almost never arise anyway.
           (ghub-http-error
-           (if (string=
-                "already_exists"
-                (let-alist (nth 3 ghub--create-token-error)
-                  (car .errors.code)))
-               (error
-                (concat "A token named %S\nalready exists on Github."
-                        " Please visit "
-                        "https://github.com/settings/tokens and"
-                        " delete it.")
-                ident))))
+           (if (string-equal (let-alist (nth 3 ghub--create-token-error)
+                               (car .errors.code))
+                             "already_exists")
+               (error "\
+A token named %S ready exists on Github. \
+Please visit https://github.com/settings/tokens and delete it." ident))))
       (user-error "Abort"))))
 
 (defun ghub--get-token-id (host username package)
