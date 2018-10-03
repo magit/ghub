@@ -856,15 +856,36 @@ WARNING: The token will be stored unencrypted in %S.
          If you don't want that, you have to abort and customize
          the `auth-sources' option.\n" (car auth-sources))
               ""))))
-        (progn
-          (when (ghub--get-token-id host username package)
-            (if (yes-or-no-p
-                 (format
-                  "A token named %S\nalready exists on Github.  Replace it?"
-                  ident))
-                (ghub--delete-token host username package)
-              (user-error "Abort")))
-          (ghub-create-token host username package scopes))
+        (condition-case ghub--create-token-error
+            ;; Naively attempt to create the token since the user told us to
+            (ghub-create-token host username package scopes)
+          ;; The API _may_ respond with the fact that a token of the name
+          ;; we wanted already exists. At this point we're out of luck. We
+          ;; don't have a token (otherwise why would we be here?) and, if
+          ;; the user is using SMS 2FA, we have no way of telling GitHub
+          ;; to send a new 2FA code to the user other than sending a POST
+          ;; to /authorizations which is ugly.
+          ;;
+          ;; If they are not using SMS 2FA then we could try to delete the
+          ;; existing token (which will require them to hand us another
+          ;; OTP for the delete request) and then call create again,
+          ;; possibly requiring _another_ OTP if they don't do things fast
+          ;; enough, but this is only because non-SMS 2FA doesn't require
+          ;; any action on GitHub's part.
+          ;;
+          ;; GitHub does hand us a header that indicates what type of 2FA
+          ;; is in use, but it's not currently available in this location
+          ;; and would make the following code which is already quite
+          ;; complicated even more complicated. So in the interest of
+          ;; simplicity it's better to error out here and ask the user to
+          ;; take action. This situation should almost never arise anyway.
+          (ghub-http-error
+           (if (string-equal (let-alist (nth 3 ghub--create-token-error)
+                               (car .errors.code))
+                             "already_exists")
+               (error "\
+A token named %S ready exists on Github. \
+Please visit https://github.com/settings/tokens and delete it." ident))))
       (user-error "Abort"))))
 
 (defun ghub--get-token-id (host username package)
