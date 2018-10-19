@@ -133,11 +133,17 @@ However, in some situations some manual configuration is necessary
   create the token manually as describe in [[*Manually Creating and
   Storing a Token]].  Also see [[*Support for Other Forges]].
 
-- If you want to access a Github Enterprise instance, then you have
-  to tell Ghub about that before the wizard makes its appearance by
-  setting the Git variable ~github.host~.  You also have to tell Ghub
-  your username for that instance using the variable ~github.HOST.user~
-  even if it is the same as on Github.com.
+- If you want to access a Github Enterprise instance, then you have to
+  tell Ghub about it before the wizard makes its appearance by setting
+  the Git variable ~github.host~.  For example, if your company's GitHub
+  Enterprise instance is hosted at ~git.example.com~, then you should
+  set ~github.host~ to ~git.example.com/api/v3~ to use the JSON API.  You
+  also have to tell Ghub your username for that instance using the
+  variable ~github.HOST.user~ (e.g. ~github.git.example.com/api/v3.user~)
+  even if it is the same as on Github.com.  While ~github.host~ should
+  be set per-repository to allow Ghub to interface with both a GitHub
+  Enterprise instance and GitHub.com, setting GitHub Enterprise users
+  globally is recommended.
 
 - If the variable ~github.user~ (or ~github.HOST.user~ for an Enterprise
   instance) is unset when the wizard is first summoned, then you are
