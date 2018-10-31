@@ -19,6 +19,7 @@ This document is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE@.  See the GNU
 General Public License for more details.
+
 @end quotation
 @end copying
 
@@ -30,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 2.0.1 (v2.0.1-48-g87701ea+1)
+@subtitle for version 3.0.0
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -67,7 +68,7 @@ because then all packages that talk to forge APIs could be configured
 the same way.
 
 @noindent
-This manual is for Ghub version 2.0.1 (v2.0.1-48-g87701ea+1).
+This manual is for Ghub version 3.0.0.
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -81,6 +82,7 @@ This document is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE@.  See the GNU
 General Public License for more details.
+
 @end quotation
 @end ifnottex
 
