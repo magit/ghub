@@ -885,7 +885,7 @@ WARNING: The token will be stored unencrypted in %S.
                                (car .errors.code))
                              "already_exists")
                (error "\
-A token named %S ready exists on Github. \
+A token named %S already exists on Github. \
 Please visit https://github.com/settings/tokens and delete it." ident))))
       (user-error "Abort"))))
 
