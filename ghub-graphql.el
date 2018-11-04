@@ -24,8 +24,10 @@
 (require 'dash)
 (require 'ghub)
 (require 'graphql)
-(require 'subr-x)
 (require 'treepy)
+
+(eval-when-compile
+  (require 'subr-x))
 
 ;;; Api
 

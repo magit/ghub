@@ -57,7 +57,8 @@
 (require 'url-auth)
 (require 'url-http)
 
-(eval-when-compile (require 'subr-x))
+(eval-when-compile
+  (require 'subr-x))
 
 (defvar url-callback-arguments)
 (defvar url-http-end-of-headers)
