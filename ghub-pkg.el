@@ -4,4 +4,4 @@
     (dash "2.14.1")
     (graphql "0.1.1")
     (let-alist "1.0.5")
-    (treepy "0.1.1")))
+    (treepy "1.0.0")))
