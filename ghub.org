@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 3.0.0 (v3.0.0-2-g8dbf6b2+1)
+#+SUBTITLE: for version 3.0.0 (v3.0.0-4-gc4cf60e+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -38,7 +38,7 @@ because then all packages that talk to forge APIs could be configured
 the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 3.0.0 (v3.0.0-2-g8dbf6b2+1).
+This manual is for Ghub version 3.0.0 (v3.0.0-4-gc4cf60e+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -240,8 +240,9 @@ then the setup wizard will first ask you something like this:
     Store locally according to option `auth-sources':
       ("~/.authinfo" "~/.authinfo.gpg" "~/.netrc")
 
-  If in doubt, then abort and first view the section of the Ghub
-  documentation called "Manually Creating and Storing a Token".
+  If in doubt, then abort and first view the section of
+  the Ghub documentation called "Interactively Creating
+  and Storing a Token".
 
   Create and store such a token? (yes or no)
 #+END_EXAMPLE

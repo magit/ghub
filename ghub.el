@@ -838,8 +838,9 @@ See https://magit.vc/manual/ghub/Support-for-Other-Forges.html for instructions.
   Store on Github as:\n    %S
   Store locally according to option `auth-sources':\n    %S
 %s
-If in doubt, then abort and first view the section of the Ghub
-documentation called \"Manually Creating and Storing a Token\".
+If in doubt, then abort and first view the section of
+the Ghub documentation called \"Interactively Creating
+and Storing a Token\".
 
 Otherwise confirm and then provide your Github username and
 password at the next two prompts.  Depending on the backend
