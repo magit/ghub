@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 3.0.0 (v3.0.0-4-gc4cf60e+1)
+#+SUBTITLE: for version 3.0.0 (v3.0.0-5-g86a17df+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -38,7 +38,7 @@ because then all packages that talk to forge APIs could be configured
 the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 3.0.0 (v3.0.0-4-gc4cf60e+1).
+This manual is for Ghub version 3.0.0 (v3.0.0-5-g86a17df+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -110,6 +110,7 @@ storing a new token, and at the end of that process the request is
 carried out as if the token had been available to begin with.
 
 * Getting Started
+** _ :ignore:
 
 Each package that uses Ghub uses its own token.  Despite that, chances
 are good that after successfully configuring one package you can just
@@ -133,17 +134,20 @@ However, in some situations some manual configuration is necessary
   create the token manually as describe in [[*Manually Creating and
   Storing a Token]].  Also see [[*Support for Other Forges]].
 
-- If you want to access a Github Enterprise instance, then you have to
-  tell Ghub about it before the wizard makes its appearance by setting
-  the Git variable ~github.host~.  For example, if your company's GitHub
-  Enterprise instance is hosted at ~git.example.com~, then you should
-  set ~github.host~ to ~git.example.com/api/v3~ to use the JSON API.  You
-  also have to tell Ghub your username for that instance using the
-  variable ~github.HOST.user~ (e.g. ~github.git.example.com/api/v3.user~)
-  even if it is the same as on Github.com.  While ~github.host~ should
-  be set per-repository to allow Ghub to interface with both a GitHub
-  Enterprise instance and GitHub.com, setting GitHub Enterprise users
-  globally is recommended.
+- If you want to access a Github Enterprise instance, then you have
+  to tell Ghub about that before the wizard makes its appearance by
+  setting the Git variable ~github.host~.  You also have to tell Ghub
+  your username for that instance using the variable ~github.HOST.user~
+  even if it is the same as on Github.com.
+
+  These variables are documented in [[*Configuration Variables]]. Also see
+  [[*Setting the Username]].  TL;DR: If your Github Enterprise instance is
+  hosted at ~git.example.com~ and your username on that instance is
+  ~jtribbiani~, then set ~github.host~ to ~git.example.com/api/v3~ in every
+  repository cloned from that instance (i.e. /do not/ set it globally)
+  and /globally/ set ~github.git.example.com/api/v3.user~ to ~jtribbiani~.
+  The latter is necessary even if your username on Github.com is the
+  same.
 
 - If the variable ~github.user~ (or ~github.HOST.user~ for an Enterprise
   instance) is unset when the wizard is first summoned, then you are
@@ -329,7 +333,7 @@ of the doubts that you might have:
   ~ghub-override-system-name~.  See [[*Configuration Variables]] for
   details.
 
-After the above prompt you are also asked for you username and
+After the above prompt you are also asked for your username and
 password.  If you have enabled two-factor authentication, then you
 also have to provide the authentication code at least twice.  If you
 make sure the code is still good for a while when asked for it first,
@@ -489,6 +493,7 @@ behalf of which package a request is being made by passing the symbol
   #+END_EXAMPLE
 
 * API
+** _ :ignore:
 
 This section describes the Ghub API.  In other words it describes the
 public functions and variables provided by the Ghub package and not
