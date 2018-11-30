@@ -283,7 +283,9 @@ See Info node `(ghub)GraphQL Support'."
                 (setq loc  (treepy-down loc))
                 (setq loc  (treepy-next loc)))
               (dolist (elt alist)
-                (cond ((keywordp (car elt)))
+                (cond ((eq (car elt) :alias)
+                       (push elt vars))
+                      ((keywordp (car elt)))
                       ((= (length elt) 3)
                        (push (list (nth 0 elt)
                                    (nth 1 elt)) vars)
@@ -417,20 +419,22 @@ See Info node `(ghub)GraphQL Support'."
 (defun ghub--graphql-encode (g)
   (if (symbolp g)
       (symbol-name g)
-    (let* ((object (car g))
+    (let* ((object (graphql--encode-object (car g)))
            (args   (and (vectorp (cadr g))
                         (cl-coerce (cadr g) 'list)))
-           (fields (if args (cddr g) (cdr g))))
-       (concat
-        (graphql--encode-object object)
-        (and args
-             (format " (\n%s)"
-                     (mapconcat (pcase-lambda (`(,key ,val))
-                                  (graphql--encode-argument key val))
-                                args ",\n")))
-        (and fields
-             (format " {\n%s\n}"
-                     (mapconcat #'ghub--graphql-encode fields "\n")))))))
+           (aliasp (cadr (assq :alias args)))
+           (fields (if args (cddr g) (cdr g)))
+           (fields (and fields
+                        (mapconcat #'ghub--graphql-encode fields "\n")))
+           (args   (and args
+                        (mapconcat (pcase-lambda (`(,key ,val))
+                                     (graphql--encode-argument key val))
+                                   args ",\n"))))
+      (if aliasp
+          (concat object ": " fields)
+        (concat object
+                (and args   (format " (\n%s)" args))
+                (and fields (format " {\n%s\n}" fields)))))))
 
 (defun ghub--alist-zip (root)
   (let ((branchp (lambda (elt) (and (listp elt) (listp (cdr elt)))))
