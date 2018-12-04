@@ -218,6 +218,7 @@ data as the only argument."
   (query     nil :read-only t)
   (variables nil :read-only t)
   (until     nil :read-only t)
+  (buffer    nil :read-only t)
   (pages     0   :read-only nil))
 
 (cl-defun ghub--graphql-vacuum (query variables callback
@@ -238,18 +239,23 @@ See Info node `(ghub)GraphQL Support'."
     :query     query
     :variables variables
     :until     until
-    :callback  (if narrow
+    :buffer    (current-buffer)
+    :callback  (let ((buf (current-buffer)))
+                 (if narrow
+                     (lambda (data)
+                       (let ((path narrow) key)
+                         (while (setq key (pop path))
+                           (setq data (cdr (assq key data)))))
+                       (ghub--graphql-set-mode-line buf nil)
+                       (funcall callback data))
                    (lambda (data)
-                     (let ((path narrow) key)
-                       (while (setq key (pop path))
-                         (setq data (cdr (assq key data)))))
-                     (funcall callback data))
-                 callback))))
+                     (ghub--graphql-set-mode-line buf nil)
+                     (funcall callback data)))))))
 
 (cl-defun ghub--graphql-retrieve (req &optional lineage cursor)
   (let ((p (cl-incf (ghub--graphql-req-pages req))))
     (when (> p 1)
-      (message "Fetching page %s..." p)))
+      (ghub--graphql-set-mode-line req "Fetching page %s" p)))
   (ghub--retrieve
    (let ((json-false nil))
      (ghub--encode-payload
@@ -440,6 +446,15 @@ See Info node `(ghub)GraphQL Support'."
   (let ((branchp (lambda (elt) (and (listp elt) (listp (cdr elt)))))
         (make-node (lambda (_ children) children)))
     (treepy-zipper branchp #'identity make-node root)))
+
+(defun ghub--graphql-set-mode-line (buf string &rest args)
+  (when (ghub--graphql-req-p buf)
+    (setq buf (ghub--graphql-req-buffer buf)))
+  (when (buffer-live-p buf)
+    (with-current-buffer buf
+      (setq mode-line-process
+            (and string (concat " " (apply #'format string args))))
+      (force-mode-line-update t))))
 
 ;;; _
 (provide 'ghub-graphql)
