@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 3.0.0 (v3.0.0-5-g86a17df+1)
+#+SUBTITLE: for version 3.0.0 (v3.0.0-7-g66dbfc2+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -38,7 +38,7 @@ because then all packages that talk to forge APIs could be configured
 the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 3.0.0 (v3.0.0-5-g86a17df+1).
+This manual is for Ghub version 3.0.0 (v3.0.0-7-g66dbfc2+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -514,7 +514,7 @@ functions.  The forge APIs are documented at:
   This function makes a request for ~RESOURCE~ using ~METHOD~.
   ~PARAMS~, ~QUERY~, ~PAYLOAD~ and/or ~HEADERS~ are alists holding
   additional request data.  The response body is returned and the
-  response header is stored in the variable ~ghub-response-headers~.
+  response headers are stored in the variable ~ghub-response-headers~.
 
   - ~METHOD~ is the HTTP method, given as a string.
   - ~RESOURCE~ is the resource to access, given as a string beginning
@@ -622,7 +622,7 @@ functions.  The forge APIs are documented at:
   If there is a next page, then this function retrieves that.
 
   This function is only intended to be called from callbacks.  If
-  there is a next page, then that is retrieve and the buffer that
+  there is a next page, then that is retrieved and the buffer that
   the result will be loaded into is returned, or t if the process
   has already completed.  If there is no next page, then return nil.
 

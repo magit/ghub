@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 3.0.0 (v3.0.0-5-g86a17df+1)
+@subtitle for version 3.0.0 (v3.0.0-7-g66dbfc2+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -68,7 +68,7 @@ because then all packages that talk to forge APIs could be configured
 the same way.
 
 @noindent
-This manual is for Ghub version 3.0.0 (v3.0.0-5-g86a17df+1).
+This manual is for Ghub version 3.0.0 (v3.0.0-7-g66dbfc2+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -637,7 +637,7 @@ Bitbucket: @uref{https://developer.atlassian.com/bitbucket/api/2/reference}
 This function makes a request for @code{RESOURCE} using @code{METHOD}.
 @code{PARAMS}, @code{QUERY}, @code{PAYLOAD} and/or @code{HEADERS} are alists holding
 additional request data.  The response body is returned and the
-response header is stored in the variable @code{ghub-response-headers}.
+response headers are stored in the variable @code{ghub-response-headers}.
 
 @itemize
 @item
@@ -789,7 +789,7 @@ A @code{ghub--req} struct, which can be passed to @code{ghub-continue}
 If there is a next page, then this function retrieves that.
 
 This function is only intended to be called from callbacks.  If
-there is a next page, then that is retrieve and the buffer that
+there is a next page, then that is retrieved and the buffer that
 the result will be loaded into is returned, or t if the process
 has already completed.  If there is no next page, then return nil.
 

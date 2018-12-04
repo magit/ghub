@@ -218,7 +218,7 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
                                callback errorback value extra)
   "Make a request for RESOURCE and return the response body.
 
-Also place the response header in `ghub-response-headers'.
+Also place the response headers in `ghub-response-headers'.
 
 METHOD is the HTTP method, given as a string.
 RESOURCE is the resource to access, given as a string beginning
