@@ -522,10 +522,10 @@ this function is called with nil for PAYLOAD."
                 payload
               (setcdr (last err) (list payload))
               nil)
-          (ghub--signal-error err payload))
+          (ghub--signal-error err payload req))
       payload)))
 
-(defun ghub--signal-error (err &optional payload)
+(defun ghub--signal-error (err &optional payload req)
   (pcase-let ((`(,symb . ,data) err))
     (if (eq symb 'error)
         (if (eq (car-safe data) 'http)
@@ -533,6 +533,7 @@ this function is called with nil for PAYLOAD."
                     (let ((code (car (cdr-safe data))))
                       (list code
                             (nth 2 (assq code url-http-codes))
+                            (and req (url-filename (ghub--req-url req)))
                             payload)))
           (signal 'ghub-error data))
       (signal symb data))))
