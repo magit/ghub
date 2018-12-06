@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 3.0.0 (v3.0.0-7-g66dbfc2+1)
+#+SUBTITLE: for version 3.0.0 (v3.0.0-11-gca1982d+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -38,7 +38,7 @@ because then all packages that talk to forge APIs could be configured
 the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 3.0.0 (v3.0.0-7-g66dbfc2+1).
+This manual is for Ghub version 3.0.0 (v3.0.0-11-gca1982d+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -597,13 +597,14 @@ functions.  The forge APIs are documented at:
     internal use.  Instead of using this argument you should use
     function ~glab-request~ and other ~glab-*~ functions.
 
-  - If ~CALLBACK~ and/or ~ERRORBACK~ is non-nil, then this function
-    makes one or more asynchronous requests and calls ~CALLBACK~ or
-    ~ERRORBACK~ when finished.  If an error occurred, then it calls
-    ~ERRORBACK~, or if that is ~nil~, then ~CALLBACK~.  When no error
-    occurred then it calls ~CALLBACK~.  When making asynchronous
-    requests, then no errors are signaled, regardless of the value of
-    ~NOERROR~.
+  - If ~CALLBACK~ and/or ~ERRORBACK~ is non-nil, then this function makes
+    one or more asynchronous requests and calls ~CALLBACK~ or ~ERRORBACK~
+    when finished.  If no error occurred, then it calls ~CALLBACK~,
+    unless that is ~nil~.
+
+    If an error occurred, then it calls ~ERRORBACK~, or if that is nil,
+    then ~CALLBACK~.  ~ERRORBACK~ can also be ~t~, in which case it signals
+    instead.  ~NOERROR~ is ignored for all asynchronous requests.
 
     Both callbacks are called with four arguments.
 

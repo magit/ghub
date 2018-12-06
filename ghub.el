@@ -295,10 +295,13 @@ If FORGE is `gitlab', then connect to Gitlab.com or, depending
 
 If CALLBACK and/or ERRORBACK is non-nil, then make one or more
   asynchronous requests and call CALLBACK or ERRORBACK when
-  finished.  If an error occurred, then call ERRORBACK, or if
-  that is nil, then CALLBACK.  When no error occurred then call
-  CALLBACK.  When making asynchronous requests, then no errors
-  are signaled, regardless of the value of NOERROR.
+  finished.  If no error occurred, then call CALLBACK, unless
+  that is nil.
+
+  If an error occurred, then call ERRORBACK, or if that is nil,
+  then CALLBACK.  ERRORBACK can also be t, in which case an error
+  is signaled instead.  NOERROR is ignored for all asynchronous
+  requests.
 
 Both callbacks are called with four arguments.
   1. For CALLBACK, the combined value of the retrieved pages.
@@ -487,7 +490,10 @@ this function is called with nil for PAYLOAD."
                       (err       (plist-get status :error)))
                   (cond ((and err errorback)
                          (setf (ghub--req-url req) prev)
-                         (funcall errorback err headers status req))
+                         (funcall (if (eq errorback t)
+                                      'ghub--errorback
+                                    errorback)
+                                  err headers status req))
                         (callback
                          (funcall callback value headers status req))
                         (t value))))))
@@ -537,6 +543,9 @@ this function is called with nil for PAYLOAD."
                             payload)))
           (signal 'ghub-error data))
       (signal symb data))))
+
+(defun ghub--errorback (err _headers _status req)
+  (ghub--signal-error err (nth 3 err) req))
 
 (defun ghub--handle-response-value (payload req)
   (setf (ghub--req-value req)

@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 3.0.0 (v3.0.0-7-g66dbfc2+1)
+@subtitle for version 3.0.0 (v3.0.0-11-gca1982d+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -68,7 +68,7 @@ because then all packages that talk to forge APIs could be configured
 the same way.
 
 @noindent
-This manual is for Ghub version 3.0.0 (v3.0.0-7-g66dbfc2+1).
+This manual is for Ghub version 3.0.0 (v3.0.0-11-gca1982d+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -753,13 +753,14 @@ function @code{glab-request} and other @code{glab-*} functions.
 
 
 @item
-If @code{CALLBACK} and/or @code{ERRORBACK} is non-nil, then this function
-makes one or more asynchronous requests and calls @code{CALLBACK} or
-@code{ERRORBACK} when finished.  If an error occurred, then it calls
-@code{ERRORBACK}, or if that is @code{nil}, then @code{CALLBACK}.  When no error
-occurred then it calls @code{CALLBACK}.  When making asynchronous
-requests, then no errors are signaled, regardless of the value of
-@code{NOERROR}.
+If @code{CALLBACK} and/or @code{ERRORBACK} is non-nil, then this function makes
+one or more asynchronous requests and calls @code{CALLBACK} or @code{ERRORBACK}
+when finished.  If no error occurred, then it calls @code{CALLBACK},
+unless that is @code{nil}.
+
+If an error occurred, then it calls @code{ERRORBACK}, or if that is nil,
+then @code{CALLBACK}.  @code{ERRORBACK} can also be @code{t}, in which case it signals
+instead.  @code{NOERROR} is ignored for all asynchronous requests.
 
 Both callbacks are called with four arguments.
 
