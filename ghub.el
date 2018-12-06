@@ -469,6 +469,7 @@ this function is called with nil for PAYLOAD."
                  (payload    (ghub--handle-response-payload req))
                  (payload    (ghub--handle-response-error status payload req))
                  (value      (ghub--handle-response-value payload req))
+                 (prev       (ghub--req-url req))
                  (next       (cdr (assq 'next (ghub-response-link-relations
                                                req headers payload)))))
             (when (numberp unpaginate)
@@ -485,6 +486,7 @@ this function is called with nil for PAYLOAD."
                       (errorback (ghub--req-errorback req))
                       (err       (plist-get status :error)))
                   (cond ((and err errorback)
+                         (setf (ghub--req-url req) prev)
                          (funcall errorback err headers status req))
                         (callback
                          (funcall callback value headers status req))
