@@ -428,11 +428,18 @@ this function is called with nil for PAYLOAD."
                       (substring url 1 -1))))
             (split-string rels ", ")))))
 
-(cl-defun ghub-repository-id (owner name &key username auth host forge)
-  "Return the id of the specified repository."
+(cl-defun ghub-repository-id (owner name &key username auth host forge noerror)
+  "Return the id of the specified repository.
+Signal an error if the id cannot be determined."
   (let ((fn (intern (format "%s-repository-id" (or forge 'ghub)))))
-    (funcall (if (eq fn 'ghub-repository-id) 'ghub--repository-id fn)
-             owner name :username username :auth auth :host host)))
+    (or (funcall (if (eq fn 'ghub-repository-id) 'ghub--repository-id fn)
+                 owner name :username username :auth auth :host host)
+        (and (not noerror)
+             (error "Repository %S does not exist on %S.\n%s%S?"
+                    (concat owner "/" name)
+                    (or host (ghub--host host))
+                    "Maybe it was renamed and you have to update "
+                    "remote.<remote>.url")))))
 
 ;;;; Internal
 
