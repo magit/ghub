@@ -80,7 +80,9 @@ behave as for `ghub-request' (which see)."
      createdAt
      updatedAt
      nameWithOwner
+     (parent nameWithOwner)
      description
+     homepageUrl
      (defaultBranchRef name)
      isArchived
      isFork
