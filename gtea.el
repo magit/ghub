@@ -36,7 +36,7 @@
 (require 'ghub)
 
 (defconst gtea-default-host "localhost:3000/api/v1"
-  "The default host that is used if `gtea.host' is not set.")
+  "The default Gitea host.")
 
 ;; HEAD does not appear to be supported.
 

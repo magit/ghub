@@ -36,7 +36,7 @@
 (require 'ghub)
 
 (defconst gogs-default-host "localhost:3000/api/v1"
-  "The default host that is used if `gogs.host' is not set.")
+  "The default Gogs host.")
 
 ;; HEAD does not appear to be supported.
 
