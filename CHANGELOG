@@ -1,5 +1,19 @@
 # -*- mode: org -*-
 
+* v3.1.0    2018-12-20
+
+- Support GraphQL aliases.
+
+- Show number of GraphQL page currently being fetched in mode-line.
+
+- Add a default errorback for asynchronous REST requests, which shows
+  the same information as would be shown for a failed synchronous
+  request.
+
+- Signal an error if ~ghub-repository-id~ fails.
+
+- ~ghub-fetch-repository~ fetches a few more fields.
+
 * v3.0.0    2018-10-31
 
 - Add support for Gitea, Gogs and Bitbucket.  ~ghub.el~ supports these
