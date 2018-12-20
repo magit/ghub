@@ -1,0 +1,97 @@
+# -*- mode: org -*-
+
+* v3.0.0    2018-10-31
+
+- Add support for Gitea, Gogs and Bitbucket.  ~ghub.el~ supports these
+  forges directly, but also add new libraries ~gtea.el~, ~gogs.el~ and
+  ~buck.el~, which provide convenience wrappers just like the existing
+  ~glab.el~.  [[https://github.com/tarsius/ghub/issues/67][#67]]
+
+- No longer split the repository into multiple Melpa packages.
+  I.e. the ~glab.el~ library is now part of the ~ghub~ package.
+
+- Add support for automatic GraphQL unpagination.  [[https://github.com/tarsius/ghub/issues/68][#68]]
+
+  GraphQL was designed around the idea that you should be able to "ask
+  for what you need and get exactly that".  Unfortunately this does not
+  cover the "look, if I persist, then you are going to hand me over all
+  the data anyway, so just cough it up already", which is what Forge
+  needs.
+
+  ~ghub--graphql-vacuum~ provides a way to unpaginate all cursors in the
+  returned data without having to write a lot of boilerplate.  Callers
+  have to provide the query as an s-expression that corresponds to the
+  root request.  The queries needed to follow cursors in arbitrary
+  locations within the returned data, are automatically derived from
+  that query.
+
+  ~ghub-fetch-repository~ fetches information about a repository.
+  If also serves as an example for how to use ~ghub--graphql-vacuum~.
+
+  The initial queries used by ~ghub-fetch-issue~ and
+  ~ghub-fetch-pullreq~ are pre-narrowed variants of the initial query of
+  ~ghub-fetch-repository~.  Pre-narrowing is somewhat similar to the use
+  of fragments, but unlike that, it doesn't result in lots of duplicated
+  boilerplate and/or lots of variables.
+
+  There is very little documentation and everything is still very much
+  subject to change.
+
+- Bind ~url-show-message~ to ~nil~ so that the more useful messages
+  displayed by the callers of this package are visible to the user
+  instead of the less useful "Contacting host: api.github.com:443".
+
+- Sometimes Github returns an HTML document instead of the promised
+  JSON when an error occurs.  Try harder to extract some meaningful
+  information from that document.
+
+- Work around a bug in older Emacsen that prevented ~auth-source~ from
+  retrieving saved secrets.  [[https://github.com/tarsius/ghub/issues/64][#64]]
+
+- Deal with a chicken and egg problem concerning 2fa.  [[https://github.com/tarsius/ghub/issues/65][#65]]
+
+- Add new ~ghub-clear-caches~ command because if things go wonky it is
+  nice to know it isn't the cache.
+
+- Add new ~ghub-repository-id~ function.  This function works for all
+  supported forges and always returns a string, even for less
+  successful forges that can still get away with using integers as ids.
+
+- Add new ~ghub-graphql-rate-limit~ function.
+
+* v2.0.1    2018-04-19
+
+(For this an earlier releases only the most important changes are
+mentioned.)
+
+- Various bug fixes.
+
+* v2.0.0    2018-03-20
+
+- Support two-factor authentication.
+
+- Support asynchronous requests.
+
+- Support GraphQL.
+
+- Support Gitlab.
+
+* v1.3.0    2017-11-30
+
+- Support basic authentication.
+
+- Fix various encoding issues.
+
+* v1.2.0    2017-04-26
+
+- Support unauthenticated requests.
+
+- Support Github Enterprise instances.
+
+* v1.1.0    2016-08-07
+
+- Bind ~json-false~ to ~nil~ instead of ~:json-false~.
+
+* v1.0.0    2016-04-20
+
+- First release.
