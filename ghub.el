@@ -652,7 +652,9 @@ SCOPES are the scopes the token is given access to."
       ;; If the Auth-Source cache contains the information that there
       ;; is no value, then setting the value does not invalidate that
       ;; now incorrect information.
-      (auth-source-forget (list :host host :user user))
+      ;; The (:max 1) is needed and has to be placed at the
+      ;; end for Emacs releases before 26.1.  #24 #64 #72
+      (auth-source-forget (list :host host :user user :max 1))
       token)))
 
 ;;;###autoload
@@ -762,7 +764,7 @@ and call `auth-source-forget+'."
                 ;; fixing so we want to keep trying by invalidating that
                 ;; information.
                 ;; The (:max 1) is needed and has to be placed at the
-                ;; end for Emacs releases before 26.1.  See #24, #64.
+                ;; end for Emacs releases before 26.1.  #24 #64 #72
                 (auth-source-forget (list :host host :user user :max 1))
                 (and (not nocreate)
                      (cl-ecase forge
