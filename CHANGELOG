@@ -1,5 +1,13 @@
 # -*- mode: org -*-
 
+* v3.2.0    2018-12-27
+
+- Work around bug in Emacs versions before 26.1 that prevented newly
+  created tokens from being used without the user invalidating
+  ~auth-source~'s cache first.
+
+- Teach ~glab-repository-id~ about subgroups.
+
 * v3.1.0    2018-12-20
 
 - Support GraphQL aliases.
