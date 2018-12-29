@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 3.0.0 (v3.0.0-11-gca1982d+1)
+@subtitle for version 3.2.0 (v3.2.0+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -68,7 +68,7 @@ because then all packages that talk to forge APIs could be configured
 the same way.
 
 @noindent
-This manual is for Ghub version 3.0.0 (v3.0.0-11-gca1982d+1).
+This manual is for Ghub version 3.2.0 (v3.2.0+1).
 
 @quotation
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -446,7 +446,7 @@ the web interface and (3) store the token where Ghub expects to find
 it.
 
 A package named @code{PACKAGE} has to specify the scopes that it wants in
-the variable named @code{PACKAGE-ghub-token-scopes}.  The doc-string of
+the variable named @code{PACKAGE-github-token-scopes}.  The doc-string of
 such variables should document what the various scopes are needed for.
 
 To create or edit a token go to @uref{https://github.com/settings/tokens}.
