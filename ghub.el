@@ -511,14 +511,14 @@ Signal an error if the id cannot be determined."
   (goto-char (point-min))
   (forward-line 1)
   (let (headers)
+    (when (memq url-http-end-of-headers '(nil 0))
+      (error "BUG: missing headers %s" (plist-get status :error)))
     (while (re-search-forward "^\\([^:]*\\): \\(.+\\)"
                               url-http-end-of-headers t)
       (push (cons (match-string 1)
                   (match-string 2))
             headers))
     (setq headers (nreverse headers))
-    (unless url-http-end-of-headers
-      (error "BUG: missing headers %s" (plist-get status :error)))
     (goto-char (1+ url-http-end-of-headers))
     (if (and req (or (ghub--req-callback req)
                      (ghub--req-errorback req)))
