@@ -2,13 +2,13 @@
 :PREAMBLE:
 #+AUTHOR: Jonas Bernoulli
 #+EMAIL: jonas@bernoul.li
-#+DATE: 2017-2018
+#+DATE: 2017-2019
 #+LANGUAGE: en
 
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 3.2.0 (v3.2.0+1)
+#+SUBTITLE: for version 3.2.0 (v3.2.0-1-gae7acf4+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -38,10 +38,10 @@ because then all packages that talk to forge APIs could be configured
 the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 3.2.0 (v3.2.0+1).
+This manual is for Ghub version 3.2.0 (v3.2.0-1-gae7acf4+1).
 
 #+BEGIN_QUOTE
-Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
+Copyright (C) 2017-2019 Jonas Bernoulli <jonas@bernoul.li>
 
 You can redistribute this document and/or modify it under the terms
 of the GNU General Public License as published by the Free Software
@@ -1136,7 +1136,7 @@ values for the arguments METHOD and/or FORGE.
 :END:
 
 #+BEGIN_QUOTE
-Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
+Copyright (C) 2017-2019 Jonas Bernoulli <jonas@bernoul.li>
 
 You can redistribute this document and/or modify it under the terms
 of the GNU General Public License as published by the Free Software
