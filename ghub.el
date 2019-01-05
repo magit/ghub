@@ -903,8 +903,9 @@ WARNING: The token will be stored unencrypted in %S.
           ;; simplicity it's better to error out here and ask the user to
           ;; take action. This situation should almost never arise anyway.
           (ghub-http-error
-           (if (string-equal (let-alist (nth 3 ghub--create-token-error)
-                               (car .errors.code))
+           (if (string-equal (let ((err (let-alist (nth 4 ghub--create-token-error)
+                                            (car .errors))))
+                               (let-alist err .code))
                              "already_exists")
                (error "\
 A token named %S already exists on Github. \
