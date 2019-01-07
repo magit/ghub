@@ -879,7 +879,7 @@ WARNING: The token will be stored unencrypted in %S.
          If you don't want that, you have to abort and customize
          the `auth-sources' option.\n" (car auth-sources))
               ""))))
-        (condition-case ghub--create-token-error
+        (condition-case err
             ;; Naively attempt to create the token since the user told us to
             (ghub-create-token host username package scopes)
           ;; The API _may_ respond with the fact that a token of the name
@@ -903,12 +903,11 @@ WARNING: The token will be stored unencrypted in %S.
           ;; simplicity it's better to error out here and ask the user to
           ;; take action. This situation should almost never arise anyway.
           (ghub-http-error
-           (if (string-equal (let-alist (nth 3 ghub--create-token-error)
-                               (car .errors.code))
-                             "already_exists")
-               (error "\
-A token named %S already exists on Github. \
-Please visit https://github.com/settings/tokens and delete it." ident))))
+           (if (equal (alist-get 'code (car (alist-get 'errors (nth 4 err))))
+                      "already_exists")
+               (error "A token named %S already exists on Github.
+Please visit https://github.com/settings/tokens and delete it." ident)
+             (signal (car err) (cdr err)))))
       (user-error "Abort"))))
 
 (defun ghub--get-token-id (host username package)
