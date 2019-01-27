@@ -954,7 +954,7 @@ Please visit https://github.com/settings/tokens and delete it." ident)
 (defvar ghub--2fa-cache nil)
 
 (defun ghub--read-2fa-code ()
-  (let ((code (read-number "Two-factor authentication code: "
+  (let ((code (read-string "Two-factor authentication code: "
                            (and ghub--2fa-cache
                                 (< (float-time (time-subtract
                                                 (current-time)
@@ -962,7 +962,7 @@ Please visit https://github.com/settings/tokens and delete it." ident)
                                    25)
                                 (car ghub--2fa-cache)))))
     (setq ghub--2fa-cache (cons code (current-time)))
-    (number-to-string code)))
+    code))
 
 (defun ghub--auth-source-get (keys &rest spec)
   (declare (indent 1))
