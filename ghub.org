@@ -8,10 +8,11 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 3.2.0 (v3.2.0-1-gae7acf4+1)
+#+SUBTITLE: for version 3.2.0 (v3.2.0-6-g3566dc6+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
+#+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-copyright-years
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 Ghub provides basic support for using the APIs of various Git forges
@@ -38,7 +39,7 @@ because then all packages that talk to forge APIs could be configured
 the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 3.2.0 (v3.2.0-1-gae7acf4+1).
+This manual is for Ghub version 3.2.0 (v3.2.0-6-g3566dc6+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2019 Jonas Bernoulli <jonas@bernoul.li>
