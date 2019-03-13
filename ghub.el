@@ -478,9 +478,9 @@ we do just that.  See https://github.com/magit/ghub/issues/81.")
                           (list req)
                           silent)
             (with-timeout (2 (error "
-ghub--retrieve: Failed to work around Emacs bug;
+ghub--retrieve: Failed to work around Emacs bug; \
 see https://github.com/magit/ghub/issues/81"))
-              (while t (not buffer)
+              (while (not buffer)
                 (sit-for 0.1)))
             (with-current-buffer buffer
               (funcall handler (car url-callback-arguments) req)))
