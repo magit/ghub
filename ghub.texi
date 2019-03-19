@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 3.2.0 (v3.2.0-7-g67eb648+1)
+@subtitle for version 3.2.0 (v3.2.0-10-g9017033+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -68,7 +68,7 @@ because then all packages that talk to forge APIs could be configured
 the same way.
 
 @noindent
-This manual is for Ghub version 3.2.0 (v3.2.0-7-g67eb648+1).
+This manual is for Ghub version 3.2.0 (v3.2.0-10-g9017033+1).
 
 @quotation
 Copyright (C) 2017-2019 Jonas Bernoulli <jonas@@bernoul.li>
@@ -218,6 +218,10 @@ repository cloned from that instance (i.e. @emph{do not} set it globally)
 and @emph{globally} set @code{github.git.example.com/api/v3.user} to @code{jtribbiani}.
 The latter is necessary even if your username on Github.com is the
 same.
+
+For some Github Enterprice instances @code{/api} has to be used instead of
+@code{/api/v3} as shown above.  If the wizard fails in both cases, then try
+creating the token manually.
 
 
 @item
