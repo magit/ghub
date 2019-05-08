@@ -443,14 +443,19 @@ Signal an error if the id cannot be determined."
 
 ;;;; Internal
 
-(defvar ghub-use-workaround-for-emacs-bug (< emacs-major-version 27)
+(defvar ghub-use-workaround-for-emacs-bug
+  (and (< emacs-major-version 27) 'force)
   "Whether to use a kludge that hopefully works around an Emacs bug.
 
-In Emacs versions before 27 there is a bug that causes
-`url-retrieve-synchronously' to return an empty buffer in some
-situations.  One potential workaround is to use `url-retrieve'
-and then `sit-for' that to complete.  If this is non-nil, then
-we do just that.  See https://github.com/magit/ghub/issues/81.")
+In Emacs versions before 27 there is a bug that causes network
+connections to fail sometimes.  If this variable is non-nil, then
+Ghub works around that by binding `gnutls-algorithm-priority' to
+\"NORMAL:-VERS-TLS1.3\", unless we think it is unnecessary.  If
+`force' then always use the workaround.  Currently the latter is
+the default except when using Emacs 27.
+
+For more information see https://github.com/magit/ghub/issues/81
+and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
 
 (cl-defun ghub--retrieve (payload req)
   (let ((url-request-extra-headers
@@ -461,41 +466,30 @@ we do just that.  See https://github.com/magit/ghub/issues/81.")
         (url-show-status nil)
         (url     (ghub--req-url req))
         (handler (ghub--req-handler req))
-        (silent  (ghub--req-silent req)))
+        (silent  (ghub--req-silent req))
+        (gnutls-algorithm-priority
+         (if (and ghub-use-workaround-for-emacs-bug
+                  (or (eq ghub-use-workaround-for-emacs-bug 'force)
+                      (and (not gnutls-algorithm-priority)
+                           (< emacs-major-version 27)
+                           (memq (ghub--req-forge req) '(github nil)))))
+             "NORMAL:-VERS-TLS1.3"
+           gnutls-algorithm-priority)))
     (if (or (ghub--req-callback  req)
             (ghub--req-errorback req))
         (url-retrieve url handler (list req) silent)
-      ;; Work around a GnuTLS bug, which has been fixed in Emacs 27
-      ;; and which, in our case, appears to only affect connections
-      ;; to Github.  See #81.
-      (if (and ghub-use-workaround-for-emacs-bug
-               (< emacs-major-version 27)
-               (memq (ghub--req-forge req) '(github nil)))
-          (let ((buffer nil))
-            (url-retrieve url
-                          (lambda (_status _req)
-                            (setq buffer (current-buffer)))
-                          (list req)
-                          silent)
-            (with-timeout (2 (error "
-ghub--retrieve: Failed to work around Emacs bug; \
-see https://github.com/magit/ghub/issues/81"))
-              (while (not buffer)
-                (sit-for 0.1)))
-            (with-current-buffer buffer
-              (funcall handler (car url-callback-arguments) req)))
-        ;; When this function has already been called, then it is a
-        ;; no-op.  Otherwise it sets `url-registered-auth-schemes' among
-        ;; other things.  If we didn't ensure that it has been run, then
-        ;; `url-retrieve-synchronously' would do it, which would cause
-        ;; the value that we let-bind below to be overwritten, and the
-        ;; "default" value to be lost outside the let-binding.
-        (url-do-setup)
-        (with-current-buffer
-            (let ((url-registered-auth-schemes
-                   '(("basic" ghub--basic-auth-errorback . 10))))
-              (url-retrieve-synchronously url silent))
-          (funcall handler (car url-callback-arguments) req))))))
+      ;; When this function has already been called, then it is a
+      ;; no-op.  Otherwise it sets `url-registered-auth-schemes' among
+      ;; other things.  If we didn't ensure that it has been run, then
+      ;; `url-retrieve-synchronously' would do it, which would cause
+      ;; the value that we let-bind below to be overwritten, and the
+      ;; "default" value to be lost outside the let-binding.
+      (url-do-setup)
+      (with-current-buffer
+          (let ((url-registered-auth-schemes
+                 '(("basic" ghub--basic-auth-errorback . 10))))
+            (url-retrieve-synchronously url silent))
+        (funcall handler (car url-callback-arguments) req)))))
 
 (defun ghub--handle-response (status req)
   (let ((buffer (current-buffer)))
