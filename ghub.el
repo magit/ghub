@@ -540,15 +540,10 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
   See https://github.com/magit/ghub/issues/81.
   headers: %S
   status: %S
-  buffer: %S
-  buffer-string:
-  %S
-  --- end of buffer-string ---"
+  buffer: %S"
                url-http-end-of-headers
                status
-               (current-buffer)
-               (buffer-substring-no-properties
-                (point-min) (point-max)))))
+               (current-buffer))))
     (while (re-search-forward "^\\([^:]*\\): \\(.+\\)"
                               url-http-end-of-headers t)
       (push (cons (match-string 1)
