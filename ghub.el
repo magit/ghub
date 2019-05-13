@@ -51,6 +51,7 @@
 
 (require 'auth-source)
 (require 'cl-lib)
+(require 'gnutls)
 (require 'json)
 (require 'let-alist)
 (require 'url)
