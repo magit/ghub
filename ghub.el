@@ -448,7 +448,7 @@ Signal an error if the id cannot be determined."
   (and
    ;; Note: For build sans gnutls, `libgnutls-version' is -1.
    (>= libgnutls-version 30603)
-   (version<= emacs-major-version "26.2")
+   (version<= emacs-version "26.2")
    'force)
   "Whether to use a kludge that hopefully works around an Emacs bug.
 
@@ -479,7 +479,7 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
                   (or (eq ghub-use-workaround-for-emacs-bug 'force)
                       (and (not gnutls-algorithm-priority)
                            (>= libgnutls-version 30603)
-                           (version<= emacs-major-version "26.2")
+                           (version<= emacs-version "26.2")
                            (memq (ghub--req-forge req) '(github nil)))))
              "NORMAL:-VERS-TLS1.3"
            gnutls-algorithm-priority)))
