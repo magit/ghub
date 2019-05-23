@@ -445,15 +445,21 @@ Signal an error if the id cannot be determined."
 ;;;; Internal
 
 (defvar ghub-use-workaround-for-emacs-bug
-  (and (< emacs-major-version 27) 'force)
+  (and
+   ;; Note: For build sans gnutls, `libgnutls-version' is -1.
+   (>= libgnutls-version 30603)
+   (version<= emacs-major-version "26.2")
+   'force)
   "Whether to use a kludge that hopefully works around an Emacs bug.
 
-In Emacs versions before 27 there is a bug that causes network
-connections to fail sometimes.  If this variable is non-nil, then
-Ghub works around that by binding `gnutls-algorithm-priority' to
-\"NORMAL:-VERS-TLS1.3\", unless we think it is unnecessary.  If
-`force' then always use the workaround.  Currently the latter is
-the default except when using Emacs 27.
+In Emacs versions before 26.3 there is a bug that causes network
+connections to fail when using TLS1.3.  If this variable is
+non-nil, then Ghub works around that by binding
+`gnutls-algorithm-priority' to \"NORMAL:-VERS-TLS1.3\", unless we
+think it is unnecessary.  If `force' then always use the
+workaround.  Currently the latter is the default except when
+using Emacs 26.3+, or the libgnutls is earlier than 3.6.3 (when
+it introduced TLS1.3).
 
 For more information see https://github.com/magit/ghub/issues/81
 and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
@@ -472,7 +478,8 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
          (if (and ghub-use-workaround-for-emacs-bug
                   (or (eq ghub-use-workaround-for-emacs-bug 'force)
                       (and (not gnutls-algorithm-priority)
-                           (< emacs-major-version 27)
+                           (>= libgnutls-version 30603)
+                           (version<= emacs-major-version "26.2")
                            (memq (ghub--req-forge req) '(github nil)))))
              "NORMAL:-VERS-TLS1.3"
            gnutls-algorithm-priority)))
