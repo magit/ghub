@@ -23,7 +23,7 @@
 
 (require 'dash)
 (require 'ghub)
-(require 'graphql)
+(require 'gsexp)
 (require 'treepy)
 
 (eval-when-compile
@@ -261,7 +261,7 @@ See Info node `(ghub)GraphQL Support'."
   (ghub--retrieve
    (let ((json-false nil))
      (ghub--encode-payload
-      `((query     . ,(ghub--graphql-encode
+      `((query     . ,(gsexp-encode
                        (ghub--graphql-prepare-query
                         (ghub--graphql-req-query req)
                         lineage cursor)))
@@ -420,26 +420,6 @@ See Info node `(ghub)GraphQL Support'."
                   ,@(cddr child)))
                (t
                 child))))))
-
-(defun ghub--graphql-encode (g)
-  (if (symbolp g)
-      (symbol-name g)
-    (let* ((object (graphql--encode-object (car g)))
-           (args   (and (vectorp (cadr g))
-                        (cl-coerce (cadr g) 'list)))
-           (aliasp (cadr (assq :alias args)))
-           (fields (if args (cddr g) (cdr g)))
-           (fields (and fields
-                        (mapconcat #'ghub--graphql-encode fields "\n")))
-           (args   (and args
-                        (mapconcat (pcase-lambda (`(,key ,val))
-                                     (graphql--encode-argument key val))
-                                   args ",\n"))))
-      (if aliasp
-          (concat object ": " fields)
-        (concat object
-                (and args   (format " (\n%s)" args))
-                (and fields (format " {\n%s\n}" fields)))))))
 
 (defun ghub--alist-zip (root)
   (let ((branchp (lambda (elt) (and (listp elt) (listp (cdr elt)))))

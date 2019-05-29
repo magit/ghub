@@ -3,6 +3,7 @@
 PKG   = ghub
 
 ELS   = $(PKG).el
+ELS  += gsexp.el
 ELS  += $(PKG)-graphql.el
 ELS  += glab.el
 ELS  += gtea.el
@@ -11,7 +12,6 @@ ELS  += buck.el
 ELCS  = $(ELS:.el=.elc)
 
 DEPS  = dash
-DEPS += graphql
 DEPS += treepy
 
 VERSION ?= $(shell test -e $(TOP).git && git describe --tags --abbrev=0 | cut -c2-)
