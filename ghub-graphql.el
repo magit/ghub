@@ -294,9 +294,7 @@ See Info node `(ghub)GraphQL Support'."
                 (setq loc  (treepy-down loc))
                 (setq loc  (treepy-next loc)))
               (dolist (elt alist)
-                (cond ((eq (car elt) :alias)
-                       (push elt vars))
-                      ((keywordp (car elt)))
+                (cond ((keywordp (car elt)))
                       ((= (length elt) 3)
                        (push (list (nth 0 elt)
                                    (nth 1 elt)) vars)
@@ -401,6 +399,12 @@ See Info node `(ghub)GraphQL Support'."
                (ghub--graphql-narrow-query child (cdr lineage) cursor)
               child)))
     (let* ((child  (or (assq (car lineage) (cdr query))
+                       ;; Alias
+                       (cl-find-if (lambda (c)
+                                     (eq (car-safe (car-safe c))
+                                         (car lineage)))
+                                   query)
+                       ;; Edges
                        (cl-find-if (lambda (c)
                                      (and (listp c)
                                           (vectorp (cadr c))
