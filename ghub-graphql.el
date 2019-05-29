@@ -320,14 +320,12 @@ See Info node `(ghub)GraphQL Support'."
                  (payload (ghub--handle-response-error status payload req))
                  (err     (plist-get status :error))
                  (errors  (cdr (assq 'errors payload)))
-                 (errors  (and errors
-                               (cons 'ghub-graphql-error errors)))
-                 (data    (assq 'data payload)))
+                 (errors  (and errors (cons 'ghub-graphql-error errors))))
             (if (or err errors)
                 (if-let ((errorback (ghub--req-errorback req)))
                     (funcall errorback (or err errors) headers status req)
                   (ghub--signal-error (or err errors)))
-              (ghub--graphql-walk-response req data))))
+              (ghub--graphql-walk-response req (assq 'data payload)))))
       (when (buffer-live-p buffer)
         (kill-buffer buffer)))))
 
