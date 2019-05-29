@@ -322,56 +322,56 @@ See Info node `(ghub)GraphQL Support'."
                  (errors  (cdr (assq 'errors payload)))
                  (errors  (and errors
                                (cons 'ghub-graphql-error errors)))
-                 (data    (assq 'data payload))
-                 (value   (ghub--req-value req)))
+                 (data    (assq 'data payload)))
             (if (or err errors)
                 (if-let ((errorback (ghub--req-errorback req)))
                     (funcall errorback (or err errors) headers status req)
                   (ghub--signal-error (or err errors)))
-              (ghub--graphql-walk-response value data req))))
+              (ghub--graphql-walk-response req data))))
       (when (buffer-live-p buffer)
         (kill-buffer buffer)))))
 
-(defun ghub--graphql-walk-response (loc data req)
-  (if (not loc)
-      (setf (ghub--req-value req)
-            (setq loc (ghub--alist-zip data)))
-    (setq data (ghub--graphql-narrow-data data (ghub--graphql-lineage loc)))
-    (setf (alist-get 'edges data)
-          (append (alist-get 'edges (treepy-node loc))
-                  (or (alist-get 'edges data)
-                      (error "BUG: Expected new nodes"))))
-    (setq loc (treepy-replace loc data)))
-  (cl-block nil
-    (while t
-      (when (eq (car-safe (treepy-node loc)) 'edges)
-        (setq loc (treepy-up loc))
-        (pcase-let ((`(,key . ,val) (treepy-node loc)))
-          (let-alist val
-            (let* ((cursor (and .pageInfo.hasNextPage
-                                .pageInfo.endCursor))
-                   (until (cdr (assq (intern (format "%s-until" key))
-                                     (ghub--graphql-req-until req))))
-                   (nodes (mapcar #'cdar .edges))
-                   (nodes (if until
-                              (--take-while
-                               (or (string> (cdr (assq 'updatedAt it)) until)
-                                   (setq cursor nil))
-                               nodes)
-                            nodes)))
-              (if cursor
-                  (progn
-                    (setf (ghub--req-value req) loc)
-                    (ghub--graphql-retrieve req
-                                            (ghub--graphql-lineage loc)
-                                            cursor)
-                    (cl-return))
-                (setq loc (treepy-replace loc (cons key nodes))))))))
-      (if (not (treepy-end-p loc))
-          (setq loc (treepy-next loc))
-        (funcall (ghub--req-callback req)
-                 (treepy-root loc))
-        (cl-return)))))
+(defun ghub--graphql-walk-response (req data)
+  (let ((loc (ghub--req-value req)))
+    (if (not loc)
+        (setf (ghub--req-value req)
+              (setq loc (ghub--alist-zip data)))
+      (setq data (ghub--graphql-narrow-data data (ghub--graphql-lineage loc)))
+      (setf (alist-get 'edges data)
+            (append (alist-get 'edges (treepy-node loc))
+                    (or (alist-get 'edges data)
+                        (error "BUG: Expected new nodes"))))
+      (setq loc (treepy-replace loc data)))
+    (cl-block nil
+      (while t
+        (when (eq (car-safe (treepy-node loc)) 'edges)
+          (setq loc (treepy-up loc))
+          (pcase-let ((`(,key . ,val) (treepy-node loc)))
+            (let-alist val
+              (let* ((cursor (and .pageInfo.hasNextPage
+                                  .pageInfo.endCursor))
+                     (until (cdr (assq (intern (format "%s-until" key))
+                                       (ghub--graphql-req-until req))))
+                     (nodes (mapcar #'cdar .edges))
+                     (nodes (if until
+                                (--take-while
+                                 (or (string> (cdr (assq 'updatedAt it)) until)
+                                     (setq cursor nil))
+                                 nodes)
+                              nodes)))
+                (if cursor
+                    (progn
+                      (setf (ghub--req-value req) loc)
+                      (ghub--graphql-retrieve req
+                                              (ghub--graphql-lineage loc)
+                                              cursor)
+                      (cl-return))
+                  (setq loc (treepy-replace loc (cons key nodes))))))))
+        (if (not (treepy-end-p loc))
+            (setq loc (treepy-next loc))
+          (funcall (ghub--req-callback req)
+                   (treepy-root loc))
+          (cl-return))))))
 
 (defun ghub--graphql-lineage (loc)
   (let (lineage)
