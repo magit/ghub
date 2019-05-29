@@ -324,7 +324,6 @@ See Info node `(ghub)GraphQL Support'."
                                (cons 'ghub-graphql-error errors)))
                  (data    (assq 'data payload))
                  (value   (ghub--req-value req)))
-            (setf (ghub--req-value req) value)
             (if (or err errors)
                 (if-let ((errorback (ghub--req-errorback req)))
                     (funcall errorback (or err errors) headers status req)
