@@ -332,16 +332,16 @@ See Info node `(ghub)GraphQL Support'."
         (kill-buffer buffer)))))
 
 (defun ghub--graphql-walk-response (req data)
-  (let ((loc (ghub--req-value req)))
-    (if (not loc)
-        (setf (ghub--req-value req)
-              (setq loc (ghub--alist-zip data)))
-      (setq data (ghub--graphql-narrow-data data (ghub--graphql-lineage loc)))
-      (setf (alist-get 'edges data)
-            (append (alist-get 'edges (treepy-node loc))
-                    (or (alist-get 'edges data)
-                        (error "BUG: Expected new nodes"))))
-      (setq loc (treepy-replace loc data)))
+  (let* ((loc (ghub--req-value req))
+         (loc (if (not loc)
+                  (ghub--alist-zip data)
+                (setq data (ghub--graphql-narrow-data
+                            data (ghub--graphql-lineage loc)))
+                (setf (alist-get 'edges data)
+                      (append (alist-get 'edges (treepy-node loc))
+                              (or (alist-get 'edges data)
+                                  (error "BUG: Expected new nodes"))))
+                (treepy-replace loc data))))
     (cl-block nil
       (while t
         (when (eq (car-safe (treepy-node loc)) 'edges)
