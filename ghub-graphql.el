@@ -396,7 +396,7 @@ See Info node `(ghub)GraphQL Support'."
           ,(vector (list (cadr single) (cdr (car lineage))))
           ,@(if (cdr lineage)
                (ghub--graphql-narrow-query child (cdr lineage) cursor)
-             child)))
+              child)))
     (let* ((child  (or (assq (car lineage) (cdr query))
                        (cl-find-if (lambda (c)
                                      (and (listp c)
