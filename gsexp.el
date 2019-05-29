@@ -30,7 +30,7 @@
 ;;; Code:
 
 (defun gsexp-encode (document)
-  (gsexp--encode-field document))
+  (gsexp--pp (gsexp--encode-field document)))
 
 (defun gsexp--encode-field (field)
   (cond
@@ -70,6 +70,20 @@
                       (format "%s: %s" name (gsexp--encode-value value)))
                     value ", ")))
    (t (error "Invalid field value: %S" value))))
+
+(defun gsexp--pp (string)
+  (with-temp-buffer
+    (save-excursion
+      (insert string))
+    (while (< (point) (point-max))
+      (unless (and (bolp) (eolp))
+        (save-excursion
+          (let ((level (car (syntax-ppss (point-at-bol)))))
+            (when (looking-at "\\s-*\\s)")
+              (cl-decf level))
+            (indent-line-to (* 2 level)))))
+      (forward-line 1))
+    (buffer-string)))
 
 ;;; _
 (provide 'gsexp)
