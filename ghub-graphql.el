@@ -23,7 +23,7 @@
 
 (require 'dash)
 (require 'ghub)
-(require 'graphql)
+(require 'gsexp)
 (require 'treepy)
 
 (eval-when-compile
@@ -100,7 +100,7 @@ behave as for `ghub-request' (which see)."
                       name)
      (issues         [(:edges t)
                       (:singular issue number)
-                      (orderBy ((field . UPDATED_AT) (direction . DESC)))]
+                      (orderBy ((field UPDATED_AT) (direction DESC)))]
                      number
                      state
                      (author login)
@@ -129,7 +129,7 @@ behave as for `ghub-request' (which see)."
                      description)
      (pullRequests   [(:edges t)
                       (:singular pullRequest number)
-                      (orderBy ((field . UPDATED_AT) (direction . DESC)))]
+                      (orderBy ((field UPDATED_AT) (direction DESC)))]
                      number
                      state
                      (author login)
@@ -218,6 +218,7 @@ data as the only argument."
                (:constructor ghub--make-graphql-req)
                (:copier nil))
   (query     nil :read-only t)
+  (query-str nil :read-only nil)
   (variables nil :read-only t)
   (until     nil :read-only t)
   (buffer    nil :read-only t)
@@ -258,13 +259,15 @@ See Info node `(ghub)GraphQL Support'."
   (let ((p (cl-incf (ghub--graphql-req-pages req))))
     (when (> p 1)
       (ghub--graphql-set-mode-line req "Fetching page %s" p)))
+  (setf (ghub--graphql-req-query-str req)
+        (gsexp-encode
+         (ghub--graphql-prepare-query
+          (ghub--graphql-req-query req)
+          lineage cursor)))
   (ghub--retrieve
    (let ((json-false nil))
      (ghub--encode-payload
-      `((query     . ,(ghub--graphql-encode
-                       (ghub--graphql-prepare-query
-                        (ghub--graphql-req-query req)
-                        lineage cursor)))
+      `((query     . ,(ghub--graphql-req-query-str req))
         (variables . ,(ghub--graphql-req-variables req)))))
    req))
 
@@ -291,9 +294,7 @@ See Info node `(ghub)GraphQL Support'."
                 (setq loc  (treepy-down loc))
                 (setq loc  (treepy-next loc)))
               (dolist (elt alist)
-                (cond ((eq (car elt) :alias)
-                       (push elt vars))
-                      ((keywordp (car elt)))
+                (cond ((keywordp (car elt)))
                       ((= (length elt) 3)
                        (push (list (nth 0 elt)
                                    (nth 1 elt)) vars)
@@ -320,59 +321,56 @@ See Info node `(ghub)GraphQL Support'."
                  (payload (ghub--handle-response-error status payload req))
                  (err     (plist-get status :error))
                  (errors  (cdr (assq 'errors payload)))
-                 (errors  (and errors
-                               (cons 'ghub-graphql-error errors)))
-                 (data    (assq 'data payload))
-                 (value   (ghub--req-value req)))
-            (setf (ghub--req-value req) value)
+                 (errors  (and errors (cons 'ghub-graphql-error errors))))
             (if (or err errors)
                 (if-let ((errorback (ghub--req-errorback req)))
                     (funcall errorback (or err errors) headers status req)
                   (ghub--signal-error (or err errors)))
-              (ghub--graphql-walk-response value data req))))
+              (ghub--graphql-walk-response req (assq 'data payload)))))
       (when (buffer-live-p buffer)
         (kill-buffer buffer)))))
 
-(defun ghub--graphql-walk-response (loc data req)
-  (if (not loc)
-      (setf (ghub--req-value req)
-            (setq loc (ghub--alist-zip data)))
-    (setq data (ghub--graphql-narrow-data data (ghub--graphql-lineage loc)))
-    (setf (alist-get 'edges data)
-          (append (alist-get 'edges (treepy-node loc))
-                  (or (alist-get 'edges data)
-                      (error "BUG: Expected new nodes"))))
-    (setq loc (treepy-replace loc data)))
-  (cl-block nil
-    (while t
-      (when (eq (car-safe (treepy-node loc)) 'edges)
-        (setq loc (treepy-up loc))
-        (pcase-let ((`(,key . ,val) (treepy-node loc)))
-          (let-alist val
-            (let* ((cursor (and .pageInfo.hasNextPage
-                                .pageInfo.endCursor))
-                   (until (cdr (assq (intern (format "%s-until" key))
-                                     (ghub--graphql-req-until req))))
-                   (nodes (mapcar #'cdar .edges))
-                   (nodes (if until
-                              (--take-while
-                               (or (string> (cdr (assq 'updatedAt it)) until)
-                                   (setq cursor nil))
-                               nodes)
-                            nodes)))
-              (if cursor
-                  (progn
-                    (setf (ghub--req-value req) loc)
-                    (ghub--graphql-retrieve req
-                                            (ghub--graphql-lineage loc)
-                                            cursor)
-                    (cl-return))
-                (setq loc (treepy-replace loc (cons key nodes))))))))
-      (if (not (treepy-end-p loc))
-          (setq loc (treepy-next loc))
-        (funcall (ghub--req-callback req)
-                 (treepy-root loc))
-        (cl-return)))))
+(defun ghub--graphql-walk-response (req data)
+  (let* ((loc (ghub--req-value req))
+         (loc (if (not loc)
+                  (ghub--alist-zip data)
+                (setq data (ghub--graphql-narrow-data
+                            data (ghub--graphql-lineage loc)))
+                (setf (alist-get 'edges data)
+                      (append (alist-get 'edges (treepy-node loc))
+                              (or (alist-get 'edges data)
+                                  (error "BUG: Expected new nodes"))))
+                (treepy-replace loc data))))
+    (cl-block nil
+      (while t
+        (when (eq (car-safe (treepy-node loc)) 'edges)
+          (setq loc (treepy-up loc))
+          (pcase-let ((`(,key . ,val) (treepy-node loc)))
+            (let-alist val
+              (let* ((cursor (and .pageInfo.hasNextPage
+                                  .pageInfo.endCursor))
+                     (until (cdr (assq (intern (format "%s-until" key))
+                                       (ghub--graphql-req-until req))))
+                     (nodes (mapcar #'cdar .edges))
+                     (nodes (if until
+                                (--take-while
+                                 (or (string> (cdr (assq 'updatedAt it)) until)
+                                     (setq cursor nil))
+                                 nodes)
+                              nodes)))
+                (if cursor
+                    (progn
+                      (setf (ghub--req-value req) loc)
+                      (ghub--graphql-retrieve req
+                                              (ghub--graphql-lineage loc)
+                                              cursor)
+                      (cl-return))
+                  (setq loc (treepy-replace loc (cons key nodes))))))))
+        (if (not (treepy-end-p loc))
+            (setq loc (treepy-next loc))
+          (funcall (ghub--req-callback req)
+                   (treepy-root loc))
+          (cl-return))))))
 
 (defun ghub--graphql-lineage (loc)
   (let (lineage)
@@ -399,8 +397,14 @@ See Info node `(ghub)GraphQL Support'."
           ,(vector (list (cadr single) (cdr (car lineage))))
           ,@(if (cdr lineage)
                (ghub--graphql-narrow-query child (cdr lineage) cursor)
-             child)))
+              child)))
     (let* ((child  (or (assq (car lineage) (cdr query))
+                       ;; Alias
+                       (cl-find-if (lambda (c)
+                                     (eq (car-safe (car-safe c))
+                                         (car lineage)))
+                                   query)
+                       ;; Edges
                        (cl-find-if (lambda (c)
                                      (and (listp c)
                                           (vectorp (cadr c))
@@ -408,7 +412,8 @@ See Info node `(ghub)GraphQL Support'."
                                                           (cl-coerce (cadr c)
                                                                      'list)))
                                               (car lineage))))
-                                   (cdr query))))
+                                   (cdr query))
+                       (error "BUG: Failed to narrow query")))
            (object (car query))
            (args   (and (vectorp (cadr query))
                         (cadr query))))
@@ -423,26 +428,6 @@ See Info node `(ghub)GraphQL Support'."
                   ,@(cddr child)))
                (t
                 child))))))
-
-(defun ghub--graphql-encode (g)
-  (if (symbolp g)
-      (symbol-name g)
-    (let* ((object (graphql--encode-object (car g)))
-           (args   (and (vectorp (cadr g))
-                        (cl-coerce (cadr g) 'list)))
-           (aliasp (cadr (assq :alias args)))
-           (fields (if args (cddr g) (cdr g)))
-           (fields (and fields
-                        (mapconcat #'ghub--graphql-encode fields "\n")))
-           (args   (and args
-                        (mapconcat (pcase-lambda (`(,key ,val))
-                                     (graphql--encode-argument key val))
-                                   args ",\n"))))
-      (if aliasp
-          (concat object ": " fields)
-        (concat object
-                (and args   (format " (\n%s)" args))
-                (and fields (format " {\n%s\n}" fields)))))))
 
 (defun ghub--alist-zip (root)
   (let ((branchp (lambda (elt) (and (listp elt) (listp (cdr elt)))))
