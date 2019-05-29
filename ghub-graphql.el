@@ -218,6 +218,7 @@ data as the only argument."
                (:constructor ghub--make-graphql-req)
                (:copier nil))
   (query     nil :read-only t)
+  (query-str nil :read-only nil)
   (variables nil :read-only t)
   (until     nil :read-only t)
   (buffer    nil :read-only t)
@@ -258,13 +259,15 @@ See Info node `(ghub)GraphQL Support'."
   (let ((p (cl-incf (ghub--graphql-req-pages req))))
     (when (> p 1)
       (ghub--graphql-set-mode-line req "Fetching page %s" p)))
+  (setf (ghub--graphql-req-query-str req)
+        (gsexp-encode
+         (ghub--graphql-prepare-query
+          (ghub--graphql-req-query req)
+          lineage cursor)))
   (ghub--retrieve
    (let ((json-false nil))
      (ghub--encode-payload
-      `((query     . ,(gsexp-encode
-                       (ghub--graphql-prepare-query
-                        (ghub--graphql-req-query req)
-                        lineage cursor)))
+      `((query     . ,(ghub--graphql-req-query-str req))
         (variables . ,(ghub--graphql-req-variables req)))))
    req))
 
