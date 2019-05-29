@@ -66,7 +66,7 @@
     (format "(%s)" (mapconcat #'gsexp--encode-value value "")))
    ((listp value)
     (format "{%s}" (mapconcat
-                    (pcase-lambda (`(,name . ,value))
+                    (pcase-lambda (`(,name ,value))
                       (format "%s: %s" name (gsexp--encode-value value)))
                     value ", ")))
    (t (error "Invalid field value: %S" value))))
