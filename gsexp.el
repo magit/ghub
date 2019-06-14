@@ -29,6 +29,8 @@
 
 ;;; Code:
 
+(require 'cl-lib)
+
 (defun gsexp-encode (document)
   (gsexp--pp (gsexp--encode-field document)))
 
