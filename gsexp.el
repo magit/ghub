@@ -36,6 +36,8 @@
 
 (defun gsexp--encode-field (field)
   (cond
+   ((stringp field)
+    field)
    ((symbolp field)
     (symbol-name field))
    ((listp (car field))
