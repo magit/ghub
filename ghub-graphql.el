@@ -150,6 +150,8 @@ behave as for `ghub-request' (which see)."
                                           nameWithOwner))
                      (assignees [(:edges t)]
                                 id)
+                     (reviewRequests [(:edges t)]
+                                     (requestedReviewer "... on User { id }\n"))
                      (comments  [(:edges t)]
                                 databaseId
                                 (author login)
