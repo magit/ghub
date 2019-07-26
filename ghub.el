@@ -338,7 +338,12 @@ Both callbacks are called with four arguments.
    (ghub--encode-payload payload)
    (ghub--make-req
     :url (url-generic-parse-url
-          (concat "https://" host resource
+          (concat "https://"
+                  (if (and (equal resource "/graphql")
+                           (string-suffix-p "/v3" host))
+                      (substring host 0 -3)
+                    host)
+                  resource
                   (and query (concat "?" (ghub--url-encode-params query)))))
     :forge forge
     :silent silent
