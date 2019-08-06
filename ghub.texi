@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 3.2.0 (v3.2.0-10-g9017033+1)
+@subtitle for version 3.2.0 (v3.2.0-35-g9d75d30+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -68,7 +68,7 @@ because then all packages that talk to forge APIs could be configured
 the same way.
 
 @noindent
-This manual is for Ghub version 3.2.0 (v3.2.0-10-g9017033+1).
+This manual is for Ghub version 3.2.0 (v3.2.0-35-g9d75d30+1).
 
 @quotation
 Copyright (C) 2017-2019 Jonas Bernoulli <jonas@@bernoul.li>

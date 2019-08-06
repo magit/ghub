@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 3.2.0 (v3.2.0-10-g9017033+1)
+#+SUBTITLE: for version 3.2.0 (v3.2.0-35-g9d75d30+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -40,7 +40,7 @@ because then all packages that talk to forge APIs could be configured
 the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 3.2.0 (v3.2.0-10-g9017033+1).
+This manual is for Ghub version 3.2.0 (v3.2.0-35-g9d75d30+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2019 Jonas Bernoulli <jonas@bernoul.li>
@@ -1167,8 +1167,6 @@ General Public License for more details.
 
 # IMPORTANT: Also update ORG_ARGS and ORG_EVAL in the Makefile.
 # Local Variables:
-# eval: (require 'magit-utils nil t)
-# eval: (require 'org-man     nil t)
 # eval: (require 'ox-extra    nil t)
 # eval: (require 'ox-texinfo+ nil t)
 # eval: (and (featurep 'ox-extra) (ox-extras-activate '(ignore-headlines)))
