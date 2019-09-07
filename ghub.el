@@ -759,16 +759,25 @@ and call `auth-source-forget+'."
              "Authorization")
             (gitlab
              "Private-Token"))
-          (concat
-           (and (not (eq forge 'gitlab)) "token ")
-           (encode-coding-string
-            (cl-typecase auth
-              (string auth)
-              (null   (ghub--token host username 'ghub nil forge))
-              (symbol (ghub--token host username auth  nil forge))
-              (t (signal 'wrong-type-argument
-                         `((or stringp symbolp) ,auth))))
-            'utf-8)))))
+          (cl-ecase forge
+            (bitbucket
+             (concat "Basic "
+                     (base64-encode-string
+                      (concat username ":"
+                              (ghub--token host username auth nil forge)))))
+            ((nil gitea github gitlab gogs)
+             (concat
+              (cond
+               ((eq forge 'gitlab) "")
+               (t "token "))
+              (encode-coding-string
+               (cl-typecase auth
+                 (string auth)
+                 (null   (ghub--token host username 'ghub nil forge))
+                 (symbol (ghub--token host username auth  nil forge))
+                 (t (signal 'wrong-type-argument
+                            `((or stringp symbolp) ,auth))))
+               'utf-8)))))))
 
 (defun ghub--basic-auth (host username)
   (let ((url (url-generic-parse-url (concat "https://" host))))
