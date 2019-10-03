@@ -96,6 +96,9 @@ at URL `https://github.com/settings/tokens'.")
 If this is nil, then the value returned by `system-name' is
 used instead.")
 
+(defvar ghub-insecure-hosts nil
+  "List of hosts that use http instead of https.")
+
 ;;; Request
 ;;;; Object
 
@@ -338,7 +341,7 @@ Both callbacks are called with four arguments.
    (ghub--encode-payload payload)
    (ghub--make-req
     :url (url-generic-parse-url
-          (concat "https://"
+          (concat (if (member host ghub-insecure-hosts) "http://" "https://")
                   (if (and (equal resource "/graphql")
                            (string-suffix-p "/v3" host))
                       (substring host 0 -3)
@@ -771,7 +774,8 @@ and call `auth-source-forget+'."
             'utf-8)))))
 
 (defun ghub--basic-auth (host username)
-  (let ((url (url-generic-parse-url (concat "https://" host))))
+  (let ((url (url-generic-parse-url
+              (if (member host ghub-insecure-hosts) "http://" "https://"))))
     (setf (url-user url) username)
     (url-basic-auth url t)))
 
