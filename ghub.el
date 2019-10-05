@@ -750,7 +750,7 @@ and call `auth-source-forget+'."
 
 (defun ghub--auth (host auth &optional username forge)
   (unless username
-    (setq username (ghub--username host)))
+    (setq username (ghub--username host forge)))
   (if (eq auth 'basic)
       (cl-ecase forge
         ((nil github gitea gogs bitbucket)
