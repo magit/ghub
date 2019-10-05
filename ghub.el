@@ -883,7 +883,7 @@ See https://magit.vc/manual/ghub/Support-for-Other-Forges.html for instructions.
         (car (process-lines "git" "config" var))
       (error
        (let ((user (read-string
-                    (format "Git variable `%s' is unset.  Set to: " 'var))))
+                    (format "Git variable `%s' is unset.  Set to: " var))))
          (if (equal user "")
              (user-error "The empty string is not a valid username")
            (call-process "git" nil nil nil "config" "--global" var user)
