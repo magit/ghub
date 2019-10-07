@@ -446,7 +446,7 @@ Signal an error if the id cannot be determined."
         (and (not noerror)
              (error "Repository %S does not exist on %S.\n%s%S?"
                     (concat owner "/" name)
-                    (or host (ghub--host host))
+                    (or host (ghub--host forge))
                     "Maybe it was renamed and you have to update "
                     "remote.<remote>.url")))))
 
