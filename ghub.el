@@ -440,9 +440,17 @@ this function is called with nil for PAYLOAD."
 (cl-defun ghub-repository-id (owner name &key username auth host forge noerror)
   "Return the id of the specified repository.
 Signal an error if the id cannot be determined."
-  (let ((fn (intern (format "%s-repository-id" (or forge 'ghub)))))
-    (or (funcall (if (eq fn 'ghub-repository-id) 'ghub--repository-id fn)
-                 owner name :username username :auth auth :host host)
+  (let ((fn (cl-case forge
+              ((nil ghub github) 'ghub--repository-id)
+              (gitlab            'glab-repository-id)
+              (gittea            'gtea-repository-id)
+              (gogs              'gogs-repository-id)
+              (bitbucket         'buck-repository-id)
+              (t (intern (format "%s-repository-id" forge))))))
+    (unless (fboundp fn)
+      (error "ghub-repository-id: Forge type/abbreviation `%s' is unknown"
+             forge))
+    (or (funcall fn owner name :username username :auth auth :host host)
         (and (not noerror)
              (error "Repository %S does not exist on %S.\n%s%S?"
                     (concat owner "/" name)
