@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 3.2.0 (v3.2.0-35-g9d75d30+1)
+#+SUBTITLE: for version 3.2.0 (v3.2.0-45-ge19cd86+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -40,7 +40,7 @@ because then all packages that talk to forge APIs could be configured
 the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 3.2.0 (v3.2.0-35-g9d75d30+1).
+This manual is for Ghub version 3.2.0 (v3.2.0-45-ge19cd86+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2019 Jonas Bernoulli <jonas@bernoul.li>
@@ -615,7 +615,7 @@ functions.  The forge APIs are documented at:
     Both callbacks are called with four arguments.
 
     1. For ~CALLBACK~, the combined value of the retrieved pages.
-       For ~ERRORBACK~, the error that occured when retrieving the
+       For ~ERRORBACK~, the error that occurred when retrieving the
        last page.
     2. The headers of the last page as an alist.
     3. Status information provided by ~url-retrieve~.  Its ~:error~
@@ -1127,7 +1127,7 @@ values for the arguments METHOD and/or FORGE.
 
 - The Gitlab API documentation is not always accurate, though I don't
   have an example at hand.  It also isn't structured well, making it
-  occationally difficult to find the information one is looking for.
+  occasionally difficult to find the information one is looking for.
 
 - Where one would use ~user/repo~ when accessing another forge, one has
   to use ~user%2Frepo~ when accessing Gitlab, e.g.:

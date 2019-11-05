@@ -309,7 +309,7 @@ If CALLBACK and/or ERRORBACK is non-nil, then make one or more
 
 Both callbacks are called with four arguments.
   1. For CALLBACK, the combined value of the retrieved pages.
-     For ERRORBACK, the error that occured when retrieving the
+     For ERRORBACK, the error that occurred when retrieving the
      last page.
   2. The headers of the last page as an alist.
   3. Status information provided by `url-retrieve'. Its `:error'
@@ -699,7 +699,7 @@ SCOPES are the scopes the token is given access to."
                       `((scopes . ,scopes)
                         (note   . ,(ghub--ident-github package)))
                       :username username :auth 'basic :host host))))
-      ;; Build-in back-ends return a function that does the actual
+      ;; Built-in back-ends return a function that does the actual
       ;; saving, while for some third-party back-ends ":create t"
       ;; is enough.
       (when (functionp save)
