@@ -846,7 +846,7 @@ See https://magit.vc/manual/ghub/Support-for-Other-Forges.html for instructions.
                                user host))))))))
     (if (functionp token) (funcall token) token)))
 
-(cl-defmethod ghub--host (forge)
+(cl-defmethod ghub--host (&optional forge)
   (cl-ecase forge
     ((nil github)
      (or (ignore-errors (car (process-lines "git" "config" "github.host")))
