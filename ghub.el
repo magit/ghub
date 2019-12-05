@@ -464,18 +464,41 @@ Signal an error if the id cannot be determined."
   (and
    ;; Note: For build sans gnutls, `libgnutls-version' is -1.
    (>= libgnutls-version 30603)
-   (version<= emacs-version "26.2")
+   (or (version<= emacs-version "26.2")
+       (eq system-type 'darwin))
    'force)
   "Whether to use a kludge that hopefully works around an Emacs bug.
 
-In Emacs versions before 26.3 there is a bug that causes network
-connections to fail when using TLS1.3.  If this variable is
-non-nil, then Ghub works around that by binding
-`gnutls-algorithm-priority' to \"NORMAL:-VERS-TLS1.3\", unless we
-think it is unnecessary.  If `force' then always use the
-workaround.  Currently the latter is the default except when
-using Emacs 26.3+, or the libgnutls is earlier than 3.6.3 (when
-it introduced TLS1.3).
+In Emacs versions before 26.3 there is a bug that often but not
+always causes network connections to fail when using TLS1.3.  It
+appears that even when using Emacs 26.3 the bug still exists but
+only on macOS.
+
+The workaround works by binding `gnutls-algorithm-priority' to
+\"NORMAL:-VERS-TLS1.3\" in `ghub--retrieve' around the call to
+`url-retrieve' or `url-retrieve-synchronously'.  If you would
+like to use the same kludge for other uses of these functions,
+then you have to set this variable globally to the mentioned
+value.
+
+This variable controls whether the `ghub' package should use the
+kludge.
+
+- If nil, then never use the kludge.
+- If `force' then always use the kludge no matter what.
+- For any other non-nil value use the kludge, if and only if we
+  believe that doing so is the correct thing to do.
+
+The default value of this variable is either nil or `forge'.  It
+is `forge' if using libgnutls >=3.6.3 (the version introducing
+TLS1.3); AND also using Emacs < 26.3 and/or macOS (any version).
+
+If the value is any other non-nil value, then `ghub--retrieve'
+used the same logic as describe in the previous paragraph, but
+every time it is called.  (This complication is mostly a historic
+accident, which we don't want to change because doing so would
+break this kludge for some users who have been relying on it for
+a while already.)
 
 For more information see https://github.com/magit/ghub/issues/81
 and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
@@ -495,7 +518,8 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
                   (or (eq ghub-use-workaround-for-emacs-bug 'force)
                       (and (not gnutls-algorithm-priority)
                            (>= libgnutls-version 30603)
-                           (version<= emacs-version "26.2")
+                           (or (version<= emacs-version "26.2")
+                               (eq system-type 'darwin))
                            (memq (ghub--req-forge req) '(github nil)))))
              "NORMAL:-VERS-TLS1.3"
            gnutls-algorithm-priority)))
