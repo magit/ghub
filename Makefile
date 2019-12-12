@@ -11,8 +11,7 @@ ELS  += gogs.el
 ELS  += buck.el
 ELCS  = $(ELS:.el=.elc)
 
-DEPS  = dash
-DEPS += treepy
+DEPS  = treepy
 
 VERSION ?= $(shell test -e $(TOP).git && git describe --tags --abbrev=0 | cut -c2-)
 

@@ -21,7 +21,6 @@
 
 ;;; Code:
 
-(require 'dash)
 (require 'ghub)
 (require 'gsexp)
 (require 'treepy)
@@ -359,9 +358,11 @@ See Info node `(ghub)GraphQL Support'."
                                        (ghub--graphql-req-until req))))
                      (nodes (mapcar #'cdar .edges))
                      (nodes (if until
-                                (--take-while
-                                 (or (string> (cdr (assq 'updatedAt it)) until)
-                                     (setq cursor nil))
+                                (seq-take-while
+                                 (lambda (node)
+                                   (or (string> (cdr (assq 'updatedAt node))
+                                                until)
+                                       (setq cursor nil)))
                                  nodes)
                               nodes)))
                 (if cursor
