@@ -1,6 +1,6 @@
 ;;; gsexp.el --- GraphQl as S-expressions  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2016-2019  Jonas Bernoulli
+;; Copyright (C) 2016-2020  Jonas Bernoulli
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/magit/ghub
