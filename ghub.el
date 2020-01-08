@@ -918,7 +918,16 @@ See https://magit.vc/manual/ghub/Support-for-Other-Forges.html for instructions.
                     (format "Git variable `%s' is unset.  Set to: " var))))
          (if (equal user "")
              (user-error "The empty string is not a valid username")
-           (call-process "git" nil nil nil "config" "--global" var user)
+           (call-process
+            "git" nil nil nil "config"
+            (and (eq (read-char-choice
+                      (format
+                       "Set %s=%s [g]lobally (recommended) or [l]ocally? "
+                       var user)
+                      (list ?g ?l))
+                     ?g)
+                 "--global")
+            var user)
            user))))))
 
 (defun ghub--ident (username package)
