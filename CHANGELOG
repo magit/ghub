@@ -1,4 +1,33 @@
 # -*- mode: org -*-
+* v3.3.0    2020-01-19
+
+- Add a kludge to work around a bug in Emacs versions before 26.3 that
+  often but not always causes network connections to fail when using
+  TLS1.3.  On macOS use the workaround regardless of the Emacs version
+  because the supposed bug fix does not appear to work there.  Add a
+  variable ~ghub-use-workaround-for-emacs-bug~ to allow users to opt in
+  or out of using the kludge.  #81
+
+- Add a new library ~gsexp.el~ to encode S-expressions as GraphQl
+  documents.  Previously we used the third-party library ~graphql.el~
+  but using our own library gives us more flexibility.  Currently it
+  is rather incomplete and only intended for use by ~ghub-graphql~ but
+  I might fill the gaps and add documentation eventually.  I am not
+  in a hurry though.  #90
+
+- No longer depend on ~dash~.
+
+- Handle some undocumented Bitbucket behavior. #97
+
+- Add new option ~ghub-insecure-hosts~ to allow users to connect to
+  insecure forges.  #9
+
+- Support Github instances that use an undocumented url-schema, which
+  users report to have sighted in the wild.
+
+- ~ghub-fetch-repository~ now also fetches ~reviewRequests~.
+
+- Various bug fixes and improvements.
 
 * v3.2.0    2018-12-27
 
