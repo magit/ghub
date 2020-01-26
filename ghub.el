@@ -586,12 +586,12 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
       (let ((print-escape-newlines nil))
         (error "BUG: missing headers
   See https://github.com/magit/ghub/issues/81.
-  url: %S
+  url: %s
   headers: %S
   status: %S
   buffer: %S"
-               url-http-end-of-headers
                (url-recreate-url (ghub--req-url req))
+               url-http-end-of-headers
                status
                (current-buffer))))
     (while (re-search-forward "^\\([^:]*\\): \\(.+\\)"
