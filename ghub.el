@@ -443,7 +443,7 @@ Signal an error if the id cannot be determined."
   (let ((fn (cl-case forge
               ((nil ghub github) 'ghub--repository-id)
               (gitlab            'glab-repository-id)
-              (gittea            'gtea-repository-id)
+              (gitea             'gtea-repository-id)
               (gogs              'gogs-repository-id)
               (bitbucket         'buck-repository-id)
               (t (intern (format "%s-repository-id" forge))))))
