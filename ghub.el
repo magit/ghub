@@ -379,7 +379,8 @@ called after the next request has finished.  Use the function
   (and (assq 'next (ghub-response-link-relations req))
        (or (ghub--retrieve nil req) t)))
 
-(cl-defun ghub-wait (resource &optional duration &key username auth host)
+(cl-defun ghub-wait (resource &optional duration
+                              &key username auth host forge)
   "Busy-wait up to DURATION seconds for RESOURCE to become available.
 
 DURATION specifies how many seconds to wait at most.  It defaults
@@ -393,14 +394,17 @@ See `ghub-request' for information about the other arguments."
     (setq duration 64))
   (with-local-quit
     (let ((total 0))
-      (while (not (ghub-get resource nil
-                            :noerror t
-                            :username username
-                            :auth auth
-                            :host host))
+      (while (not (ghub-request "GET" resource nil
+                                :noerror t
+                                :username username
+                                :auth auth
+                                :host host
+                                :forge forge))
         (message "Waited (%3ss of %ss) for %s..." total duration resource)
         (if (= total duration)
-            (error "Github is taking too long to create %s" resource)
+            (error "%s is taking too long to create %s"
+                   (if forge (capitalize (symbol-name forge)) "Github")
+                   resource)
           (if (> total 0)
               (let ((wait (min total (- duration total))))
                 (sit-for wait)
