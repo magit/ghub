@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 3.3.0
+@subtitle for version 3.3.0 (v3.3.0-1-g4ebe60b+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -68,7 +68,7 @@ because then all packages that talk to forge APIs could be configured
 the same way.
 
 @noindent
-This manual is for Ghub version 3.3.0.
+This manual is for Ghub version 3.3.0 (v3.3.0-1-g4ebe60b+1).
 
 @quotation
 Copyright (C) 2017-2020 Jonas Bernoulli <jonas@@bernoul.li>
@@ -200,7 +200,7 @@ create tokens manually as described in @ref{Manually Creating and Storing a Toke
 @item
 Unfortunately only Github supports the creation of tokens by using
 the API@.  If you want to access another forge, then you have to
-create the token manually as describe in @ref{Manually Creating and Storing a Token}.  Also see @ref{Support for Other Forges}.
+create the token manually as described in @ref{Manually Creating and Storing a Token}.  Also see @ref{Support for Other Forges}.
 
 
 @item
@@ -219,7 +219,7 @@ and @emph{globally} set @code{github.git.example.com/api/v3.user} to @code{jtrib
 The latter is necessary even if your username on Github.com is the
 same.
 
-For some Github Enterprice instances @code{/api} has to be used instead of
+For some Github Enterprise instances @code{/api} has to be used instead of
 @code{/api/v3} as shown above.  If the wizard fails in both cases, then try
 creating the token manually.
 
@@ -244,7 +244,7 @@ repeat the request to trigger the wizard again.
 
 @item
 The setup wizard should work even if you have enabled two-factor
-authentication.  However if your Github Enterprise instance enforces
+authentication.  However, if your Github Enterprise instance enforces
 Single Sign-On as an additional security measure, then you are out
 of luck and have to create the token manually as described in
 @ref{Manually Creating and Storing a Token}.
@@ -400,7 +400,7 @@ answer is yes, then you should abort and see @ref{How Ghub uses Auth-Source} for
 
 
 @item
-When creating a token it is necessary to provide a token
+When creating a token, it is necessary to provide a token
 description.  Ghub uses descriptions that have the form "Emacs
 package PACKAGE @@ LOCAL-MACHINE".
 
@@ -693,7 +693,7 @@ messaged.
 
 
 @item
-If @code{UNPAGINATE} is t, then this function make as many requests as
+If @code{UNPAGINATE} is t, then this function makes as many requests as
 necessary to get all values.  If @code{UNPAGINATE} is a natural number,
 then it gets at most that many pages.  For any other non-nil value
 it raises an error.
@@ -723,7 +723,7 @@ if connecting to a Github Enterprise instance.
 Each package that uses Ghub should use its own token.  If @code{AUTH}
 is @code{nil} or unspecified, then the generic @code{ghub} token is used
 instead.  This is only acceptable for personal utilities.  A
-packages that is distributed to other users should always use this
+package that is distributed to other users should always use this
 argument to identify itself, using a symbol matching its name.
 
 Package authors who find this inconvenient should write a wrapper
@@ -924,7 +924,7 @@ If you want to do something with some resource right after making
 a request for its creation, then you might have to wait for it to
 actually be created.  This function can be used to do so.  It
 repeatedly tries to access the resource until it becomes available
-or until the timeout exceeds.  In the latter case it signals
+or until a timeout is reached.  In the latter case it signals
 @code{ghub-error}.
 
 @code{RESOURCE} specifies the resource that this function waits for.
@@ -1133,7 +1133,7 @@ also more opinionated.
 @defun ghub--graphql-vacuum query variables callback &optional until &key narrow username auth host forge
 
 This function is an opinionated alternative to @code{ghub-graphql}.
-It relies and dark magic to get the job done.
+It relies on dark magic to get the job done.
 
 It makes an initial request using @code{QUERY}.  It then looks for
 paginated edges in the returned data and makes more requests to

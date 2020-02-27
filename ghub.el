@@ -265,7 +265,7 @@ If USERNAME is non-nil, then make a request on behalf of that
   `github.user' for \"api.github.com\", or `github.HOST.user' if
   connecting to a Github Enterprise instance.
 
-Each package that uses `ghub' should use its own token. If AUTH
+Each package that uses `ghub' should use its own token.  If AUTH
   is nil, then the generic `ghub' token is used instead.  This
   is only acceptable for personal utilities.  A packages that
   is distributed to other users should always use this argument
