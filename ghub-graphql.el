@@ -154,9 +154,11 @@ behave as for `ghub-request' (which see)."
                      body
                      (baseRef name
                               (repository nameWithOwner))
+                     baseRefOid
                      (headRef name
                               (repository (owner login)
                                           nameWithOwner))
+                     headRefOid
                      (assignees [(:edges t)]
                                 id)
                      (reviewRequests [(:edges t)]
@@ -169,6 +171,34 @@ behave as for `ghub-request' (which see)."
 	                        body)
                      (labels    [(:edges t)]
                                 id)))))
+
+(defconst ghub-fetch-repository-review-threads
+  '(query
+    (repository
+     [(owner $owner String!)
+      (name  $name  String!)]
+     (pullRequests   [(:edges t)
+                      (:singular pullRequest number)
+                      (orderBy ((field UPDATED_AT) (direction DESC)))]
+                     number
+                     baseRefOid
+                     headRefOid
+                     (reviewThreads [(:edges t)]
+                                    id
+                                    line
+                                    originalLine
+                                    diffSide
+                                    (resolvedBy login)
+                                    (comments [(:edges t)]
+                                              id
+                                              databaseId
+                                              (author login)
+                                              createdAt
+                                              updatedAt
+                                              body
+                                              (replyTo databaseId)
+                                              (originalCommit oid)
+                                              path))))))
 
 (cl-defun ghub-fetch-repository (owner name callback
                                        &optional until
@@ -219,6 +249,27 @@ Once all data has been collected, CALLBACK is called with the
 data as the only argument."
   (ghub--graphql-vacuum (ghub--graphql-prepare-query
                          ghub-fetch-repository
+                         `(repository pullRequests (pullRequest . ,number)))
+                        `((owner . ,owner)
+                          (name  . ,name))
+                        callback until
+                        :narrow   '(repository pullRequest)
+                        :username username
+                        :auth     auth
+                        :host     host
+                        :forge    forge
+                        :headers  headers
+                        :errorback errorback))
+
+(cl-defun ghub-fetch-review-threads (owner name number callback
+                                           &optional until
+                                           &key username auth host forge
+                                           headers errorback)
+  "Asynchronously fetch forge data about the review threads from a pull-request.
+Once all data has been collected, CALLBACK is called with the
+data as the only argument."
+  (ghub--graphql-vacuum (ghub--graphql-prepare-query
+                         ghub-fetch-repository-review-threads
                          `(repository pullRequests (pullRequest . ,number)))
                         `((owner . ,owner)
                           (name  . ,name))
