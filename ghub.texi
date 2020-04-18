@@ -460,9 +460,11 @@ Finally store the token in a place where Ghub looks for it, as
 described in @ref{How Ghub uses Auth-Source}.
 
 If you store the token in a file like @code{~/.authinfo}, then note that
-@code{auth-source}'s parsing of that file is brittle.  Make sure the file
-ends with a newline character, that there are no empty or invalid
-lines, and that all comments are prefixed with @code{#}.
+@code{auth-source}'s parsing of that file is brittle.  Make sure the
+file ends with a newline character, that there are no empty or invalid
+lines, and that all comments are prefixed with @code{#}.  You should
+also verify that the case of your user-name in Emacs matches the one on
+your forge since the match in @code{~/.authinfo} is case-sensitive.
 
 @node How Ghub uses Auth-Source
 @section How Ghub uses Auth-Source
