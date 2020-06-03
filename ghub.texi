@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 3.3.0 (v3.3.0-7-g206f2b5+1)
+@subtitle for version 3.3.0 (v3.3.0-9-g4f904ac+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -68,7 +68,7 @@ because then all packages that talk to forge APIs could be configured
 the same way.
 
 @noindent
-This manual is for Ghub version 3.3.0 (v3.3.0-7-g206f2b5+1).
+This manual is for Ghub version 3.3.0 (v3.3.0-9-g4f904ac+1).
 
 @quotation
 Copyright (C) 2017-2020 Jonas Bernoulli <jonas@@bernoul.li>
@@ -291,10 +291,10 @@ to be used to set the username.  For example if the API is available
 at @code{https://example.com/api/v3}, then you should do this:
 
 @example
-# Do this once
+# Do this just once:
 git config --global github.example.com/api/v3.user EMPLOYEE
 
-# Do this for every corporate repository
+# Do this for every corporate repository:
 cd /path/to/repo
 git config github.host example.com/api/v3
 @end example
@@ -303,6 +303,11 @@ If you do not set @code{github.example.com/api/v3.user}, then you will be
 asked to provide the value when trying to make a request, but you do
 have to manually set @code{github.host}, or Ghub assumes that you are trying
 to access @code{api.github.com}.
+
+Note that in the above example @code{github.example.com/api/v3.user} is a Git
+variable whose name has the form @code{github.HOST[/PATH].user}.  If the API
+were available at @code{github.example.com/api/v3}, then the variable would
+be @code{github.github.example.com/api/v3.user}.
 
 @node Interactively Creating and Storing a Token
 @section Interactively Creating and Storing a Token
@@ -487,26 +492,26 @@ flipping the positions of the first two elements.
 Auth-Source also supports storing secrets in various key-chains.
 Refer to its documentation for more information.
 
-Some Auth-Source backends only support storing three values per entry,
-the "machine", the "login" and the "password".  Because Ghub uses
-separate tokens for each package, it has to squeeze four values into
-those three slots, and it does that by using "USERNAME@math{^PACKAGE}" as the
-"login".
+The default Auth-Source backends only support storing three values per
+entry; the "machine", the "login" and the "password".  Because Ghub
+uses separate tokens for each package, it has to squeeze four values
+into those three slots, and it does that by using "USERNAME@math{^PACKAGE}"
+as the "login".
 
-Assuming your username is "ziggy",the package is named "stardust", and
-you want to access @strong{Github.com} an entry in one of the three mentioned
-files would then look like this:
+Assuming your @strong{Github} username is "ziggy", the package is named
+"forge", and you want to access @strong{Github.com}, an entry in one of
+the three mentioned files would then look like this:
 
 @example
-machine api.github.com login ziggy^stardust password 012345abcdef...
+machine api.github.com login ziggy^forge password 012345abcdef...
 @end example
 
-Assuming your username is "ziggy",the package is named "stardust", and
-you want to access @strong{Gitlab.com} an entry in one of the three mentioned
-files would then look like this:
+Assuming your @strong{Gitlab} username is "ziggy", the package is named
+"forge", and you want to access @strong{Gitlab.com}, an entry in one of
+the three mentioned files would then look like this:
 
 @example
-machine gitlab.com/api/v4 login ziggy^stardust password 012345abcdef...
+machine gitlab.com/api/v4 login ziggy^forge password 012345abcdef...
 @end example
 
 @node Using Ghub in Personal Scripts
