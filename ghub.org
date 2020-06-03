@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 3.3.0 (v3.3.0-9-g4f904ac+1)
+#+SUBTITLE: for version 3.3.0 (v3.3.0-10-g961cd30+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -16,31 +16,15 @@
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-copyright-years
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
-Ghub provides basic support for using the APIs of various Git forges
-from Emacs packages.  Originally it only supported the Github REST
-API, but now it also supports the Github GraphQL API as well as the
-REST APIs of Gitlab, Gitea, Gogs and Bitbucket.
+Ghub is an Elisp library that is used by packages to access the
+GraphQL and/or REST APIs of various forges such as Github, Gitlab and
+Gitea, hosted on https://github.com, https://gitlab.com and elsewhere.
 
-Ghub abstracts access to API resources using only a handful of basic
-functions such as `ghub-get`.  These are convenience wrappers around
-`ghub-request`.  Additional forge-specific wrappers like `glab-put`,
-`gtea-put`, `gogs-post` and `buck-delete` are also available.  Ghub
-does not provide any resource-specific functions, with the exception
-of `FORGE-repository-id`.
-
-When accessing Github, then Ghub handles the creation and storage of
-access tokens using a setup wizard to make it easier for users to get
-started.  The tokens for other forges have to be created manually.
-
-Ghub is intentionally limited to only provide these two essential
-features — basic request functions and guided setup — to avoid being
-too opinionated, which would hinder wide adoption.  It is assumed that
-wide adoption would make life easier for users and maintainers alike,
-because then all packages that talk to forge APIs could be configured
-the same way.
+Most users will get in contact with Ghub and this manual when using
+the Forge package.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 3.3.0 (v3.3.0-9-g4f904ac+1).
+This manual is for Ghub version 3.3.0 (v3.3.0-10-g961cd30+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2020 Jonas Bernoulli <jonas@bernoul.li>
@@ -58,58 +42,12 @@ General Public License for more details.
 :END:
 * Introduction
 
-Ghub provides basic support for using the APIs of various Git forges
-from Emacs packages.  Originally it only supported the Github REST
-API, but now it also supports the Github GraphQL API as well as the
-REST APIs of Gitlab, Gitea, Gogs and Bitbucket.
+Ghub is an Elisp library that is used by packages to access the
+GraphQL and/or REST APIs of various forges such as Github, Gitlab and
+Gitea, hosted on https://github.com, https://gitlab.com and elsewhere.
 
-Ghub abstracts access to API resources using only a handful of basic
-functions such as `ghub-get`.  These are convenience wrappers around
-`ghub-request`.  Additional forge-specific wrappers like `glab-put`,
-`gtea-put`, `gogs-post` and `buck-delete` are also available.  Ghub
-does not provide any resource-specific functions, with the exception
-of `FORGE-repository-id`.
-
-When accessing Github, then Ghub handles the creation and storage of
-access tokens using a setup wizard to make it easier for users to get
-started.  The tokens for other forges have to be created manually.
-
-Ghub is intentionally limited to only provide these two essential
-features — basic request functions and guided setup — to avoid being
-too opinionated, which would hinder wide adoption.  It is assumed that
-wide adoption would make life easier for users and maintainers alike,
-because then all packages that talk to forge APIs could be configured
-the same way.
-
-Fancier interfaces can be implemented on top of Ghub, and one such
-wrapper — named simply Ghub+ — has already been implemented.  The
-benefit of basing various opinionated interfaces on top of a single
-library that provides only the core functionality is that choosing the
-programming interface no longer dictates how access tokens are
-handled.  Users can then use multiple packages that access the Github
-API without having to learn the various incompatible ways packages
-expect the appropriate token to be made available to them.
-
-Ghub uses the built-in ~auth-source~ library to store access tokens.
-That library is very flexible and supports multiple backends, which
-means that it is up to the user how secrets are stored.  They can,
-among other things, choose between storing secrets in plain text for
-ease of use, or encrypted for better security.
-
-Previously (as in until this library is widely adopted) it was up to
-package authors to decide if things should be easy or secure.  (Note
-that ~auth-source~ defaults to "easy" — you have been warned.)
-
-Ghub expects package authors to use a dedicated access token instead
-of sharing a single token between all packages that rely on it.  That
-means that users cannot configure Ghub once and later start using a
-new package without any additional setup.  But Ghub helps with that.
-
-When the user invokes some command that ultimately results in
-~ghub-request~ being called and the appropriate token is not available
-yet, then the user is guided through the process of creating and
-storing a new token, and at the end of that process the request is
-carried out as if the token had been available to begin with.
+Most users will get in contact with Ghub and this manual when using
+the Forge package.
 
 * Getting Started
 ** _ :ignore:
