@@ -74,27 +74,9 @@
 (defvar ghub-github-token-scopes '(repo)
   "The Github API scopes that your private tools need.
 
-The token that is created based on the value of this variable
-is used when `ghub-request' (or one of its wrappers) is called
-without providing a value for AUTH.  Packages should always
-identify themselves using that argument, but when you use Ghub
-directly in private tools, then that is not necessary and the
-request is made on behalf of the `ghub' package itself, aka on
-behalf of some private tool.
-
-By default the only requested scope is `repo' because that is
-sufficient as well as required for most common uses.  This and
-other scopes are documented at URL `https://magit.vc/goto/2e586d36'.
-
-If your private tools need other scopes, then you have to add
-them here *before* creating the token.  Alternatively you can
-edit the scopes of an existing token using the web interface
-at URL `https://github.com/settings/tokens'.")
-
-(defvar ghub-override-system-name nil
-  "If non-nil, the string used to identify the local machine.
-If this is nil, then the value returned by `system-name' is
-used instead.")
+You have to manually create or update the token at
+https://github.com/settings/tokens.  This variable
+only serves as documentation.")
 
 (defvar ghub-insecure-hosts nil
   "List of hosts that use http instead of https.")
@@ -280,11 +262,6 @@ Each package that uses `ghub' should use its own token.  If AUTH
   request.  If the value is a string, then it is assumed to be
   a valid token.  `basic' and an explicit token string are only
   intended for internal and debugging uses.
-
-  If AUTH is a package symbol, then the scopes are specified
-  using the variable `AUTH-github-token-scopes'.  It is an error
-  if that is not specified.  See `ghub-github-token-scopes' for
-  an example.
 
 If HOST is non-nil, then connect to that Github instance.  This
   defaults to \"api.github.com\".  When a repository is connected
@@ -530,17 +507,8 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
     (if (or (ghub--req-callback  req)
             (ghub--req-errorback req))
         (url-retrieve url handler (list req) silent)
-      ;; When this function has already been called, then it is a
-      ;; no-op.  Otherwise it sets `url-registered-auth-schemes' among
-      ;; other things.  If we didn't ensure that it has been run, then
-      ;; `url-retrieve-synchronously' would do it, which would cause
-      ;; the value that we let-bind below to be overwritten, and the
-      ;; "default" value to be lost outside the let-binding.
-      (url-do-setup)
       (with-current-buffer
-          (let ((url-registered-auth-schemes
-                 '(("basic" ghub--basic-auth-errorback . 10))))
-            (url-retrieve-synchronously url silent))
+          (url-retrieve-synchronously url silent)
         (funcall handler (car url-callback-arguments) req)))))
 
 (defun ghub--handle-response (status req)
@@ -701,66 +669,6 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
 ;;;; API
 
 ;;;###autoload
-(defun ghub-create-token (host username package scopes)
-  "Create, store and return a new token.
-
-HOST is the Github instance, usually \"api.github.com\".
-USERNAME is the name of a user on that instance.
-PACKAGE is the package that will use the token.
-SCOPES are the scopes the token is given access to."
-  (interactive
-   (pcase-let ((`(,host ,username ,package)
-                (ghub--read-triplet)))
-     (list host username package
-           (split-string
-            (read-string
-             "Scopes (separated by commas): "
-             (mapconcat #'symbol-name
-                        (symbol-value
-                         (intern (format "%s-github-token-scopes" package)))
-                        ","))
-            "," t "[\s\t]+"))))
-  (let ((user (ghub--ident username package)))
-    (cl-destructuring-bind (save token)
-        (ghub--auth-source-get (list :save-function :secret)
-          :create t :host host :user user
-          :secret
-          (cdr (assq 'token
-                     (ghub-post
-                      "/authorizations"
-                      `((scopes . ,scopes)
-                        (note   . ,(ghub--ident-github package)))
-                      :username username :auth 'basic :host host))))
-      ;; Built-in back-ends return a function that does the actual
-      ;; saving, while for some third-party back-ends ":create t"
-      ;; is enough.
-      (when (functionp save)
-        (funcall save))
-      ;; If the Auth-Source cache contains the information that there
-      ;; is no value, then setting the value does not invalidate that
-      ;; now incorrect information.
-      ;; The (:max 1) is needed and has to be placed at the
-      ;; end for Emacs releases before 26.1.  #24 #64 #72
-      (auth-source-forget (list :host host :user user :max 1))
-      token)))
-
-;;;###autoload
-(defun ghub-token-scopes (host username package)
-  "Return and echo the scopes of the specified token.
-This is intended for debugging purposes only.  The user
-has to provide several values including their password."
-  (interactive (ghub--read-triplet))
-  (let ((scopes
-         (cdr (assq 'scopes (ghub--get-token-plist host username package)))))
-    (when (called-interactively-p 'any)
-      ;; Also show the input values to make it easy for package
-      ;; authors to verify that the user has done it correctly.
-      (message "Scopes for %s@%s: %S"
-               (ghub--ident username package)
-               host scopes))
-    scopes))
-
-;;;###autoload
 (defun ghub-clear-caches ()
   "Clear all caches that might negatively affect Ghub.
 
@@ -793,10 +701,11 @@ and call `auth-source-forget+'."
     (setq username (ghub--username host forge)))
   (if (eq auth 'basic)
       (cl-ecase forge
-        ((nil github gitea gogs bitbucket)
+        ((nil gitea gogs bitbucket)
          (cons "Authorization" (ghub--basic-auth host username)))
-        (gitlab
-         (error "Gitlab does not support basic authentication")))
+        ((github gitlab)
+         (error "%s does not support basic authentication"
+                (capitalize (symbol-name forge)))))
     (cons (cl-ecase forge
             ((nil github gitea gogs bitbucket)
              "Authorization")
@@ -831,29 +740,6 @@ and call `auth-source-forget+'."
     (setf (url-user url) username)
     (url-basic-auth url t)))
 
-(defun ghub--basic-auth-errorback (url &optional prompt _overwrite _realm _args)
-  ;; This gets called twice.  Do nothing the first time,
-  ;; when PROMPT is nil.  See `url-get-authentication'.
-  (when prompt
-    (if (assoc "X-GitHub-OTP" (ghub--handle-response-headers nil nil))
-        (progn
-          (setq url-http-extra-headers
-                `(("Pragma" . "no-cache")
-                  ("Content-Type" . "application/json")
-                  ("X-GitHub-OTP" . ,(ghub--read-2fa-code))
-                  ;; Without "Content-Type" and "Authorization".
-                  ;; The latter gets re-added from the return value.
-                  ,@(cddr url-http-extra-headers)))
-          ;; Return the cached values, they are correct.
-          (url-basic-auth url nil nil nil))
-      ;; Remove the invalid cached values and fail, which
-      ;; is better than the invalid values sticking around.
-      (setq url-http-real-basic-auth-storage
-            (cl-delete (format "%s:%d" (url-host url) (url-port url))
-                       url-http-real-basic-auth-storage
-                       :test #'equal :key #'car))
-      nil)))
-
 (defun ghub--token (host username package &optional nocreate forge)
   (let* ((user (ghub--ident username package))
          (token
@@ -868,14 +754,10 @@ and call `auth-source-forget+'."
                 ;; end for Emacs releases before 26.1.  #24 #64 #72
                 (auth-source-forget (list :host host :user user :max 1))
                 (and (not nocreate)
-                     (cl-ecase forge
-                       ((nil github)
-                        (ghub--confirm-create-token host username package))
-                       ((gitlab gitea gogs bitbucket)
-                        (error "Required %s token (%S for %S) does not exist.
+                     (error "Required %s token (%S for %S) does not exist.
 See https://magit.vc/manual/ghub/Support-for-Other-Forges.html for instructions."
-                               (capitalize (symbol-name forge))
-                               user host))))))))
+                            (capitalize (symbol-name forge))
+                            user host))))))
     (if (functionp token) (funcall token) token)))
 
 (cl-defmethod ghub--host (&optional forge)
@@ -940,124 +822,6 @@ See https://magit.vc/manual/ghub/Support-for-Other-Forges.html for instructions.
 
 (defun ghub--ident (username package)
   (format "%s^%s" username package))
-
-(defun ghub--ident-github (package)
-  (format "Emacs package %s @ %s"
-          package
-          (or ghub-override-system-name (system-name))))
-
-(defun ghub--package-scopes (package)
-  (let ((var (intern (format "%s-github-token-scopes" package))))
-    (if (boundp var)
-        (symbol-value var)
-      (error "%s fails to define %s" package var))))
-
-(defun ghub--confirm-create-token (host username package)
-  (let* ((ident (ghub--ident-github package))
-         (scopes (ghub--package-scopes package))
-         (max-mini-window-height 40))
-    (if (let ((message-log-max nil))
-          (yes-or-no-p
-           (format
-            "Such a Github API token is not available:
-
-  Host:    %s
-  User:    %s
-  Package: %s
-
-  Scopes requested in `%s-github-token-scopes':\n%s
-  Store on Github as:\n    %S
-  Store locally according to option `auth-sources':\n    %S
-%s
-If in doubt, then abort and first view the section of
-the Ghub documentation called \"Interactively Creating
-and Storing a Token\".
-
-Otherwise confirm and then provide your Github username and
-password at the next two prompts.  Depending on the backend
-you might have to provide a passphrase and confirm that you
-really want to save the token.
-
-Create and store such a token? "
-            host username package package
-            (mapconcat (lambda (scope) (format "    %s" scope)) scopes "\n")
-            ident auth-sources
-            (if (and (stringp (car auth-sources))
-                     (not (string-suffix-p ".gpg" (car auth-sources))))
-                (format "
-WARNING: The token will be stored unencrypted in %S.
-         If you don't want that, you have to abort and customize
-         the `auth-sources' option.\n" (car auth-sources))
-              ""))))
-        (condition-case err
-            ;; Naively attempt to create the token since the user told us to
-            (ghub-create-token host username package scopes)
-          ;; The API _may_ respond with the fact that a token of the name
-          ;; we wanted already exists. At this point we're out of luck. We
-          ;; don't have a token (otherwise why would we be here?) and, if
-          ;; the user is using SMS 2FA, we have no way of telling GitHub
-          ;; to send a new 2FA code to the user other than sending a POST
-          ;; to /authorizations which is ugly.
-          ;;
-          ;; If they are not using SMS 2FA then we could try to delete the
-          ;; existing token (which will require them to hand us another
-          ;; OTP for the delete request) and then call create again,
-          ;; possibly requiring _another_ OTP if they don't do things fast
-          ;; enough, but this is only because non-SMS 2FA doesn't require
-          ;; any action on GitHub's part.
-          ;;
-          ;; GitHub does hand us a header that indicates what type of 2FA
-          ;; is in use, but it's not currently available in this location
-          ;; and would make the following code which is already quite
-          ;; complicated even more complicated. So in the interest of
-          ;; simplicity it's better to error out here and ask the user to
-          ;; take action. This situation should almost never arise anyway.
-          (ghub-http-error
-           (if (equal (alist-get 'code (car (alist-get 'errors (nth 4 err))))
-                      "already_exists")
-               (error "A token named %S already exists on Github.
-Please visit https://github.com/settings/tokens and delete it." ident)
-             (signal (car err) (cdr err)))))
-      (user-error "Abort"))))
-
-(defun ghub--get-token-id (host username package)
-  (let ((ident (ghub--ident-github package)))
-    (cl-some (lambda (x)
-               (let-alist x
-                 (and (equal .app.name ident) .id)))
-             (ghub-get "/authorizations"
-                       '((per_page . 100))
-                       :unpaginate t
-                       :username username :auth 'basic :host host))))
-
-(defun ghub--get-token-plist (host username package)
-  (ghub-get (format "/authorizations/%s"
-                    (ghub--get-token-id host username package))
-            nil :username username :auth 'basic :host host))
-
-(defun ghub--delete-token (host username package)
-  (ghub-delete (format "/authorizations/%s"
-                       (ghub--get-token-id host username package))
-               nil :username username :auth 'basic :host host))
-
-(defun ghub--read-triplet ()
-  (let ((host (read-string "Host: " (ghub--host))))
-    (list host
-          (read-string "Username: " (ghub--username host))
-          (intern (read-string "Package: " "ghub")))))
-
-(defvar ghub--2fa-cache nil)
-
-(defun ghub--read-2fa-code ()
-  (let ((code (read-string "Two-factor authentication code: "
-                           (and ghub--2fa-cache
-                                (< (float-time (time-subtract
-                                                (current-time)
-                                                (cdr ghub--2fa-cache)))
-                                   25)
-                                (car ghub--2fa-cache)))))
-    (setq ghub--2fa-cache (cons code (current-time)))
-    code))
 
 (defun ghub--auth-source-get (keys &rest spec)
   (declare (indent 1))
