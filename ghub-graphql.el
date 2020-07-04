@@ -126,6 +126,16 @@ behave as for `ghub-request' (which see)."
                      name
                      color
                      description)
+     (milestones     [(:edges t)
+                      (:singular milestone id)]
+                     id
+                     number
+                     title
+                     createdAt
+                     updatedAt
+                     dueOn
+                     closedAt
+                     description)
      (pullRequests   [(:edges t)
                       (:singular pullRequest number)
                       (orderBy ((field UPDATED_AT) (direction DESC)))]
