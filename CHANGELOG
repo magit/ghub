@@ -1,4 +1,13 @@
 # -*- mode: org -*-
+* v3.4.0    2020-07-20
+
+- Remove the token setup wizard because (a) it only ever supported
+  Github, (b) Github is about to remove support for that on their
+  end, (c) it did not always work, and (d) when it couldn't be used,
+  or failed, then it made things /more/ complicated.  #113
+
+- Various minor fixes and improvements.
+
 * v3.3.0    2020-01-19
 
 - Add a kludge to work around a bug in Emacs versions before 26.3 that
