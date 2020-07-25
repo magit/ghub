@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 3.4.0
+#+SUBTITLE: for version 3.4.0 (v3.4.0+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -20,7 +20,7 @@ Ghub is an Emacs library that is used by various packages to access
 the APIs of various instances of various Git forge implementation.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 3.4.0.
+This manual is for Ghub version 3.4.0 (v3.4.0+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2020 Jonas Bernoulli <jonas@bernoul.li>
@@ -246,7 +246,7 @@ To inform Ghub about your username on HOST (a FORGE instance) do this:
 #+END_SRC
 
 FORGE can be one of ~bitbucket~, ~gitea~ or ~gogs~.  It can also be ~github~ or
-~gitlab~; but if that is the case, then you should look at the preceeding
+~gitlab~; but if that is the case, then you should look at the preceding
 sections instead, which discuss these cases specifically.
 
 HOST identifies the instance.  This actually points at the top-level
@@ -275,7 +275,7 @@ For other forges we cannot provide a functioning URL because they
 contain unknown values such as your name.  Just go to the general
 settings page of the respective host and then go from there.
 
-Except on ~gitea~ and ~gogs~ each token can be limitted to certain
+Except on ~gitea~ and ~gogs~ each token can be limited to certain
 "scopes", i.e. it is possible to limit for which purposes any given
 token can be used.
 
@@ -846,7 +846,7 @@ argument.
   (ghub-request "GET" "/user" nil :auth 'PACKAGE)
 #+END_SRC
 
-Keep in mind that the users of your pacakge will have to manually
+Keep in mind that the users of your package will have to manually
 create a suitable token.  To make that easier, you should not only
 link to this manual but also prominently mention the scopes the token
 needs; and explain what they are needed for.

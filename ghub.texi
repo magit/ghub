@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 3.4.0
+@subtitle for version 3.4.0 (v3.4.0+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -48,7 +48,7 @@ Ghub is an Emacs library that is used by various packages to access
 the APIs of various instances of various Git forge implementation.
 
 @noindent
-This manual is for Ghub version 3.4.0.
+This manual is for Ghub version 3.4.0 (v3.4.0+1).
 
 @quotation
 Copyright (C) 2017-2020 Jonas Bernoulli <jonas@@bernoul.li>
@@ -356,7 +356,7 @@ git config --global FORGE.HOST.user USERNAME
 @end example
 
 FORGE can be one of @code{bitbucket}, @code{gitea} or @code{gogs}.  It can also be @code{github} or
-@code{gitlab}; but if that is the case, then you should look at the preceeding
+@code{gitlab}; but if that is the case, then you should look at the preceding
 sections instead, which discuss these cases specifically.
 
 HOST identifies the instance.  This actually points at the top-level
@@ -398,7 +398,7 @@ For other forges we cannot provide a functioning URL because they
 contain unknown values such as your name.  Just go to the general
 settings page of the respective host and then go from there.
 
-Except on @code{gitea} and @code{gogs} each token can be limitted to certain
+Except on @code{gitea} and @code{gogs} each token can be limited to certain
 "scopes", i.e. it is possible to limit for which purposes any given
 token can be used.
 
@@ -1111,7 +1111,7 @@ argument.
 (ghub-request "GET" "/user" nil :auth 'PACKAGE)
 @end lisp
 
-Keep in mind that the users of your pacakge will have to manually
+Keep in mind that the users of your package will have to manually
 create a suitable token.  To make that easier, you should not only
 link to this manual but also prominently mention the scopes the token
 needs; and explain what they are needed for.
