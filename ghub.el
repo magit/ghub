@@ -723,7 +723,8 @@ and call `auth-source-forget+'."
               (concat "Basic "
                       (base64-encode-string
                        (concat username ":"
-                               (ghub--token host username auth nil forge))))
+                               (ghub--token host username auth nil forge))
+                       t))
             (concat
              (and (not (eq forge 'gitlab)) "token ")
              (encode-coding-string
