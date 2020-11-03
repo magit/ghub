@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 3.4.2 (v3.4.2-1-g586be88+1)
+@subtitle for version 3.4.2 (v3.4.2-2-g2eb4898+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -48,7 +48,7 @@ Ghub is an Emacs library that is used by various packages to access
 the APIs of various instances of various Git forge implementations.
 
 @noindent
-This manual is for Ghub version 3.4.2 (v3.4.2-1-g586be88+1).
+This manual is for Ghub version 3.4.2 (v3.4.2-2-g2eb4898+1).
 
 @quotation
 Copyright (C) 2017-2020 Jonas Bernoulli <jonas@@bernoul.li>
@@ -440,16 +440,18 @@ into those three slots, and it does that by using "USERNAME@math{^PACKAGE}"
 as the "login".
 
 Assuming your @strong{Github} username is "ziggy", the package is named
-"forge", and you want to access @strong{Github.com}, an entry in one of
-the three mentioned files would then look like this:
+"forge", and you want to access @strong{Github.com} with the @strong{token}
+"012345abcdef@dots{}", an entry in one of the three mentioned files
+would then look like this:
 
 @example
 machine api.github.com login ziggy^forge password 012345abcdef...
 @end example
 
 Assuming your @strong{Gitlab} username is "ziggy", the package is named
-"forge", and you want to access @strong{Gitlab.com}, an entry in one of
-the three mentioned files would then look like this:
+"forge", and you want to access @strong{Gitlab.com} with the @strong{token}
+"012345abcdef@dots{}", an entry in one of the three mentioned files
+would then look like this:
 
 @example
 machine gitlab.com/api/v4 login ziggy^forge password 012345abcdef...

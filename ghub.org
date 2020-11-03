@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 3.4.2 (v3.4.2-1-g586be88+1)
+#+SUBTITLE: for version 3.4.2 (v3.4.2-2-g2eb4898+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -20,7 +20,7 @@ Ghub is an Emacs library that is used by various packages to access
 the APIs of various instances of various Git forge implementations.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 3.4.2 (v3.4.2-1-g586be88+1).
+This manual is for Ghub version 3.4.2 (v3.4.2-2-g2eb4898+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2020 Jonas Bernoulli <jonas@bernoul.li>
@@ -316,16 +316,18 @@ into those three slots, and it does that by using "USERNAME^PACKAGE"
 as the "login".
 
 Assuming your *Github* username is "ziggy", the package is named
-"forge", and you want to access *Github.com*, an entry in one of
-the three mentioned files would then look like this:
+"forge", and you want to access *Github.com* with the *token*
+"012345abcdef...", an entry in one of the three mentioned files
+would then look like this:
 
 #+BEGIN_SRC example
   machine api.github.com login ziggy^forge password 012345abcdef...
 #+END_SRC
 
 Assuming your *Gitlab* username is "ziggy", the package is named
-"forge", and you want to access *Gitlab.com*, an entry in one of
-the three mentioned files would then look like this:
+"forge", and you want to access *Gitlab.com* with the *token*
+"012345abcdef...", an entry in one of the three mentioned files
+would then look like this:
 
 #+BEGIN_SRC example
   machine gitlab.com/api/v4 login ziggy^forge password 012345abcdef...
