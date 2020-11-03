@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 3.4.1 (v3.4.1+1)
+@subtitle for version 3.4.2 (v3.4.2+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -45,10 +45,10 @@ General Public License for more details.
 @top Ghub User and Developer Manual
 
 Ghub is an Emacs library that is used by various packages to access
-the APIs of various instances of various Git forge implementation.
+the APIs of various instances of various Git forge implementations.
 
 @noindent
-This manual is for Ghub version 3.4.1 (v3.4.1+1).
+This manual is for Ghub version 3.4.2 (v3.4.2+1).
 
 @quotation
 Copyright (C) 2017-2020 Jonas Bernoulli <jonas@@bernoul.li>
@@ -111,7 +111,7 @@ Notes
 @chapter Introduction
 
 Ghub is an Emacs library that is used by various packages to access
-the APIs of various instances of various Git forge implementation.
+the APIs of various instances of various Git forge implementations.
 
 A forge is a web-based collaborative software platform for developing
 and distributing computer applications.  Examples include Github and
@@ -129,7 +129,7 @@ this:
 @end lisp
 
 To be able to do that, Ghub needs to know who you want to talk to, who
-you are, and how you are going to proof the latter to the former.
+you are, and how you are going to prove the latter to the former.
 
 Additionally Ghub wants to know on behalf of which Emacs package it is
 making a request.  So the question of "who is making the request" has
@@ -148,7 +148,7 @@ complicated.
 So now it is necessary for users to read some documentation and
 because many things can go wrong, those instructions have to be fairly
 detailed.  You can of course skip over most of this, but if things go
-wrong, then I would like to kindly requested that you take another
+wrong, then I would like to kindly request that you take another
 look before asking me for help.
 
 @menu
