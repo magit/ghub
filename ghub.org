@@ -316,16 +316,18 @@ into those three slots, and it does that by using "USERNAME^PACKAGE"
 as the "login".
 
 Assuming your *Github* username is "ziggy", the package is named
-"forge", and you want to access *Github.com*, an entry in one of
-the three mentioned files would then look like this:
+"forge", and you want to access *Github.com* with the *token*
+"012345abcdef...", an entry in one of the three mentioned files would then
+look like this:
 
 #+BEGIN_SRC example
   machine api.github.com login ziggy^forge password 012345abcdef...
 #+END_SRC
 
 Assuming your *Gitlab* username is "ziggy", the package is named
-"forge", and you want to access *Gitlab.com*, an entry in one of
-the three mentioned files would then look like this:
+"forge", and you want to access *Gitlab.com* with the *token*
+"012345abcdef...", an entry in one of the three mentioned files would
+then look like this:
 
 #+BEGIN_SRC example
   machine gitlab.com/api/v4 login ziggy^forge password 012345abcdef...
