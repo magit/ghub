@@ -264,7 +264,7 @@ then you have to set that variable locally:
 ** Creating and Storing a Token
 *** Creating a Token
 
-To create a token use the web interface of the forge/host you want to
+To create a token, use the web interface of the forge/host you want to
 connect to.  Here is a list of pages to do this for certain popular
 hosts:
 
