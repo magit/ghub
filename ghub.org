@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 3.4.2 (v3.4.2+1)
+#+SUBTITLE: for version 3.4.2 (v3.4.2-1-g586be88+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -20,7 +20,7 @@ Ghub is an Emacs library that is used by various packages to access
 the APIs of various instances of various Git forge implementations.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 3.4.2 (v3.4.2+1).
+This manual is for Ghub version 3.4.2 (v3.4.2-1-g586be88+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2020 Jonas Bernoulli <jonas@bernoul.li>
@@ -264,7 +264,7 @@ then you have to set that variable locally:
 ** Creating and Storing a Token
 *** Creating a Token
 
-To create a token use the web interface of the forge/host you want to
+To create a token, use the web interface of the forge/host you want to
 connect to.  Here is a list of pages to do this for certain popular
 hosts:
 

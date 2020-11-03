@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 3.4.2 (v3.4.2+1)
+@subtitle for version 3.4.2 (v3.4.2-1-g586be88+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -48,7 +48,7 @@ Ghub is an Emacs library that is used by various packages to access
 the APIs of various instances of various Git forge implementations.
 
 @noindent
-This manual is for Ghub version 3.4.2 (v3.4.2+1).
+This manual is for Ghub version 3.4.2 (v3.4.2-1-g586be88+1).
 
 @quotation
 Copyright (C) 2017-2020 Jonas Bernoulli <jonas@@bernoul.li>
@@ -382,7 +382,7 @@ git config --local FORGE.HOST.user USERNAME
 @node Creating a Token
 @subsection Creating a Token
 
-To create a token use the web interface of the forge/host you want to
+To create a token, use the web interface of the forge/host you want to
 connect to.  Here is a list of pages to do this for certain popular
 hosts:
 
