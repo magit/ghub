@@ -836,14 +836,16 @@ or (info \"(ghub)Getting Started\") for instructions.
               (plist-get plist k))
             keys)))
 
-(advice-add 'auth-source-netrc-parse-next-interesting :around
-            'auth-source-netrc-parse-next-interesting@save-match-data)
-(defun auth-source-netrc-parse-next-interesting@save-match-data (fn)
-  "Save match-data for the benefit of caller `auth-source-netrc-parse-one'.
+(when (version< emacs-version "26.2")
+  ;; Fixed by Emacs commit 60ff8101449eea3a5ca4961299501efd83d011bd.
+  (advice-add 'auth-source-netrc-parse-next-interesting :around
+              'auth-source-netrc-parse-next-interesting@save-match-data)
+  (defun auth-source-netrc-parse-next-interesting@save-match-data (fn)
+    "Save match-data for the benefit of caller `auth-source-netrc-parse-one'.
 Without wrapping this function in `save-match-data' the caller
 won't see the secret from a line that is followed by a commented
 line."
-  (save-match-data (funcall fn)))
+    (save-match-data (funcall fn))))
 
 (advice-add 'url-http-handle-authentication :around
             'url-http-handle-authentication@unauthorized-bugfix)
