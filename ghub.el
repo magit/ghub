@@ -857,7 +857,7 @@ releases prevent a new request from being made, which would
 either result in an infinite loop or (e.g. in the case of `ghub')
 the user being asked for their name."
   (if (assoc "Authorization" url-http-extra-headers)
-      t ; Return "success" here, also known as "successfully failed".
+      t ; Return "success", here also known as "successfully failed".
     (funcall fn proxy)))
 
 ;;; _
