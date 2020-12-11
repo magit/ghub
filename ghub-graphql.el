@@ -32,7 +32,7 @@
 
 (cl-defun ghub-graphql (graphql &optional variables
                                 &key username auth host
-                                silent
+                                headers silent
                                 callback errorback value extra)
   "Make a GraphQL request using GRAPHQL and VARIABLES.
 Return the response as a JSON-like alist.  Even if the response
@@ -44,7 +44,7 @@ behave as for `ghub-request' (which see)."
   (ghub-request "POST" "/graphql" nil :payload
                 (json-encode `(("query" . ,graphql)
                                ,@(and variables `(("variables" ,@variables)))))
-                :silent silent
+                :headers headers :silent silent
                 :username username :auth auth :host host
                 :callback callback :errorback errorback
                 :extra extra :value value))
