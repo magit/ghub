@@ -1,4 +1,8 @@
 # -*- mode: org -*-
+* v3.5.1    2020-12-27
+
+- Add new ~headers~ keyword argument to ~ghub-graphql~.
+
 * v3.5.0    2020-11-21
 
 - Add a kludge to work around a bug in Emacs that causes it to not
