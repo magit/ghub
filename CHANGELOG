@@ -1,4 +1,24 @@
 # -*- mode: org -*-
+* v3.5.0    2020-11-21
+
+- Add a kludge to work around a bug in Emacs that causes it to not
+  respond correctly to http codes 401 and 409, causing the user to
+  be asked for their username, which makes it very hard to debug
+  the actual issue that caused to reject the provided information.
+  [[https://github.com/magit/forge/issues/293][forge/293]]
+
+- Limit the kludge from v3.3.0 to Emacs releases that are affected.
+  It was fixed in Emacs 27.1.
+
+* v3.4.2    2020-10-25
+
+- Make sure base64 encoded credentials do not contain any newline
+  characters.  #118
+
+* v3.4.1    2020-08-01
+
+- Fix a regression introduced in v3.4.0.
+
 * v3.4.0    2020-07-20
 
 - Remove the token setup wizard because (a) it only ever supported
