@@ -2,13 +2,13 @@
 :PREAMBLE:
 #+AUTHOR: Jonas Bernoulli
 #+EMAIL: jonas@bernoul.li
-#+DATE: 2017-2020
+#+DATE: 2017-2021
 #+LANGUAGE: en
 
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 3.4.2 (v3.4.2-2-g2eb4898+1)
+#+SUBTITLE: for version 3.5.1 (v3.5.1-1-gc46de21+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -20,10 +20,10 @@ Ghub is an Emacs library that is used by various packages to access
 the APIs of various instances of various Git forge implementations.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 3.4.2 (v3.4.2-2-g2eb4898+1).
+This manual is for Ghub version 3.5.1 (v3.5.1-1-gc46de21+1).
 
 #+BEGIN_QUOTE
-Copyright (C) 2017-2020 Jonas Bernoulli <jonas@bernoul.li>
+Copyright (C) 2017-2021 Jonas Bernoulli <jonas@bernoul.li>
 
 You can redistribute this document and/or modify it under the terms
 of the GNU General Public License as published by the Free Software
@@ -276,7 +276,7 @@ contain unknown values such as your name.  Just go to the general
 settings page of the respective host and then go from there.
 
 Except on ~gitea~ and ~gogs~ each token can be limited to certain
-"scopes", i.e. it is possible to limit for which purposes any given
+"scopes", i.e., it is possible to limit for which purposes any given
 token can be used.
 
 Before you create a token to be used for a certain package, you should
@@ -891,7 +891,7 @@ needs; and explain what they are needed for.
 :END:
 
 #+BEGIN_QUOTE
-Copyright (C) 2017-2020 Jonas Bernoulli <jonas@bernoul.li>
+Copyright (C) 2017-2021 Jonas Bernoulli <jonas@bernoul.li>
 
 You can redistribute this document and/or modify it under the terms
 of the GNU General Public License as published by the Free Software
