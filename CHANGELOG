@@ -1,4 +1,12 @@
 # -*- mode: org -*-
+* v3.5.2    2021-04-27
+
+- Add new function ~ghub-fetch-review-threads~ and make
+  ~ghub-fetch-respository~ fetch ~baseRefOid~ and ~headRefOid~.  #110
+
+- Add new ~headers~ argument to ~ghub-fetch-repository~, ~ghub-fetch-issue~
+  and ~ghub-fetch-pullreq~.  #110
+
 * v3.5.1    2020-12-27
 
 - Add new ~headers~ keyword argument to ~ghub-graphql~.
