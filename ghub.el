@@ -816,13 +816,13 @@ or (info \"(ghub)Getting Started\") for instructions.
              (user-error "The empty string is not a valid username")
            (call-process
             "git" nil nil nil "config"
-            (and (eq (read-char-choice
-                      (format
-                       "Set %s=%s [g]lobally (recommended) or [l]ocally? "
-                       var user)
-                      (list ?g ?l))
-                     ?g)
-                 "--global")
+            (if (eq (read-char-choice
+                     (format "Set %s=%s [g]lobally (recommended) or [l]ocally? "
+                             var user)
+                     (list ?g ?l))
+                    ?g)
+                "--global"
+              "--local")
             var user)
            user))))))
 
