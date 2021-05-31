@@ -268,7 +268,7 @@ for these two forges:
 non-nil
 
 @item
-@code{gogs.user} is @strong{not} used because no canonical @code{gitea} instance exists.
+@code{gogs.user} is @strong{not} used because no canonical @code{gogs} instance exists.
 
 @item
 @code{gogs.HOST.user} specifies the user for the HOST @code{gogs} instance.

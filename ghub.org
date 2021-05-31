@@ -151,7 +151,7 @@ for these two forges:
 - ~gitea.HOST.user~ specifies the user for the HOST ~gitea~ instance.
 - ~gitea.host~ specifies the ~gitea~ host, unless the HOST argument is
   non-nil
-- ~gogs.user~ is *not* used because no canonical ~gitea~ instance exists.
+- ~gogs.user~ is *not* used because no canonical ~gogs~ instance exists.
 - ~gogs.HOST.user~ specifies the user for the HOST ~gogs~ instance.
 - ~gogs.host~ specifies the ~gogs~ host, unless the HOST argument is
   non-nil
