@@ -117,8 +117,8 @@ behave as for `ghub-request' (which see)."
                      (comments  [(:edges t)]
                                 databaseId
                                 (author login)
-	                        createdAt
-	                        updatedAt
+                                createdAt
+                                updatedAt
                                 body)
                      (labels    [(:edges t)]
                                 id))
@@ -169,8 +169,8 @@ behave as for `ghub-request' (which see)."
                                 databaseId
                                 (author login)
                                 createdAt
-	                        updatedAt
-	                        body)
+                                updatedAt
+                                body)
                      (labels    [(:edges t)]
                                 id)))))
 
@@ -477,7 +477,7 @@ See Info node `(ghub)GraphQL Support'."
         `(,(car single)
           ,(vector (list (cadr single) (cdr (car lineage))))
           ,@(if (cdr lineage)
-               (ghub--graphql-narrow-query child (cdr lineage) cursor)
+                (ghub--graphql-narrow-query child (cdr lineage) cursor)
               child)))
     (let* ((child  (or (assq (car lineage) (cdr query))
                        ;; Alias
