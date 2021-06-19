@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 3.5.3 (v3.5.3-2-gf2901f0+1)
+@subtitle for version 3.5.3 (v3.5.3-4-g39f9a5b+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -48,7 +48,7 @@ Ghub is an Emacs library that is used by various packages to access
 the APIs of various instances of various Git forge implementations.
 
 @noindent
-This manual is for Ghub version 3.5.3 (v3.5.3-2-gf2901f0+1).
+This manual is for Ghub version 3.5.3 (v3.5.3-4-g39f9a5b+1).
 
 @quotation
 Copyright (C) 2017-2021 Jonas Bernoulli <jonas@@bernoul.li>
@@ -395,7 +395,7 @@ hosts:
 @uref{https://github.com/settings/tokens}
 
 @item
-@uref{https://gitlab.com/profile/personal_access_tokens}
+@uref{https://gitlab.com/-/profile/personal_access_tokens}
 @end itemize
 
 For other forges we cannot provide a functioning URL because they

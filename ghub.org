@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 3.5.3 (v3.5.3-2-gf2901f0+1)
+#+SUBTITLE: for version 3.5.3 (v3.5.3-4-g39f9a5b+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -20,7 +20,7 @@ Ghub is an Emacs library that is used by various packages to access
 the APIs of various instances of various Git forge implementations.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 3.5.3 (v3.5.3-2-gf2901f0+1).
+This manual is for Ghub version 3.5.3 (v3.5.3-4-g39f9a5b+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2021 Jonas Bernoulli <jonas@bernoul.li>
@@ -269,7 +269,7 @@ connect to.  Here is a list of pages to do this for certain popular
 hosts:
 
 - https://github.com/settings/tokens
-- https://gitlab.com/profile/personal_access_tokens
+- https://gitlab.com/-/profile/personal_access_tokens
 
 For other forges we cannot provide a functioning URL because they
 contain unknown values such as your name.  Just go to the general
