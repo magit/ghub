@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 3.5.3
+#+SUBTITLE: for version 3.5.3 (v3.5.3-2-gf2901f0+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -20,7 +20,7 @@ Ghub is an Emacs library that is used by various packages to access
 the APIs of various instances of various Git forge implementations.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 3.5.3.
+This manual is for Ghub version 3.5.3 (v3.5.3-2-gf2901f0+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2021 Jonas Bernoulli <jonas@bernoul.li>
@@ -167,7 +167,7 @@ hosts.
 
 *** Setting your Github.com Username
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 To inform Ghub about your "github.com" username do this:
@@ -186,7 +186,7 @@ then you have to set that variable locally:
 
 *** Setting your Gitlab.com Username
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 To inform Ghub about your "gitlab.com" username do this:
@@ -208,7 +208,7 @@ not be the same as on "github.com"!
 
 *** Setting your Github Enterprise Username
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 For Github Enterprise instances you have to specify where the API
@@ -236,7 +236,7 @@ like so:
 
 *** Setting your Username for Other Hosts and/or Forges
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 To inform Ghub about your username on HOST (a FORGE instance) do this:

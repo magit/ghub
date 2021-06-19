@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 3.5.3
+@subtitle for version 3.5.3 (v3.5.3-2-gf2901f0+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -48,7 +48,7 @@ Ghub is an Emacs library that is used by various packages to access
 the APIs of various instances of various Git forge implementations.
 
 @noindent
-This manual is for Ghub version 3.5.3.
+This manual is for Ghub version 3.5.3 (v3.5.3-2-gf2901f0+1).
 
 @quotation
 Copyright (C) 2017-2021 Jonas Bernoulli <jonas@@bernoul.li>
@@ -287,7 +287,8 @@ be set to specify the username on that host.  More than one variable
 is needed because you might use different usernames on different
 hosts.
 
-@subsection Setting your Github.com Username
+@anchor{Setting your Githubcom Username}
+@subheading Setting your Github.com Username
 
 To inform Ghub about your "github.com" username do this:
 
@@ -303,7 +304,8 @@ cd /path/to/repo
 git config --local github.user USERNAME
 @end example
 
-@subsection Setting your Gitlab.com Username
+@anchor{Setting your Gitlabcom Username}
+@subheading Setting your Gitlab.com Username
 
 To inform Ghub about your "gitlab.com" username do this:
 
@@ -322,7 +324,8 @@ git config --local gitlab.user USERNAME
 Make sure you use the correct USERNAME for this forge/host.  It might
 not be the same as on "github.com"!
 
-@subsection Setting your Github Enterprise Username
+@anchor{Setting your Github Enterprise Username}
+@subheading Setting your Github Enterprise Username
 
 For Github Enterprise instances you have to specify where the API
 can be accessed and a different variable has to be used to set the
@@ -347,7 +350,8 @@ cd /path/to/repo
 git config --local github.host example.com/api/v3
 @end example
 
-@subsection Setting your Username for Other Hosts and/or Forges
+@anchor{Setting your Username for Other Hosts and/or Forges}
+@subheading Setting your Username for Other Hosts and/or Forges
 
 To inform Ghub about your username on HOST (a FORGE instance) do this:
 
