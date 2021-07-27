@@ -471,8 +471,8 @@ kludge.
 - For any other non-nil value use the kludge, if and only if we
   believe that doing so is the correct thing to do.
 
-The default value of this variable is either nil or `forge'.  It
-is `forge' if using libgnutls >=3.6.3 (the version introducing
+The default value of this variable is either nil or `force'.  It
+is `force' if using libgnutls >=3.6.3 (the version introducing
 TLS1.3); AND also using Emacs < 26.3 and/or macOS (any version).
 
 If the value is any other non-nil value, then `ghub--retrieve'
