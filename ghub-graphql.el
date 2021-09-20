@@ -71,7 +71,7 @@ behave as for `ghub-request' (which see)."
 
 ;;; Api (drafts)
 
-(defconst ghub-fetch-repository
+(defconst ghub-fetch-repository-sparse
   '(query
     (repository
      [(owner $owner String!)
@@ -94,7 +94,12 @@ behave as for `ghub-request' (which see)."
      hasWikiEnabled
      (licenseInfo name)
      (stargazers totalCount)
-     (watchers totalCount)
+     (watchers totalCount))))
+
+(defconst ghub-fetch-repository
+  `(query
+    (repository
+     ,@(cdr (cadr ghub-fetch-repository-sparse))
      (assignableUsers [(:edges t)]
                       id
                       login
@@ -205,11 +210,13 @@ behave as for `ghub-request' (which see)."
 (cl-defun ghub-fetch-repository (owner name callback
                                        &optional until
                                        &key username auth host forge
-                                       headers errorback)
+                                       headers errorback sparse)
   "Asynchronously fetch forge data about the specified repository.
 Once all data has been collected, CALLBACK is called with the
 data as the only argument."
-  (ghub--graphql-vacuum ghub-fetch-repository
+  (ghub--graphql-vacuum (if sparse
+                            ghub-fetch-repository-sparse
+                          ghub-fetch-repository)
                         `((owner . ,owner)
                           (name  . ,name))
                         callback until
