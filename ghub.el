@@ -848,18 +848,21 @@ won't see the secret from a line that is followed by a commented
 line."
     (save-match-data (funcall fn))))
 
-(advice-add 'url-http-handle-authentication :around
-            'url-http-handle-authentication@unauthorized-bugfix)
-(defun url-http-handle-authentication@unauthorized-bugfix (fn proxy)
-  "If authorization failed then don't try again but fail properly.
+(progn ; (when (< emacs-major-version 28)
+  ;; Fixed by Emacs commit 0b98ea5fbe276c67206896dca111c000f984ee0f,
+  ;; but keep this advice until 28.1 is released.
+  (advice-add 'url-http-handle-authentication :around
+              'url-http-handle-authentication@unauthorized-bugfix)
+  (defun url-http-handle-authentication@unauthorized-bugfix (fn proxy)
+    "If authorization failed then don't try again but fail properly.
 For Emacs 27.1 prevent a useful `http' error from being replaced
 by a generic one that omits all useful information.  For earlier
 releases prevent a new request from being made, which would
 either result in an infinite loop or (e.g. in the case of `ghub')
 the user being asked for their name."
-  (if (assoc "Authorization" url-http-extra-headers)
-      t ; Return "success", here also known as "successfully failed".
-    (funcall fn proxy)))
+    (if (assoc "Authorization" url-http-extra-headers)
+        t ; Return "success", here also known as "successfully failed".
+      (funcall fn proxy))))
 
 ;;; _
 (provide 'ghub)
