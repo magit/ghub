@@ -1,4 +1,10 @@
 # -*- mode: org -*-
+* v3.5.4    2021-10-02
+
+- Add new ~sparse~ argument to ~ghub-fetch-repository~, making it possible
+  to fetch only information about the repository itself, exluding data
+  such as issues and pull-requests.
+
 * v3.5.3    2021-05-26
 
 - If the username isn't set and the user decides to set it locally,
