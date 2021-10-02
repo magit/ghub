@@ -745,26 +745,18 @@ and call `auth-source-forget+'."
 
 (defun ghub--token (host username package &optional nocreate forge)
   (let* ((user (ghub--ident username package))
-         (token
-          (or (car (ghub--auth-source-get (list :secret)
-                     :host host :user user))
-              (progn
-                ;; Auth-Source caches the information that there is no
-                ;; value, but in our case that is a situation that needs
-                ;; fixing so we want to keep trying by invalidating that
-                ;; information.
-                ;; The (:max 1) is needed and has to be placed at the
-                ;; end for Emacs releases before 26.1.  #24 #64 #72
-                (auth-source-forget (list :host host :user user :max 1))
-                (and (not nocreate)
-                     (error "\
+         (token (ghub--auth-source-get (list :secret)
+                  :host host :user user :create (not nocreate))))
+    (if token
+        (if (functionp (car token)) (funcall (car token)) (car token))
+      (unless nocreate
+        (error "\
 Required %s token (%S for %S) does not exist.
 See https://magit.vc/manual/ghub/Getting-Started.html
 or (info \"(ghub)Getting Started\") for instructions.
 \(The setup wizard no longer exists.)"
-                            (capitalize (symbol-name (or forge 'github)))
-                            user host))))))
-    (if (functionp token) (funcall token) token)))
+               (capitalize (symbol-name (or forge 'github)))
+               user host)))))
 
 (cl-defmethod ghub--host (&optional forge)
   (cl-ecase forge
@@ -830,12 +822,33 @@ or (info \"(ghub)Getting Started\") for instructions.
   (format "%s^%s" username package))
 
 (defun ghub--auth-source-get (keys &rest spec)
+  "Search auth-source backends according to SPEC and return values for KEYS.
+
+If there are no saved authentication tokens containing values for all KEYS,
+and SPEC includes `:create t', then a token will be created if possible. The
+the user will be prompted for a token and asked whether it should be saved.
+
+Returns a list containing values for all KEYS, or nil if any values are not found."
   (declare (indent 1))
-  (let ((plist (car (apply #'auth-source-search
-                           (append spec (list :max 1))))))
-    (mapcar (lambda (k)
-              (plist-get plist k))
-            keys)))
+  ;; The (:max 1) is needed and has to be placed at the
+  ;; end for Emacs releases before 26.1.  #24 #64 #72
+  (let* ((args (list :require keys :max 1))
+         (args-no-create (plist-put (append spec args) :create nil))
+         (saved-entry (apply #'auth-source-search args-no-create))
+         (entry (or saved-entry
+                    (and (plist-get spec :create)
+                         (apply #'auth-source-search (append spec args))))))
+    (unless saved-entry
+      ;; Auth-Source caches the information that there is no
+      ;; value, but in our case that is a situation that needs
+      ;; fixing so we want to keep trying by invalidating that
+      ;; information.
+      (auth-source-forget args-no-create))
+    (when entry
+      (unless saved-entry
+        (when-let ((save-function (plist-get (car entry) ':save-function)))
+          (funcall save-function)))
+      (mapcar (lambda (key) (plist-get (car entry) key)) keys))))
 
 (when (version< emacs-version "26.2")
   ;; Fixed by Emacs commit 60ff8101449eea3a5ca4961299501efd83d011bd.
