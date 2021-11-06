@@ -758,7 +758,7 @@ and call `auth-source-forget+'."
                 (auth-source-forget (list :host host :user user :max 1))
                 (and (not nocreate)
                      (error "\
-Required %s token (%S for %S) does not exist.
+Required %s token (\"%s\" for \"%s\") does not exist.
 See https://magit.vc/manual/ghub/Getting-Started.html
 or (info \"(ghub)Getting Started\") for instructions.
 \(The setup wizard no longer exists.)"
