@@ -53,7 +53,6 @@
 (require 'auth-source)
 (require 'cl-lib)
 (require 'gnutls)
-(require 'json)
 (require 'let-alist)
 (require 'url)
 (require 'url-auth)
@@ -625,13 +624,20 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
   (let ((raw (ghub--decode-payload)))
     (and raw
          (condition-case nil
-             (let ((json-object-type 'alist)
-                   (json-array-type  'list)
-                   (json-key-type    'symbol)
-                   (json-false       nil)
-                   (json-null        nil))
-               (json-read-from-string raw))
-           (json-readtable-error
+             (if (fboundp 'json-parse-string)
+                 (json-parse-string
+                  raw
+                  :object-type  'alist
+                  :array-type   'list
+                  :false-object nil
+                  :null-object  nil)
+               (require 'json)
+               (let ((json-object-type 'alist)
+                     (json-array-type  'list)
+                     (json-false       nil)
+                     (json-null        nil))
+                 (json-read-from-string raw)))
+           ((json-parse-error json-readtable-error)
             `((message
                . ,(if (looking-at "<!DOCTYPE html>")
                       (if (re-search-forward
@@ -652,10 +658,14 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
   (and payload
        (progn
          (unless (stringp payload)
-           ;; Unfortunately `json-encode' may modify the input.
-           ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=40693.
-           ;; and https://github.com/magit/forge/issues/267
-           (setq payload (json-encode (copy-tree payload))))
+           (setq payload
+                 (if (fboundp 'json-serialize)
+                     (json-serialize payload)
+                   ;; Unfortunately `json-encode' may modify the input.
+                   ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=40693.
+                   ;; and https://github.com/magit/forge/issues/267
+                   (require 'json)
+                   (json-encode (copy-tree payload)))))
          (encode-coding-string payload 'utf-8))))
 
 (defun ghub--url-encode-params (params)
