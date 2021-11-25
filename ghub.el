@@ -81,6 +81,12 @@ only serves as documentation.")
 (defvar ghub-insecure-hosts nil
   "List of hosts that use http instead of https.")
 
+(defvar ghub-json-object-type 'alist
+  "The object type that is used for json payload decoding.")
+
+(defvar ghub-json-array-type 'list
+  "The array type that is used for json payload decoding.")
+
 ;;; Request
 ;;;; Object
 
@@ -627,13 +633,13 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
              (if (fboundp 'json-parse-string)
                  (json-parse-string
                   raw
-                  :object-type  'alist
-                  :array-type   'list
+                  :object-type  ghub-json-object-type
+                  :array-type   ghub-json-array-type
                   :false-object nil
                   :null-object  nil)
                (require 'json)
-               (let ((json-object-type 'alist)
-                     (json-array-type  'list)
+               (let ((json-object-type ghub-json-object-type)
+                     (json-array-type  ghub-json-array-type)
                      (json-false       nil)
                      (json-null        nil))
                  (json-read-from-string raw)))
