@@ -698,7 +698,7 @@ and call `auth-source-forget+'."
                 headers)
         (cons (ghub--auth host auth username forge) headers)))))
 
-(cl-defmethod ghub--auth (host auth &optional username forge)
+(cl-defgeneric ghub--auth (host auth &optional username forge)
   (unless username
     (setq username (ghub--username host forge)))
   (if (eq auth 'basic)
@@ -766,7 +766,7 @@ or (info \"(ghub)Getting Started\") for instructions.
                             user host))))))
     (if (functionp token) (funcall token) token)))
 
-(cl-defmethod ghub--host (&optional forge)
+(cl-defgeneric ghub--host (&optional forge)
   (cl-ecase forge
     ((nil github)
      (or (ignore-errors (car (process-lines "git" "config" "github.host")))
@@ -784,7 +784,7 @@ or (info \"(ghub)Getting Started\") for instructions.
      (or (ignore-errors (car (process-lines "git" "config" "bitbucket.host")))
          (bound-and-true-p buck-default-host)))))
 
-(cl-defmethod ghub--username (host &optional forge)
+(cl-defgeneric ghub--username (host &optional forge)
   (let ((var
          (cl-ecase forge
            ((nil github)
