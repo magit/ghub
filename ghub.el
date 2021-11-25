@@ -698,7 +698,7 @@ and call `auth-source-forget+'."
                 headers)
         (cons (ghub--auth host auth username forge) headers)))))
 
-(defun ghub--auth (host auth &optional username forge)
+(cl-defmethod ghub--auth (host auth &optional username forge)
   (unless username
     (setq username (ghub--username host forge)))
   (if (eq auth 'basic)
