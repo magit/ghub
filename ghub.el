@@ -81,11 +81,6 @@ only serves as documentation.")
 (defvar ghub-insecure-hosts nil
   "List of hosts that use http instead of https.")
 
-(defvar ghub-json-use-jansson nil
-  "Whether to use the Jansson library, if available.
-It is likely that this variable will be removed again or that its
-default will change.  See https://github.com/magit/ghub/pull/149.")
-
 (defvar ghub-json-object-type 'alist
   "The object type that is used for json payload decoding.")
 
@@ -635,8 +630,7 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
   (let ((raw (ghub--decode-payload)))
     (and raw
          (condition-case nil
-             (if (and ghub-json-use-jansson
-                      (fboundp 'json-parse-string))
+             (if (fboundp 'json-parse-string)
                  (json-parse-string
                   raw
                   :object-type  ghub-json-object-type
@@ -671,9 +665,13 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
        (progn
          (unless (stringp payload)
            (setq payload
-                 (if (and ghub-json-use-jansson
-                          (fboundp 'json-serialize))
-                     (json-serialize payload)
+                 (if (fboundp 'json-serialize)
+                     (condition-case nil
+                         (json-serialize payload)
+                       (t
+                        (warn "(ghub--encode-payload) Encoding with `json-serialize' failed. Please use array instead of list.")
+                        (require 'json)
+                        (json-encode (copy-tree payload))))
                    ;; Unfortunately `json-encode' may modify the input.
                    ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=40693.
                    ;; and https://github.com/magit/forge/issues/267
