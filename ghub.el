@@ -83,8 +83,10 @@ only serves as documentation.")
 
 (defvar ghub-json-use-jansson nil
   "Whether to use the Jansson library, if available.
-It is likely that this variable will be removed again or that its
-default will change.  See https://github.com/magit/ghub/pull/149.")
+This is experimental.  Only let-bind this but do not enable it
+globally because doing that is likely to break other packages
+that use `ghub'.  As a user also do not enable this yet.
+See https://github.com/magit/ghub/pull/149.")
 
 (defvar ghub-json-object-type 'alist
   "The object type that is used for json payload decoding.")
