@@ -687,7 +687,10 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
 (defun ghub--json-serialize (object)
   (if (and ghub-json-use-jansson
            (fboundp 'json-serialize))
-      (json-serialize object)
+      (apply #'json-serialize
+             `(,object
+               ,@(and (boundp 'json-false) `(:false-object json-false))
+               ,@(and (boundp 'json-null) `(:null-object json-null))))
     ;; Unfortunately `json-encode' may modify the input.
     ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=40693.
     ;; and https://github.com/magit/forge/issues/267
