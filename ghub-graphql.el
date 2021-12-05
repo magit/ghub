@@ -25,6 +25,7 @@
 
 (require 'ghub)
 (require 'gsexp)
+(require 'json)
 (require 'treepy)
 
 (eval-when-compile
