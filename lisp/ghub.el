@@ -343,7 +343,14 @@ Both callbacks are called with four arguments.
     ;; Encode in case caller used (symbol-name 'GET). #35
     :method     (encode-coding-string method 'utf-8)
     :headers    (ghub--headers headers host auth username forge)
-    :handler    'ghub--handle-response
+    :handler    (let ((object-type ghub-json-object-type)
+                      (array-type  ghub-json-array-type)
+                      (use-jansson ghub-json-use-jansson))
+                  (lambda (status req)
+                    (let ((ghub-json-object-type object-type)
+                          (ghub-json-array-type  array-type)
+                          (ghub-json-use-jansson use-jansson))
+                      (ghub--handle-response status req))))
     :unpaginate unpaginate
     :noerror    noerror
     :reader     reader
