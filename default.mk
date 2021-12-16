@@ -1,6 +1,6 @@
 TOP := $(dir $(lastword $(MAKEFILE_LIST)))
 
-PKG   = ghub
+PKG = ghub
 
 ELS   = $(PKG).el
 ELS  += gsexp.el
