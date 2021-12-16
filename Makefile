@@ -7,16 +7,16 @@ all: lisp docs
 
 help:
 	$(info make all          - generate lisp and manual)
-	$(info make docs         - generate most manual formats)
 	$(info make lisp         - generate byte-code and autoloads)
+	$(info make docs         - generate most manual formats)
 	$(info make texi         - generate texi manual (see comments))
 	$(info make info         - generate info manual)
 	$(info make html         - generate html manual file)
 	$(info make html-dir     - generate html manual directory)
 	$(info make pdf          - generate pdf manual)
 	$(info make stats        - generate statistics)
-	$(info make publish      - publish snapshot html and pdf manuals)
-	$(info make release      - publish release html and pdf manuals)
+	$(info make publish      - publish snapshot manuals)
+	$(info make release      - publish release manuals)
 	$(info make clean        - remove most generated files)
 	@printf "\n"
 
