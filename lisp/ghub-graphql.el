@@ -25,7 +25,6 @@
 
 (require 'ghub)
 (require 'gsexp)
-(require 'json)
 (require 'treepy)
 
 (eval-when-compile
@@ -44,9 +43,9 @@ string.  VARIABLES is a JSON-like alist.  The other arguments
 behave as for `ghub-request' (which see)."
   (cl-assert (stringp graphql))
   (cl-assert (not (stringp variables)))
-  (ghub-request "POST" "/graphql" nil :payload
-                (json-encode `(("query" . ,graphql)
-                               ,@(and variables `(("variables" ,@variables)))))
+  (ghub-request "POST" "/graphql" nil
+                :payload `(("query" . ,graphql)
+                           ,@(and variables `(("variables" ,@variables))))
                 :headers headers :silent silent
                 :username username :auth auth :host host
                 :callback callback :errorback errorback
