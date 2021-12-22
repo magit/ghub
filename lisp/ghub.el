@@ -81,18 +81,53 @@ only serves as documentation.")
 (defvar ghub-insecure-hosts nil
   "List of hosts that use http instead of https.")
 
-(defvar ghub-json-use-jansson nil
-  "Whether to use the Jansson library, if available.
-This is experimental.  Only let-bind this but do not enable it
-globally because doing that is likely to break other packages
-that use `ghub'.  As a user also do not enable this yet.
-See https://github.com/magit/ghub/pull/149.")
-
 (defvar ghub-json-object-type 'alist
-  "The object type that is used for json payload decoding.")
+  "The Lisp object used to represent the JSON key-value mappings.
+
+One of `alist' (the default), `plist' or `hash-table'.
+
+This overrides `json-parse-string's `:object-type' argument,
+  which defaults to `hash-table'.
+This overrides obsolete `json-object-type',
+  which defaults to `alist'.
+
+Only ever let-bind this or you would break other packages.")
 
 (defvar ghub-json-array-type 'list
-  "The array type that is used for json payload decoding.")
+  "The Lisp object used to represent the JSON array.
+
+One of `list' (the default) or `array'.
+
+This overrides `json-parse-string's `:array-type' argument,
+  which defaults to `array'.
+This overrides obsolete `json-array-type',
+  which defaults to `vector'. (Use `array' as the value of
+  this option; it will be treated like `vector' when using
+  the Lisp implementation.  Do not use `vector'; doing that
+  would break the native implementation.)
+
+Only ever let-bind this or you would break other packages.")
+
+;; TODO Actually switch to `:null' as currently documented?
+(defvar ghub-json-null-object nil
+  "The Lisp object used to represent the JSON keyword `null'.
+
+This overrides `json-parse-string's and `json-serialize's
+  `:null-object' argument, which also default to `:false'.
+This overrides obsolete `json-null',
+  which defaults to `nil'.
+
+Only ever let-bind this or you would break other packages.")
+
+(defvar ghub-json-false-object :false
+  "The Lisp object used to represent the JSON keyword `false'.
+
+This overrides `json-parse-string's and `json-serialize's
+  `:false-object' argument, which also default to `:false'.
+This overrides obsolete `json-false',
+  which defaults to `:json-false'.
+
+Only ever let-bind this or you would break other packages.")
 
 ;;; Request
 ;;;; Object
@@ -343,13 +378,15 @@ Both callbacks are called with four arguments.
     ;; Encode in case caller used (symbol-name 'GET). #35
     :method     (encode-coding-string method 'utf-8)
     :headers    (ghub--headers headers host auth username forge)
-    :handler    (let ((object-type ghub-json-object-type)
-                      (array-type  ghub-json-array-type)
-                      (use-jansson ghub-json-use-jansson))
+    :handler    (let ((object-type  ghub-json-object-type)
+                      (array-type   ghub-json-array-type)
+                      (null-object  ghub-json-null-object)
+                      (false-object ghub-json-false-object))
                   (lambda (status req)
-                    (let ((ghub-json-object-type object-type)
-                          (ghub-json-array-type  array-type)
-                          (ghub-json-use-jansson use-jansson))
+                    (let ((ghub-json-object-type  object-type)
+                          (ghub-json-array-type   array-type)
+                          (ghub-json-null-object  null-object)
+                          (ghub-json-false-object false-object))
                       (ghub--handle-response status req))))
     :unpaginate unpaginate
     :noerror    noerror
@@ -645,7 +682,8 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
     (and raw
          (condition-case nil
              (ghub--json-parse-string raw)
-           ((json-parse-error json-readtable-error)
+           ((json-parse-error       ; from native implementation
+             json-readtable-error)  ; from lisp implementation
             `((message
                . ,(if (looking-at "<!DOCTYPE html>")
                       (if (re-search-forward
@@ -670,29 +708,33 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
          (encode-coding-string payload 'utf-8))))
 
 (defun ghub--json-parse-string (string)
-  (if (and ghub-json-use-jansson
-           (fboundp 'json-parse-string))
+  (if (fboundp 'json-parse-string)
       (json-parse-string string
                          :object-type  ghub-json-object-type
                          :array-type   ghub-json-array-type
-                         :false-object nil
-                         :null-object  nil)
+                         :null-object  ghub-json-null-object
+                         :false-object ghub-json-false-object)
     (require 'json)
     (let ((json-object-type ghub-json-object-type)
-          (json-array-type  ghub-json-array-type)
-          (json-false       nil)
-          (json-null        nil))
+          (json-array-type (if (eq ghub-json-array-type 'array)
+                               'vector
+                             ghub-json-array-type))
+          (json-null  ghub-json-null-object)
+          (json-false ghub-json-false-object))
       (json-read-from-string string))))
 
 (defun ghub--json-serialize (object)
-  (if (and ghub-json-use-jansson
-           (fboundp 'json-serialize))
-      (json-serialize object)
+  (if (fboundp 'json-serialize)
+      (json-serialize object
+                      :null-object  ghub-json-null-object
+                      :false-object ghub-json-false-object)
     ;; Unfortunately `json-encode' may modify the input.
     ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=40693.
     ;; and https://github.com/magit/forge/issues/267
     (require 'json)
-    (json-encode (copy-tree object))))
+    (let ((json-null  ghub-json-null-object)
+          (json-false ghub-json-false-object))
+      (json-encode (copy-tree object)))))
 
 (defun ghub--url-encode-params (params)
   (mapconcat (lambda (param)
