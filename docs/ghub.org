@@ -333,14 +333,14 @@ Enterprise instance have to be configured using Git variables.  In
 rare cases it might also be necessary to specify the identity of the
 local machine, which is done using a lisp variable.
 
-- Variable: github.user
+- Variable: github.user ::
 
   The Github.com username.  This should be set globally and if you
   have multiple Github.com user accounts, then you should set this
   locally only for those repositories that you want to access using
   the secondary identity.
 
-- Variable: github.HOST.user
+- Variable: github.HOST.user ::
 
   This variable serves the same purpose as ~github.user~ but for the
   Github Enterprise instance identified by ~HOST~.
@@ -350,7 +350,7 @@ local machine, which is done using a lisp variable.
   the values locally in each and every repository that is connected to
   the Github Enterprise instance, not Github.com.
 
-- Variable: github.host
+- Variable: github.host ::
 
   This variable should only be set locally for a repository and
   specifies the Github Enterprise edition that that repository is
@@ -385,7 +385,7 @@ manuals:
 
 ** Making REST Requests
 
-- Function: ghub-request method resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback url value error extra method*
+- Function: ghub-request method resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback url value error extra method* ::
 
   This function makes a request for ~RESOURCE~ using ~METHOD~.
   ~PARAMS~, ~QUERY~, ~PAYLOAD~ and/or ~HEADERS~ are alists holding
@@ -494,7 +494,7 @@ manuals:
     4. A ~ghub--req~ struct, which can be passed to ~ghub-continue~
        (which see) to retrieve the next page, if any.
 
-- Function: ghub-continue args
+- Function: ghub-continue args ::
 
   If there is a next page, then this function retrieves that.
 
@@ -541,7 +541,7 @@ manuals:
                             (setq my-value value))))
   #+END_SRC
 
-- Variable: ghub-response-headers
+- Variable: ghub-response-headers ::
 
   A select few Github API resources respond by transmitting data in
   the response header instead of in the response body.  Because there
@@ -551,7 +551,7 @@ manuals:
   To access the response headers use this variable after ~ghub-request~
   has returned.
 
-- Function: ghub-response-link-relations req headers payload
+- Function: ghub-response-link-relations req headers payload ::
 
   This function returns an alist of the link relations in ~HEADERS~, or
   if optional ~HEADERS~ is nil, then those in ~ghub-response-headers~.
@@ -564,7 +564,7 @@ manuals:
 
 ** Making GraphQL Requests
 
-- Function: ghub-graphql graphql &optional variables &key username auth host callback silent callback errorback value extra
+- Function: ghub-graphql graphql &optional variables &key username auth host callback silent callback errorback value extra ::
 
   This function makes a GraphQL request using ~GRAPHQL~ and
   ~VARIABLES~ as inputs.  ~GRAPHQL~ is a GraphQL string.  ~VARIABLES~
@@ -615,7 +615,7 @@ impossible; so I decided to give up on GraphQL variables, fragments
 and conditions, and instead implement something more powerful, though
 also more opinionated.
 
-- Function: ghub--graphql-vacuum query variables callback &optional until &key narrow username auth host forge
+- Function: ghub--graphql-vacuum query variables callback &optional until &key narrow username auth host forge ::
 
   This function is an opinionated alternative to ~ghub-graphql~.
   It relies on dark magic to get the job done.
@@ -656,19 +656,19 @@ Using ~ghub--graphql-vacuum~, the following resource specific functions
 are implemented.  These functions are not part of the public API yet
 and are very much subject to change.
 
-- Function: ghub-fetch-repository owner name callback &optional until &key username auth host forge
+- Function: ghub-fetch-repository owner name callback &optional until &key username auth host forge ::
 
   This function asynchronously fetches forge data about the specified
   repository.  Once all data has been collected, ~CALLBACK~ is called
   with the data as the only argument.
 
-- Function: ghub-fetch-issue owner name callback &optional until &key username auth host forge
+- Function: ghub-fetch-issue owner name callback &optional until &key username auth host forge ::
 
   This function asynchronously fetches forge data about the specified
   issue.  Once all data has been collected, ~CALLBACK~ is called
   with the data as the only argument.
 
-- Function: ghub-fetch-pullreq owner name callback &optional until &key username auth host forge
+- Function: ghub-fetch-pullreq owner name callback &optional until &key username auth host forge ::
 
   This function asynchronously fetches forge data about the specified
   pull-request.  Once all data has been collected, ~CALLBACK~ is called
@@ -684,8 +684,8 @@ making an initial request.
 
 ** Github Convenience Wrappers
 
-- Function: ghub-head resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: ghub-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
+- Function: ghub-head resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: ghub-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
 
   These functions are simple wrappers around ~ghub-request~.  Their
   signature is identical to that of the latter, except that they do
@@ -697,10 +697,10 @@ making an initial request.
   as the query or the payload.  For the "HEAD" and "GET" methods it
   is used as the query.
 
-- Function: ghub-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: ghub-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: ghub-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: ghub-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
+- Function: ghub-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: ghub-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: ghub-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: ghub-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
 
   These functions are simple wrappers around ~ghub-request~.  Their
   signature is identical to that of the latter, except that they do
@@ -712,7 +712,7 @@ making an initial request.
   as the query or the payload.  For the "PUT", "POST", "PATCH" and
   "DELETE" methods it is used as the payload.
 
-- Function: ghub-wait resource &optional duration &key username auth host
+- Function: ghub-wait resource &optional duration &key username auth host ::
 
   Some API requests result in an immediate successful response even
   when the requested action has not actually been carried out yet.
@@ -768,33 +768,33 @@ limited to ~ghub-METHOD~, are very simple wrappers around ~ghub-request~.
 They take fewer arguments than ~ghub-request~ and instead pass constant
 values for the arguments METHOD and/or FORGE.
 
-- Function: buck-request resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: glab-request resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: gogs-request resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
+- Function: buck-request resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: glab-request resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: gogs-request resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
 
   Wrappers around ~ghub-request~ which hardcode the FORGE to either
   ~bitbucket~, ~gitlab~, ~gogs~ or ~gitea~.
 
-- Function: buck-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: buck-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: buck-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: buck-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: glab-head resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: glab-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: glab-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: glab-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: glab-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: glab-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: gogs-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: gogs-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: gogs-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: gogs-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: gogs-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: gtea-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: gtea-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: gtea-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: gtea-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-- Function: gtea-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
+- Function: buck-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: buck-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: buck-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: buck-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: glab-head resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: glab-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: glab-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: glab-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: glab-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: glab-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: gogs-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: gogs-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: gogs-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: gogs-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: gogs-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: gtea-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: gtea-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: gtea-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: gtea-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
+- Function: gtea-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
 
   Wrappers around ~FORGE-METHOD~ which hardcode the FORGE to either
   ~bitbucket~, ~gitlab~, ~gogs~ or ~gitea~, and the METHOD to the implied
@@ -908,7 +908,6 @@ General Public License for more details.
 
 # IMPORTANT: Also update ORG_ARGS and ORG_EVAL in the Makefile.
 # Local Variables:
-# eval: (require 'ox-texinfo+ nil t)
 # fill-column: 70
 # indent-tabs-mode: nil
 # org-src-preserve-indentation: nil
