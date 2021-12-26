@@ -3,18 +3,13 @@
 #+author: Jonas Bernoulli
 #+email: jonas@bernoul.li
 #+date: 2017-{{{year}}}
-#+language: en
 
 #+texinfo_dir_category: Emacs
 #+texinfo_dir_title: Ghub: (ghub).
 #+texinfo_dir_desc: Minuscule client library for the Github API.
 #+subtitle: for version {{{version}}}
 
-#+texinfo_deffn: t
-#+options: H:4 num:4 toc:2
-#+property: header-args :eval never
-#+macro: version (eval (ox-texinfo+-get-version 'mixed))
-#+macro: year (eval (format-time-string "%Y"))
+#+setupfile: .orgconfig
 
 Ghub is an Emacs library that is used by various packages to access
 the APIs of various instances of various Git forge implementations.
