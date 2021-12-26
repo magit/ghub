@@ -1,28 +1,28 @@
-#+TITLE: Ghub User and Developer Manual
+#+title: Ghub User and Developer Manual
 :PREAMBLE:
-#+AUTHOR: Jonas Bernoulli
-#+EMAIL: jonas@bernoul.li
-#+DATE: 2017-{{{year}}}
-#+LANGUAGE: en
+#+author: Jonas Bernoulli
+#+email: jonas@bernoul.li
+#+date: 2017-{{{year}}}
+#+language: en
 
-#+TEXINFO_DIR_CATEGORY: Emacs
-#+TEXINFO_DIR_TITLE: Ghub: (ghub).
-#+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version {{{version}}}
+#+texinfo_dir_category: Emacs
+#+texinfo_dir_title: Ghub: (ghub).
+#+texinfo_dir_desc: Minuscule client library for the Github API.
+#+subtitle: for version {{{version}}}
 
-#+TEXINFO_DEFFN: t
-#+OPTIONS: H:4 num:4 toc:2
-#+PROPERTY: header-args :eval never
-#+MACRO: version (eval (ox-texinfo+-get-version 'mixed))
-#+MACRO: year (eval (format-time-string "%Y"))
+#+texinfo_deffn: t
+#+options: H:4 num:4 toc:2
+#+property: header-args :eval never
+#+macro: version (eval (ox-texinfo+-get-version 'mixed))
+#+macro: year (eval (format-time-string "%Y"))
 
 Ghub is an Emacs library that is used by various packages to access
 the APIs of various instances of various Git forge implementations.
 
-#+TEXINFO: @noindent
+#+texinfo: @noindent
 This manual is for Ghub version {{{version}}}.
 
-#+BEGIN_QUOTE
+#+begin_quote
 Copyright (C) 2017-{{{year}}} Jonas Bernoulli <jonas@bernoul.li>
 
 You can redistribute this document and/or modify it under the terms
@@ -34,7 +34,7 @@ This document is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
-#+END_QUOTE
+#+end_quote
 :END:
 * Introduction
 
@@ -51,9 +51,9 @@ This manual guides you through the steps that are necessary to use the
 Forge package and/or to make a request using just Ghub itself, such as
 this:
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
  (ghub-request "GET" "/user")
-#+END_SRC
+#+end_src
 
 To be able to do that, Ghub needs to know who you want to talk to, who
 you are, and how you are going to prove the latter to the former.
@@ -100,13 +100,13 @@ instance.  In addition to that, it is also necessary to specify on
 whose behalf the request is being made, which can be done using the
 USERNAME and AUTH arguments.  For example:
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (ghub-request "GET" "/user" nil
                 :forge 'github
                 :host "api.github.com"
                 :username "tarsius"
                 :auth 'forge)
-#+END_SRC
+#+end_src
 
 Having to specify these arguments for every request is inconvenient.
 Additional variables and convenience functions can be used to make
@@ -129,7 +129,7 @@ These variables can be set globally and/or for a specific repository.
 These ~github~ specific variables are discussed in more detail in
 [[*Github Configuration Variables]].
 
-#+TEXINFO: @noindent
+#+texinfo: @noindent
 For ~gitlab~ and ~bitbucket~ forges similar variables are available:
 
 - ~gitlab.user~ specifies the https://gitlab.com user.
@@ -170,17 +170,17 @@ hosts.
 
 To inform Ghub about your "github.com" username do this:
 
-#+BEGIN_SRC shell
+#+begin_src shell
   git config --global github.user USERNAME
-#+END_SRC
+#+end_src
 
 If you need to identify as another user in a particular repository,
 then you have to set that variable locally:
 
-#+BEGIN_SRC shell
+#+begin_src shell
   cd /path/to/repo
   git config --local github.user USERNAME
-#+END_SRC
+#+end_src
 
 *** Setting your Gitlab.com Username
 :PROPERTIES:
@@ -189,17 +189,17 @@ then you have to set that variable locally:
 
 To inform Ghub about your "gitlab.com" username do this:
 
-#+BEGIN_SRC shell
+#+begin_src shell
   git config --global gitlab.user USERNAME
-#+END_SRC
+#+end_src
 
 If you need to identify as another user in a particular repository,
 then you have to set that variable locally:
 
-#+BEGIN_SRC shell
+#+begin_src shell
   cd /path/to/repo
   git config --local gitlab.user USERNAME
-#+END_SRC
+#+end_src
 
 Make sure you use the correct USERNAME for this forge/host.  It might
 not be the same as on "github.com"!
@@ -216,9 +216,9 @@ username.
 For example if the API is available at ~https://example.com/api/v3~,
 then you should do this:
 
-#+BEGIN_SRC shell
+#+begin_src shell
   git config --global github.example.com/api/v3.user USERNAME
-#+END_SRC
+#+end_src
 
 Make sure you use the correct USERNAME for this instance.  It might
 not be the same as on "github.com"!
@@ -227,10 +227,10 @@ Doing this only tells Ghub who you are on this host, additionally you
 have to tell Ghub which repository are connected to that forge/host,
 like so:
 
-#+BEGIN_SRC shell
+#+begin_src shell
   cd /path/to/repo
   git config --local github.host example.com/api/v3
-#+END_SRC
+#+end_src
 
 *** Setting your Username for Other Hosts and/or Forges
 :PROPERTIES:
@@ -239,9 +239,9 @@ like so:
 
 To inform Ghub about your username on HOST (a FORGE instance) do this:
 
-#+BEGIN_SRC shell
+#+begin_src shell
   git config --global FORGE.HOST.user USERNAME
-#+END_SRC
+#+end_src
 
 FORGE can be one of ~bitbucket~, ~gitea~ or ~gogs~.  It can also be ~github~ or
 ~gitlab~; but if that is the case, then you should look at the preceding
@@ -254,10 +254,10 @@ endpoint of the API and may contain path components, e.g.:
 If you need to identify as another user in a particular repository,
 then you have to set that variable locally:
 
-#+BEGIN_SRC shell
+#+begin_src shell
   cd /path/to/repo
   git config --local FORGE.HOST.user USERNAME
-#+END_SRC
+#+end_src
 
 ** Creating and Storing a Token
 *** Creating a Token
@@ -293,16 +293,16 @@ sure that only one of these files exists and then you should also
 adjust the value of the variable to only ever use that file, for
 example:
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (setq auth-sources '("~/.authinfo"))
-#+END_SRC
+#+end_src
 
 In ~~/.authinfo~ secrets are stored in plain text.  If you don't want
 that, then you should use the encrypted ~~/.authinfo.gpg~ instead:
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (setq auth-sources '("~/.authinfo.gpg"))
-#+END_SRC
+#+end_src
 
 Auth-Source also supports storing secrets in various external
 key-chains.  See info:auth for more information.
@@ -318,18 +318,18 @@ Assuming your *Github* username is "ziggy", the package is named
 "012345abcdef...", an entry in one of the three mentioned files
 would then look like this:
 
-#+BEGIN_SRC example
+#+begin_src example
   machine api.github.com login ziggy^forge password 012345abcdef...
-#+END_SRC
+#+end_src
 
 Assuming your *Gitlab* username is "ziggy", the package is named
 "forge", and you want to access *Gitlab.com* with the *token*
 "012345abcdef...", an entry in one of the three mentioned files
 would then look like this:
 
-#+BEGIN_SRC example
+#+begin_src example
   machine gitlab.com/api/v4 login ziggy^forge password 012345abcdef...
-#+END_SRC
+#+end_src
 
 ** Github Configuration Variables
 
@@ -756,10 +756,10 @@ a ~github~ instance, then that requires the use of the FORGE argument.
 To avoid that, functions named ~FORGE-request~ and ~FORGE-METHOD~ are also
 available.  The following forms are equivalent, for example:
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (ghub-get ... :auth 'PACKAGE :forge 'gitlab)
   (glab-get ... :auth 'PACKAGE)
-#+END_SRC
+#+end_src
 
 These forms would remain equivalent even if you did not specify a
 value for the AUTH arguments — but you should not do that if you plan
@@ -816,7 +816,7 @@ personal scripts.  Unlike when you use Ghub in a package that you
 distribute for others to use, you don't have to explicitly specify a
 package in personal scripts.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   ;; This is perfectly acceptable in personal scripts ...
   (ghub-get "/user")
 
@@ -825,7 +825,7 @@ package in personal scripts.
 
   ;; In packages you have to specify the package using AUTH.
   (ghub-get "/user" nil :auth 'some-package)
-#+END_SRC
+#+end_src
 
 When the ~AUTH~ argument is not specified, then a request is made on
 behalf of the ~ghub~ package itself.  Like for any other package you
@@ -842,9 +842,9 @@ You have to tell ~ghub-request~ on behalf of which package a request is
 being made by passing the symbol ~PACKAGE~ as the value of its ~AUTH~
 argument.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (ghub-request "GET" "/user" nil :auth 'PACKAGE)
-#+END_SRC
+#+end_src
 
 Keep in mind that the users of your package will have to manually
 create a suitable token.  To make that easier, you should not only
@@ -888,7 +888,7 @@ needs; and explain what they are needed for.
 :COPYING:    t
 :END:
 
-#+BEGIN_QUOTE
+#+begin_quote
 Copyright (C) 2017-{{{year}}} Jonas Bernoulli <jonas@bernoul.li>
 
 You can redistribute this document and/or modify it under the terms
@@ -900,7 +900,7 @@ This document is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
-#+END_QUOTE
+#+end_quote
 
 #  LocalWords:  ARGS AUTH Bitbucket DEFFN DESC ERRORBACK EVAL Auth Ghub Gitea Github
 #  LocalWords:  Gitlab Glab Gogs GraphQL LocalWords MERCHANTABILITY
