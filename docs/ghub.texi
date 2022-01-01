@@ -8,7 +8,7 @@
 
 @copying
 @quotation
-Copyright (C) 2017-2021 Jonas Bernoulli <jonas@@bernoul.li>
+Copyright (C) 2017-2022 Jonas Bernoulli <jonas@@bernoul.li>
 
 You can redistribute this document and/or modify it under the terms
 of the GNU General Public License as published by the Free Software
@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version v3.5.4-19-g36cf008+1
+@subtitle for version v3.5.4-20-g20ccd6f+1
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -48,10 +48,10 @@ Ghub is an Emacs library that is used by various packages to access
 the APIs of various instances of various Git forge implementations.
 
 @noindent
-This manual is for Ghub version v3.5.4-19-g36cf008+1.
+This manual is for Ghub version v3.5.4-20-g20ccd6f+1.
 
 @quotation
-Copyright (C) 2017-2021 Jonas Bernoulli <jonas@@bernoul.li>
+Copyright (C) 2017-2022 Jonas Bernoulli <jonas@@bernoul.li>
 
 You can redistribute this document and/or modify it under the terms
 of the GNU General Public License as published by the Free Software

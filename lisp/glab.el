@@ -1,6 +1,6 @@
 ;;; glab.el --- minuscule client library for the Gitlab API  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2016-2021  Jonas Bernoulli
+;; Copyright (C) 2016-2022  Jonas Bernoulli
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/magit/ghub
