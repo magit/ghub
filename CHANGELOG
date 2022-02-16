@@ -1,4 +1,14 @@
 # -*- mode: org -*-
+* v3.5.5    2022-02-16
+
+- Define ~ghub--auth~ as a generic function.
+
+- Also included are several other improvements, updated documentation
+  and bugfixes.
+
+- The experimental and unfinished support for the native json backend
+  must not be used.  It was merged prematurely.
+
 * v3.5.4    2021-10-02
 
 - Add new ~sparse~ argument to ~ghub-fetch-repository~, making it possible

@@ -7,7 +7,7 @@
 #+texinfo_dir_category: Emacs
 #+texinfo_dir_title: Ghub: (ghub).
 #+texinfo_dir_desc: Minuscule client library for the Github API.
-#+subtitle: for version 3.5.4-git
+#+subtitle: for version 3.5.5
 
 #+setupfile: .orgconfig
 
@@ -15,7 +15,7 @@ Ghub is an Emacs library that is used by various packages to access
 the APIs of various instances of various Git forge implementations.
 
 #+texinfo: @noindent
-This manual is for Ghub version 3.5.4-git.
+This manual is for Ghub version 3.5.5.
 
 #+begin_quote
 Copyright (C) 2017-{{{year}}} Jonas Bernoulli <jonas@bernoul.li>
