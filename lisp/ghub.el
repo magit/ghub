@@ -675,12 +675,20 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
            (setq payload
                  (if (and ghub-json-use-jansson
                           (fboundp 'json-serialize))
-                     (json-serialize payload)
+                     (json-serialize payload
+                                     :object-type  ghub-json-object-type
+                                     :array-type   ghub-json-array-type
+                                     :false-object nil
+                                     :null-object  :null)
                    (require 'json)
-                   ;; Unfortunately `json-encode' may modify the input.
-                   ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=40693.
-                   ;; and https://github.com/magit/forge/issues/267
-                   (json-encode (copy-tree payload)))))
+                   (let ((json-object-type ghub-json-object-type)
+                         (json-array-type  ghub-json-array-type)
+                         (json-false       nil)
+                         (json-null        :null))
+                     ;; Unfortunately `json-encode' may modify the input.
+                     ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=40693.
+                     ;; and https://github.com/magit/forge/issues/267
+                     (json-encode (copy-tree payload))))))
          (encode-coding-string payload 'utf-8))))
 
 (defun ghub--url-encode-params (params)
