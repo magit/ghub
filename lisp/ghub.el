@@ -676,10 +676,10 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
                  (if (and ghub-json-use-jansson
                           (fboundp 'json-serialize))
                      (json-serialize payload)
+                   (require 'json)
                    ;; Unfortunately `json-encode' may modify the input.
                    ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=40693.
                    ;; and https://github.com/magit/forge/issues/267
-                   (require 'json)
                    (json-encode (copy-tree payload)))))
          (encode-coding-string payload 'utf-8))))
 
