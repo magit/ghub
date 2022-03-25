@@ -1,4 +1,9 @@
 # -*- mode: org -*-
+* v3.5.6    2022-03-25
+
+- When encoding payloads, explicitly specify how to encode certain
+  Lisp values in JSON.
+
 * v3.5.5    2022-02-16
 
 - Define ~ghub--auth~ as a generic function.
