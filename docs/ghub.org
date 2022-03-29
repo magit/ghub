@@ -219,7 +219,7 @@ Make sure you use the correct USERNAME for this instance.  It might
 not be the same as on "github.com"!
 
 Doing this only tells Ghub who you are on this host, additionally you
-have to tell Ghub which repository are connected to that forge/host,
+have to tell Ghub which repositories are connected to that forge/host,
 like so:
 
 #+begin_src shell
