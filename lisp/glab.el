@@ -1,4 +1,4 @@
-;;; glab.el --- minuscule client library for the Gitlab API  -*- lexical-binding: t -*-
+;;; glab.el --- Client library for the Gitlab API  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2016-2022  Jonas Bernoulli
 

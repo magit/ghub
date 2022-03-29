@@ -25,7 +25,7 @@ General Public License for more details.
 
 @dircategory Emacs
 @direntry
-* Ghub: (ghub).         Minuscule client library for the Github API.
+* Ghub: (ghub).         Client library for the Github API.
 @end direntry
 
 @finalout

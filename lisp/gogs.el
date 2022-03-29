@@ -1,4 +1,4 @@
-;;; gogs.el --- minuscule client library for the Gogs API  -*- lexical-binding: t -*-
+;;; gogs.el --- Client library for the Gogs API  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2016-2022  Jonas Bernoulli
 

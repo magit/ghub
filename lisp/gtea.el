@@ -1,4 +1,4 @@
-;;; gtea.el --- minuscule client library for the Gitea API  -*- lexical-binding: t -*-
+;;; gtea.el --- Client library for the Gitea API  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2016-2022  Jonas Bernoulli
 

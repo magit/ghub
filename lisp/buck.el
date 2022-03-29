@@ -1,4 +1,4 @@
-;;; buck.el --- minuscule client library for the Bitbucket API  -*- lexical-binding: t -*-
+;;; buck.el --- Client library for the Bitbucket API  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2016-2022  Jonas Bernoulli
 

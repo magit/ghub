@@ -1,5 +1,5 @@
-Ghub — Minuscule client libraries for the APIs of various Git forges
-====================================================================
+Ghub — Client libraries for the APIs of various Git forges
+==========================================================
 
 Ghub provides basic support for using the APIs of various Git forges
 from Emacs packages.  Originally it only supported the Github REST
