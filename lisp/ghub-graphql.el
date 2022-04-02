@@ -323,7 +323,7 @@ See Info node `(ghub)GraphQL Support'."
                           host)))
     :method    "POST"
     :headers   (ghub--headers headers host auth username forge)
-    :handler   'ghub--graphql-handle-response
+    :handler   #'ghub--graphql-handle-response
     :query     query
     :variables variables
     :until     until

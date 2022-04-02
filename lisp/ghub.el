@@ -61,6 +61,11 @@
 (eval-when-compile
   (require 'subr-x))
 
+(declare-function glab-repository-id "glab" (owner name &key username auth host))
+(declare-function gtea-repository-id "gtea" (owner name &key username auth host))
+(declare-function gogs-repository-id "gogs" (owner name &key username auth host))
+(declare-function buck-repository-id "buck" (owner name &key username auth host))
+
 (defvar url-callback-arguments)
 (defvar url-http-end-of-headers)
 (defvar url-http-extra-headers)
@@ -114,7 +119,7 @@ See https://github.com/magit/ghub/pull/149.")
   (value      nil :read-only nil)
   (extra      nil :read-only nil))
 
-(defalias 'ghub-req-extra 'ghub--req-extra)
+(defalias 'ghub-req-extra #'ghub--req-extra)
 
 ;;;; API
 
@@ -343,7 +348,7 @@ Both callbacks are called with four arguments.
     ;; Encode in case caller used (symbol-name 'GET). #35
     :method     (encode-coding-string method 'utf-8)
     :headers    (ghub--headers headers host auth username forge)
-    :handler    'ghub--handle-response
+    :handler    #'ghub--handle-response
     :unpaginate unpaginate
     :noerror    noerror
     :reader     reader
@@ -435,11 +440,11 @@ this function is called with nil for PAYLOAD."
   "Return the id of the specified repository.
 Signal an error if the id cannot be determined."
   (let ((fn (cl-case forge
-              ((nil ghub github) 'ghub--repository-id)
-              (gitlab            'glab-repository-id)
-              (gitea             'gtea-repository-id)
-              (gogs              'gogs-repository-id)
-              (bitbucket         'buck-repository-id)
+              ((nil ghub github) #'ghub--repository-id)
+              (gitlab            #'glab-repository-id)
+              (gitea             #'gtea-repository-id)
+              (gogs              #'gogs-repository-id)
+              (bitbucket         #'buck-repository-id)
               (t (intern (format "%s-repository-id" forge))))))
     (unless (fboundp fn)
       (error "ghub-repository-id: Forge type/abbreviation `%s' is unknown"
