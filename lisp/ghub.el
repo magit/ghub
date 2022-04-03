@@ -681,8 +681,8 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
                  (if (and ghub-json-use-jansson
                           (fboundp 'json-serialize))
                      (json-serialize payload
-                                     :object-type  ghub-json-object-type
-                                     :array-type   ghub-json-array-type
+                                     ;; :object-type and :array-type
+                                     ;; are not supported here.
                                      :false-object nil
                                      :null-object  :null)
                    (require 'json)
