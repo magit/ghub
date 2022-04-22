@@ -27,8 +27,7 @@
 (require 'gsexp)
 (require 'treepy)
 
-(eval-when-compile
-  (require 'subr-x))
+(eval-when-compile (require 'subr-x))
 
 ;;; Api
 
