@@ -420,7 +420,7 @@ this function is called with nil for PAYLOAD."
   (if (eq (ghub--req-forge req) 'bitbucket)
       (if payload
           (let* ((page (cl-mapcan (lambda (key)
-                                    (when-let ((elt (assq key payload)))
+                                    (and-let* ((elt (assq key payload)))
                                       (list elt)))
                                   '(size page pagelen next previous)))
                  (headers (cons (cons 'link-alist page) headers)))
@@ -430,7 +430,7 @@ this function is called with nil for PAYLOAD."
               (setq-default ghub-response-headers headers))
             page)
         (cdr (assq 'link-alist ghub-response-headers)))
-    (when-let ((rels (cdr (assoc "Link" (or headers ghub-response-headers)))))
+    (and-let* ((rels (cdr (assoc "Link" (or headers ghub-response-headers)))))
       (mapcar (lambda (elt)
                 (pcase-let ((`(,url ,rel) (split-string elt "; ")))
                   (cons (intern (substring rel 5 -1))
