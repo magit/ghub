@@ -52,6 +52,7 @@
 
 (require 'auth-source)
 (require 'cl-lib)
+(require 'compat)
 (require 'gnutls)
 (require 'let-alist)
 (require 'url)

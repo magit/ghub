@@ -11,7 +11,8 @@ ELS  += gogs.el
 ELS  += buck.el
 ELCS  = $(ELS:.el=.elc)
 
-DEPS  = treepy
+DEPS  = compat
+DEPS += treepy
 
 DOMAIN      ?= magit.vc
 CFRONT_DIST ?= E2LUHBKU1FBV02
