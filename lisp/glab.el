@@ -147,7 +147,7 @@ Like calling `ghub-request' (which see) with `gitlab' as FORGE."
   "Return the id of the repository specified by OWNER, NAME and HOST."
   (number-to-string
    (cdr (assq 'id (glab-get (format "/projects/%s%%2F%s"
-                                    (replace-regexp-in-string "/" "%2F" owner)
+                                    (string-replace "/" "%2F" owner)
                                     name)
                             nil :username username :auth auth :host host)))))
 
