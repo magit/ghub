@@ -887,9 +887,8 @@ won't see the secret from a line that is followed by a commented
 line."
     (save-match-data (funcall fn))))
 
-(progn ; (when (< emacs-major-version 28)
-  ;; Fixed by Emacs commit 0b98ea5fbe276c67206896dca111c000f984ee0f,
-  ;; but keep this advice until 28.1 is released.
+(when (< emacs-major-version 28)
+  ;; Fixed by Emacs commit 0b98ea5fbe276c67206896dca111c000f984ee0f.
   (advice-add 'url-http-handle-authentication :around
               'url-http-handle-authentication@unauthorized-bugfix)
   (defun url-http-handle-authentication@unauthorized-bugfix (fn proxy)
