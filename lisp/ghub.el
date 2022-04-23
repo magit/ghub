@@ -700,9 +700,10 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341.")
   (mapconcat (lambda (param)
                (pcase-let ((`(,key . ,val) param))
                  (concat (url-hexify-string (symbol-name key)) "="
-                         (if (integerp val)
-                             (number-to-string val)
-                           (url-hexify-string val)))))
+                         (cl-typecase val
+                           (integer (number-to-string val))
+                           (boolean (if val "true" "false"))
+                           (t (url-hexify-string val))))))
              params "&"))
 
 ;;; Authentication
