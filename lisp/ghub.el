@@ -984,8 +984,8 @@ the end of the document."
                           (progn
                             (url-http-debug
                              "Spinning for the terminator of last chunk...")
-                            (setq url-http-chunked-last-crlf-missing
-                                  (point)))
+                            (setq-local url-http-chunked-last-crlf-missing
+                                        (point)))
                         (url-http-debug "Removing terminator of last chunk")
                         (delete-region (match-beginning 0) (match-end 0))
                         (when (re-search-forward "^\r?\n" nil t)
