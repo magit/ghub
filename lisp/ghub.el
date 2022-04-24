@@ -880,8 +880,8 @@ the user being asked for their name."
   ;; Cleanup from 26faa2b943675107e1664b2fea7174137c473475 is not
   ;; included in this copy because doing that would require changes
   ;; to more functions.
-  (advice-add 'url-http-handle-authentication :override
-              'url-http-handle-authentication@54989-backport)
+  (advice-add 'url-http-chunked-encoding-after-change-function :override
+              'url-http-chunked-encoding-after-change-function@54989-backport)
   (defvar url-http-chunked-last-crlf-missing nil)
   (defvar url-http-content-type)
   (defvar url-http-chunked-start)
@@ -889,10 +889,7 @@ the user being asked for their name."
   (defvar url-http-chunked-counter)
   (defun url-http-chunked-encoding-after-change-function@54989-backport
       (st nd length)
-    "Function used when dealing with chunked encoding.
-Cannot give a sophisticated percentage, but we need a different
-function to look for the special 0-length chunk that signifies
-the end of the document."
+    "Backport bugfix from https://debbugs.gnu.org/cgi/bugreport.cgi?bug=54989."
     (if url-http-chunked-last-crlf-missing
         (progn
           (goto-char url-http-chunked-last-crlf-missing)
@@ -984,8 +981,8 @@ the end of the document."
                           (progn
                             (url-http-debug
                              "Spinning for the terminator of last chunk...")
-                            (setq url-http-chunked-last-crlf-missing
-                                  (point)))
+                            (setq-local url-http-chunked-last-crlf-missing
+                                        (point)))
                         (url-http-debug "Removing terminator of last chunk")
                         (delete-region (match-beginning 0) (match-end 0))
                         (when (re-search-forward "^\r?\n" nil t)
