@@ -879,7 +879,12 @@ the user being asked for their name."
   ;; Fixed in Emacs commit 0829c6836eff14dda0cf8b3047376967f7b000f4.
   ;; Cleanup from 26faa2b943675107e1664b2fea7174137c473475 is not
   ;; included in this copy because doing that would require changes
-  ;; to more functions.
+  ;; to more functions.  This function has seen a few other changes
+  ;; since Emacs 25.1, the oldest version we still support.  Of these
+  ;; only 4f1df40db36b221e7842bd75d6281922dcb268ee makes a functional
+  ;; change, fixing debbug#35658.  The first release to contain that
+  ;; commit is 27.1.  That commit either fixes a related bug or it
+  ;; deals with the same bug but only partially fixes it.
   (advice-add 'url-http-chunked-encoding-after-change-function :override
               'url-http-chunked-encoding-after-change-function@54989-backport)
   (defvar url-http-chunked-last-crlf-missing nil)
