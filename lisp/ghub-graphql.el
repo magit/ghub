@@ -40,8 +40,11 @@ Return the response as a JSON-like alist.  Even if the response
 contains `errors', do not raise an error.  GRAPHQL is a GraphQL
 string.  VARIABLES is a JSON-like alist.  The other arguments
 behave as for `ghub-request' (which see)."
-  (cl-assert (stringp graphql))
   (cl-assert (not (stringp variables)))
+  (cl-assert (or (stringp graphql)
+                 (memq (car-safe graphql) '(query mutation))))
+  (unless (stringp graphql)
+    (setq graphql (gsexp-encode (ghub--graphql-prepare-query graphql))))
   (ghub-request "POST" "/graphql" nil
                 :payload `(("query" . ,graphql)
                            ,@(and variables `(("variables" ,@variables))))
@@ -53,16 +56,16 @@ behave as for `ghub-request' (which see)."
 (cl-defun ghub-graphql-rate-limit (&key username auth host)
   "Return rate limit information."
   (let-alist (ghub-graphql
-              "query { rateLimit { limit cost remaining resetAt }}"
+              '(query (rateLimit limit cost remaining resetAt))
               nil :username username :auth auth :host host)
     .data.rateLimit))
 
 (cl-defun ghub--repository-id (owner name &key username auth host)
   "Return the id of the repository specified by OWNER, NAME and HOST."
   (let-alist (ghub-graphql
-              "query ($owner:String!, $name:String!) {
-                 repository(owner:$owner, name:$name) { id }
-               }"
+              '(query (repository [(owner $owner String!)
+                                   (name  $name  String!)]
+                                  id))
               `((owner . ,owner)
                 (name  . ,name))
               :username username :auth auth :host host)
