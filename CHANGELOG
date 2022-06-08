@@ -1,4 +1,23 @@
 # -*- mode: org -*-
+* v3.5.7    UNRELEASED
+
+- Queries can now be passed to ~ghub-graphql~ in the gsexp format.
+  f3a2654
+
+- Depend on the Compat package, allowing me to use convenient features
+  that were added to Emacs over the last few years, without having to
+  wait another few years until everybody has updated to a reasonably
+  recent Emacs release.  e441385
+
+Bug fixes:
+
+- 8c4d0ba ghub--encode-payload: Drop invalid arguments to json-serialize
+- 0946102 ghub--url-encode-params: Handle lisp booleans
+- 5eed205 Add kludge for debbugs#54989 and rework kludge for debbugs#34341
+
+Also contains various documentation updates, code clean-ups and
+build improvements.
+
 * v3.5.6    2022-03-25
 
 - When encoding payloads, explicitly specify how to encode certain
