@@ -62,7 +62,7 @@ the string "tarsius^forge".
 
 This package used to attempt to get the answers to these questions
 using a setup wizard.  Unfortunately that had to be removed because
-(a) it only ever supported Github, (b) Github is about to remove
+(a) it only ever supported Github, (b) by now Github has removed
 support for that on their end, (c) it did not always work, and (d)
 when it couldn't be used, or failed, then it made things /more/
 complicated.
