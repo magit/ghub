@@ -832,7 +832,7 @@ an example.  This is only useful if you "cache" the response locally
 and want to avoid fetching data again that you already have.
 
 Other arguments behave as for @code{ghub-graphql} and @code{ghub-request}, more or
-less.
+less.  If @code{CALLBACK} is nil, pretty-print the response.
 @end defun
 
 Using @code{ghub--graphql-vacuum}, the following resource specific functions

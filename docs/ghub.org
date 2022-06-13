@@ -650,7 +650,7 @@ also more opinionated.
   and want to avoid fetching data again that you already have.
 
   Other arguments behave as for ~ghub-graphql~ and ~ghub-request~, more or
-  less.
+  less.  If ~CALLBACK~ is nil, pretty-print the response.
 
 Using ~ghub--graphql-vacuum~, the following resource specific functions
 are implemented.  These functions are not part of the public API yet

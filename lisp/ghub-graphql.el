@@ -337,10 +337,10 @@ See Info node `(ghub)GraphQL Support'."
                          (while (setq key (pop path))
                            (setq data (cdr (assq key data)))))
                        (ghub--graphql-set-mode-line buf nil)
-                       (funcall callback data))
+                       (funcall (or callback #'ghub--graphql-pp-response) data))
                    (lambda (data)
                      (ghub--graphql-set-mode-line buf nil)
-                     (funcall callback data))))
+                     (funcall (or callback #'ghub--graphql-pp-response) data))))
     :errorback errorback)))
 
 (cl-defun ghub--graphql-retrieve (req &optional lineage cursor)
@@ -530,6 +530,9 @@ See Info node `(ghub)GraphQL Support'."
       (setq mode-line-process
             (and string (concat " " (apply #'format string args))))
       (force-mode-line-update t))))
+
+(defun ghub--graphql-pp-response (data)
+  (pp-display-expression data "*Pp Eval Output*"))
 
 ;;; _
 (provide 'ghub-graphql)
