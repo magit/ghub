@@ -156,6 +156,7 @@ behave as for `ghub-request' (which see)."
                      updatedAt
                      closedAt
                      mergedAt
+                     isDraft
                      locked
                      maintainerCanModify
                      isCrossRepository
