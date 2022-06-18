@@ -109,6 +109,7 @@ behave as for `ghub-request' (which see)."
      (issues         [(:edges t)
                       (:singular issue number)
                       (orderBy ((field UPDATED_AT) (direction DESC)))]
+                     id
                      number
                      state
                      (author login)
@@ -148,6 +149,7 @@ behave as for `ghub-request' (which see)."
      (pullRequests   [(:edges t)
                       (:singular pullRequest number)
                       (orderBy ((field UPDATED_AT) (direction DESC)))]
+                     id
                      number
                      state
                      (author login)
