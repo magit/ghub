@@ -46,7 +46,11 @@
             (gsexp--encode-field (cons (cadar field)
                                        (cdr field)))))
    (t
-    (concat (symbol-name (pop field))
+    (concat (pcase (pop field)
+              (`[] "")
+              ((and (pred symbolp) op) (symbol-name op))
+              (`[,op] (symbol-name op))
+              (`[,op ,name] (format "%s %s" op name)))
             (and (vectorp (car field))
                  (format " (\n%s)"
                          (mapconcat #'gsexp--encode-argument

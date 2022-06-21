@@ -370,7 +370,8 @@ See Info node `(ghub)GraphQL Support'."
     (cl-block nil
       (while t
         (let ((node (treepy-node loc)))
-          (when (vectorp node)
+          (when (and (vectorp node)
+                     (listp (aref node 0)))
             (let ((alist (cl-coerce node 'list))
                   vars)
               (when (cadr (assq :edges alist))
