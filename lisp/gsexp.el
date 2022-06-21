@@ -32,6 +32,8 @@
 
 (require 'cl-lib)
 
+(defvar gsexp-one-variable-per-line nil)
+
 (defun gsexp-encode (document)
   (gsexp--pp (gsexp--encode-field document)))
 
@@ -52,10 +54,11 @@
               (`[,op] (symbol-name op))
               (`[,op ,name] (format "%s %s" op name)))
             (and (vectorp (car field))
-                 (format " (\n%s)"
+                 (format " (%s%s)"
+                         (if gsexp-one-variable-per-line "\n" "")
                          (mapconcat #'gsexp--encode-argument
                                     (append (pop field) nil)
-                                    ",\n")))
+                                    (if gsexp-one-variable-per-line ",\n" ","))))
             (and field
                  (format " {\n%s\n}"
                          (mapconcat #'gsexp--encode-field field "\n")))))))
