@@ -47,21 +47,21 @@
     (concat (format "%s: " (caar field))
             (gsexp--encode-field (cons (cadar field)
                                        (cdr field)))))
-   (t
-    (concat (pcase (pop field)
-              (`[] "")
-              ((and (pred symbolp) op) (symbol-name op))
-              (`[,op] (symbol-name op))
-              (`[,op ,name] (format "%s %s" op name)))
-            (and (vectorp (car field))
-                 (format " (%s%s)"
-                         (if gsexp-one-variable-per-line "\n" "")
-                         (mapconcat #'gsexp--encode-argument
-                                    (append (pop field) nil)
-                                    (if gsexp-one-variable-per-line ",\n" ","))))
-            (and field
-                 (format " {\n%s\n}"
-                         (mapconcat #'gsexp--encode-field field "\n")))))))
+   ((concat
+     (pcase (pop field)
+       (`[] "")
+       ((and (pred symbolp) op) (symbol-name op))
+       (`[,op] (symbol-name op))
+       (`[,op ,name] (format "%s %s" op name)))
+     (and (vectorp (car field))
+          (format " (%s%s)"
+                  (if gsexp-one-variable-per-line "\n" "")
+                  (mapconcat #'gsexp--encode-argument
+                             (append (pop field) nil)
+                             (if gsexp-one-variable-per-line ",\n" ","))))
+     (and field
+          (format " {\n%s\n}"
+                  (mapconcat #'gsexp--encode-field field "\n")))))))
 
 (cl-defun gsexp--encode-argument ((argument value))
   (format "%s: %s" argument (gsexp--encode-value value)))
@@ -81,7 +81,7 @@
                     (pcase-lambda (`(,name ,value))
                       (format "%s: %s" name (gsexp--encode-value value)))
                     value ", ")))
-   (t (error "Invalid field value: %S" value))))
+   ((error "Invalid field value: %S" value))))
 
 (defun gsexp--pp (string)
   (with-temp-buffer
