@@ -143,6 +143,18 @@ Like calling `ghub-request' (which see) with `gitlab' as FORGE."
                 :username username :auth auth :host host
                 :callback callback :errorback errorback :extra extra))
 
+(cl-defun glab-graphql (graphql &optional variables
+                                &key username auth host
+                                headers silent
+                                callback errorback value extra)
+  "Make a GraphQL request using GRAPHQL and VARIABLES.
+Like calling `ghub-graphql' (which see) with `gitlab' as FORGE."
+  (ghub-graphql graphql variables :forge 'gitlab
+                :username username :auth auth :host host
+                :headers headers :silent silent
+                :callback callback :errorback errorback
+                :value value :extra extra))
+
 (cl-defun glab-repository-id (owner name &key username auth host)
   "Return the id of the repository specified by OWNER, NAME and HOST."
   (number-to-string

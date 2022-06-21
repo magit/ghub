@@ -32,7 +32,7 @@
 ;;; Api
 
 (cl-defun ghub-graphql (graphql &optional variables
-                                &key username auth host
+                                &key username auth host forge
                                 headers silent
                                 callback errorback value extra)
   "Make a GraphQL request using GRAPHQL and VARIABLES.
@@ -45,11 +45,13 @@ behave as for `ghub-request' (which see)."
                  (memq (car-safe graphql) '(query mutation))))
   (unless (stringp graphql)
     (setq graphql (gsexp-encode (ghub--graphql-prepare-query graphql))))
-  (ghub-request "POST" "/graphql" nil
+  (ghub-request "POST"
+                (if (eq forge 'gitlab) "/api/graphql" "/graphql")
+                nil
                 :payload `(("query" . ,graphql)
                            ,@(and variables `(("variables" ,@variables))))
                 :headers headers :silent silent
-                :username username :auth auth :host host
+                :username username :auth auth :host host :forge forge
                 :callback callback :errorback errorback
                 :extra extra :value value))
 

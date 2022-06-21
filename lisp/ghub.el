@@ -337,10 +337,15 @@ Both callbacks are called with four arguments.
    (ghub--make-req
     :url (url-generic-parse-url
           (concat (if (member host ghub-insecure-hosts) "http://" "https://")
-                  (if (and (equal resource "/graphql")
-                           (string-suffix-p "/v3" host))
-                      (substring host 0 -3)
-                    host)
+                  (cond ((and (equal resource "/graphql")
+                              (string-suffix-p "/v3" host))
+                         ;; Needed for some Github Enterprise instances.
+                         (substring host 0 -3))
+                        ((and (equal resource "/api/graphql")
+                              (string-suffix-p "/api/v4" host))
+                         ;; Needed for all Gitlab instances.
+                         (substring host 0 -7))
+                        (host))
                   resource
                   (and query (concat "?" (ghub--url-encode-params query)))))
     :forge forge
