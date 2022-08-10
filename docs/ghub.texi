@@ -50,20 +50,7 @@ the APIs of various instances of various Git forge implementations.
 @noindent
 This manual is for Ghub version 3.5.6-git.
 
-@quotation
-Copyright (C) 2017-2022 Jonas Bernoulli <jonas@@bernoul.li>
-
-You can redistribute this document and/or modify it under the terms
-of the GNU General Public License as published by the Free Software
-Foundation, either version 3 of the License, or (at your option) any
-later version.
-
-This document is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE@.  See the GNU
-General Public License for more details.
-
-@end quotation
+@insertcopying
 @end ifnottex
 
 @menu
