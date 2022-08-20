@@ -717,7 +717,9 @@ and call `auth-source-forget+'."
       (if (eq auth 'basic)
           (cons (cons "Authorization" (ghub--basic-auth host username))
                 headers)
-        (cons (ghub--auth host auth username forge) headers)))))
+        (let ((auth-data (ghub--auth host auth username forge)))
+          (cond ((listp (cdr auth-data)) (append auth-data headers))
+                (t (cons auth-data headers))))))))
 
 (cl-defgeneric ghub--auth (host auth &optional username forge)
   (unless username
