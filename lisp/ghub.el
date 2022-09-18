@@ -920,13 +920,14 @@ the user being asked for their name."
           ;; one after-change-function call.
           (while read-next-chunk
             (setq no-initial-crlf (= 0 url-http-chunked-counter))
-            (if url-http-content-type
+            (with-no-warnings
+              (if url-http-content-type
+                  (url-display-percentage nil
+                                          "Reading [%s]... chunk #%d"
+                                          url-http-content-type url-http-chunked-counter)
                 (url-display-percentage nil
-                                        "Reading [%s]... chunk #%d"
-                                        url-http-content-type url-http-chunked-counter)
-              (url-display-percentage nil
-                                      "Reading... chunk #%d"
-                                      url-http-chunked-counter))
+                                        "Reading... chunk #%d"
+                                        url-http-chunked-counter)))
             (url-http-debug "Reading chunk %d (%d %d %d)"
                             url-http-chunked-counter st nd length)
             (setq regexp (if no-initial-crlf
@@ -984,7 +985,8 @@ the user being asked for their name."
                       ;; Found the end of the document!  Wheee!
                       (url-http-debug "Saw end of stream chunk!")
                       (setq read-next-chunk nil)
-                      (url-display-percentage nil nil)
+                      (with-no-warnings
+                        (url-display-percentage nil nil))
                       ;; Every chunk, even the last 0-length one, is
                       ;; terminated by CRLF.  Skip it.
                       (if (not (looking-at "\r?\n"))
