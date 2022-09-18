@@ -90,7 +90,7 @@
     (while (< (point) (point-max))
       (unless (and (bolp) (eolp))
         (save-excursion
-          (let ((level (car (syntax-ppss (point-at-bol)))))
+          (let ((level (car (syntax-ppss (line-beginning-position)))))
             (when (looking-at "\\s-*\\s)")
               (cl-decf level))
             (indent-line-to (* 2 level)))))
