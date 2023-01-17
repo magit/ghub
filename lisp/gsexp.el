@@ -45,7 +45,7 @@
     (symbol-name field))
    ((listp (car field))
     (concat (format "%s: " (caar field))
-            (gsexp--encode-field (cons (cadar field)
+            (gsexp--encode-field (cons (car (cdar field))
                                        (cdr field)))))
    ((concat
      (pcase (pop field)

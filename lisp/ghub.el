@@ -61,6 +61,11 @@
 
 (eval-when-compile (require 'subr-x))
 
+;; Needed for Emacs < 27.
+(eval-when-compile (require 'json))
+(declare-function json-read-from-string "json" (string))
+(declare-function json-encode "json" (object))
+
 (declare-function glab-repository-id "glab" (owner name &key username auth host))
 (declare-function gtea-repository-id "gtea" (owner name &key username auth host))
 (declare-function gogs-repository-id "gogs" (owner name &key username auth host))
