@@ -54,8 +54,8 @@ behave as for `ghub-request' (which see)."
   (ghub-request "POST"
                 (if (eq forge 'gitlab) "/api/graphql" "/graphql")
                 nil
-                :payload `(("query" . ,graphql)
-                           ,@(and variables `(("variables" ,@variables))))
+                :payload `((query . ,graphql)
+                           ,@(and variables `((variables ,@variables))))
                 :headers headers :silent silent
                 :username username :auth auth :host host :forge forge
                 :callback callback :errorback errorback
