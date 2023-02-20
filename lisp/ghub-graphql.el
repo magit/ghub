@@ -37,6 +37,12 @@
 
 ;;; Api
 
+(defvar ghub-graphql-items-per-request 100
+  "Number of GraphQL items to query for entities that return a collection.
+
+Adjust this value if you're hitting query timeouts against larger
+repositories.")
+
 (cl-defun ghub-graphql (graphql &optional variables
                                 &key username auth host forge
                                 headers silent
@@ -387,7 +393,7 @@ See Info node `(ghub)GraphQL Support'."
             (let ((alist (cl-coerce node 'list))
                   vars)
               (when (cadr (assq :edges alist))
-                (push (list 'first 100) vars)
+                (push (list 'first ghub-graphql-items-per-request) vars)
                 (setq loc  (treepy-up loc))
                 (setq node (treepy-node loc))
                 (setq loc  (treepy-replace
