@@ -1,4 +1,4 @@
-(define-package "ghub" "3.5.6.50-git"
+(define-package "ghub" "3.6.0"
   "Client libraries for Git forge APIs."
   '((emacs     "25.1")
     (compat    "29.1.4.1")

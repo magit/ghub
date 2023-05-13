@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v3.5.7    UNRELEASED
+* v3.6.0    2023-05-13
 
 - Queries can now be passed to ~ghub-graphql~ in the gsexp format.
   f3a2654
