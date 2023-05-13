@@ -4,16 +4,23 @@
 - Queries can now be passed to ~ghub-graphql~ in the gsexp format.
   f3a2654
 
-- Depend on the Compat package, allowing me to use convenient features
-  that were added to Emacs over the last few years, without having to
-  wait another few years until everybody has updated to a reasonably
-  recent Emacs release.  e441385
+- ~ghub-fetch-repository~ fetches more information about Issues and
+  PullRequests.  fb9d33b 2c6671e
+
+- Gsexp now supports naming queries.  2c5ba23
+
+- Added support for GitLab's GraphQL API.  0e61c0b
+
+- ~ghub--graphql-vacuum~ can now make synchronous requests.  142b0db
+
+- Added variable ~ghub-graphql-items-per-request~. 6a5de97
 
 Bug fixes:
 
 - 8c4d0ba ghub--encode-payload: Drop invalid arguments to json-serialize
 - 0946102 ghub--url-encode-params: Handle lisp booleans
 - 5eed205 Add kludge for debbugs#54989 and rework kludge for debbugs#34341
+- 7beed8c ghub--graphql-vacuum: Fall back to pretty-printing response
 
 Also contains various documentation updates, code clean-ups and
 build improvements.
