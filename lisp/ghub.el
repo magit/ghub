@@ -878,7 +878,7 @@ line."
 For Emacs 27.1 prevent a useful `http' error from being replaced
 by a generic one that omits all useful information.  For earlier
 releases prevent a new request from being made, which would
-either result in an infinite loop or (e.g. in the case of `ghub')
+either result in an infinite loop or (e.g., in the case of `ghub')
 the user being asked for their name."
     (if (assoc "Authorization" url-http-extra-headers)
         t ; Return "success", here also known as "successfully failed".
