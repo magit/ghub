@@ -458,25 +458,24 @@ See Info node `(ghub)GraphQL Support'."
             (let-alist val
               (let* ((cursor (and .pageInfo.hasNextPage
                                   .pageInfo.endCursor))
-                     (until (cdr (assq (intern (format "%s-until" key))
-                                       (ghub--graphql-req-until req))))
-                     (nodes (mapcar #'cdar .edges))
-                     (nodes (if until
-                                (seq-take-while
-                                 (lambda (node)
-                                   (or (string> (cdr (assq 'updatedAt node))
-                                                until)
-                                       (setq cursor nil)))
-                                 nodes)
-                              nodes)))
-                (if cursor
-                    (progn
-                      (setf (ghub--req-value req) loc)
-                      (ghub--graphql-retrieve req
-                                              (ghub--graphql-lineage loc)
-                                              cursor)
-                      (cl-return))
-                  (setq loc (treepy-replace loc (cons key nodes))))))))
+                     (until  (cdr (assq (intern (format "%s-until" key))
+                                        (ghub--graphql-req-until req))))
+                     (nodes  (mapcar #'cdar .edges))
+                     (nodes  (if until
+                                 (seq-take-while
+                                  (lambda (node)
+                                    (or (string> (cdr (assq 'updatedAt node))
+                                                 until)
+                                        (setq cursor nil)))
+                                  nodes)
+                               nodes)))
+                (cond (cursor
+                       (setf (ghub--req-value req) loc)
+                       (ghub--graphql-retrieve req
+                                               (ghub--graphql-lineage loc)
+                                               cursor)
+                       (cl-return))
+                      ((setq loc (treepy-replace loc (cons key nodes)))))))))
         (cond ((not (treepy-end-p loc))
                (setq loc (treepy-next loc)))
               ((ghub--req-callback req)
