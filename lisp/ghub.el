@@ -136,11 +136,12 @@ See https://github.com/magit/ghub/pull/149.")
 `ghub-request' returns the response body and stores the
 response headers in this variable.")
 
-(cl-defun ghub-head (resource &optional params
-                              &key query payload headers
-                              silent unpaginate noerror reader
-                              username auth host
-                              callback errorback extra)
+(cl-defun ghub-head (resource
+                     &optional params
+                     &key query payload headers
+                     silent unpaginate noerror reader
+                     username auth host
+                     callback errorback extra)
   "Make a `HEAD' request for RESOURCE, with optional query PARAMS.
 Like calling `ghub-request' (which see) with \"HEAD\" as METHOD."
   (ghub-request "HEAD" resource params
@@ -150,11 +151,12 @@ Like calling `ghub-request' (which see) with \"HEAD\" as METHOD."
                 :username username :auth auth :host host
                 :callback callback :errorback errorback :extra extra))
 
-(cl-defun ghub-get (resource &optional params
-                             &key query payload headers
-                             silent unpaginate noerror reader
-                             username auth host
-                             callback errorback extra)
+(cl-defun ghub-get (resource
+                    &optional params
+                    &key query payload headers
+                    silent unpaginate noerror reader
+                    username auth host
+                    callback errorback extra)
   "Make a `GET' request for RESOURCE, with optional query PARAMS.
 Like calling `ghub-request' (which see) with \"GET\" as METHOD."
   (ghub-request "GET" resource params
@@ -164,11 +166,12 @@ Like calling `ghub-request' (which see) with \"GET\" as METHOD."
                 :username username :auth auth :host host
                 :callback callback :errorback errorback :extra extra))
 
-(cl-defun ghub-put (resource &optional params
-                             &key query payload headers
-                             silent unpaginate noerror reader
-                             username auth host
-                             callback errorback extra)
+(cl-defun ghub-put (resource
+                    &optional params
+                    &key query payload headers
+                    silent unpaginate noerror reader
+                    username auth host
+                    callback errorback extra)
   "Make a `PUT' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"PUT\" as METHOD."
   (ghub-request "PUT" resource params
@@ -178,11 +181,12 @@ Like calling `ghub-request' (which see) with \"PUT\" as METHOD."
                 :username username :auth auth :host host
                 :callback callback :errorback errorback :extra extra))
 
-(cl-defun ghub-post (resource &optional params
-                              &key query payload headers
-                              silent unpaginate noerror reader
-                              username auth host
-                              callback errorback extra)
+(cl-defun ghub-post (resource
+                     &optional params
+                     &key query payload headers
+                     silent unpaginate noerror reader
+                     username auth host
+                     callback errorback extra)
   "Make a `POST' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"POST\" as METHOD."
   (ghub-request "POST" resource params
@@ -192,11 +196,12 @@ Like calling `ghub-request' (which see) with \"POST\" as METHOD."
                 :username username :auth auth :host host
                 :callback callback :errorback errorback :extra extra))
 
-(cl-defun ghub-patch (resource &optional params
-                               &key query payload headers
-                               silent unpaginate noerror reader
-                               username auth host
-                               callback errorback extra)
+(cl-defun ghub-patch (resource
+                      &optional params
+                      &key query payload headers
+                      silent unpaginate noerror reader
+                      username auth host
+                      callback errorback extra)
   "Make a `PATCH' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"PATCH\" as METHOD."
   (ghub-request "PATCH" resource params
@@ -206,11 +211,12 @@ Like calling `ghub-request' (which see) with \"PATCH\" as METHOD."
                 :username username :auth auth :host host
                 :callback callback :errorback errorback :extra extra))
 
-(cl-defun ghub-delete (resource &optional params
-                                &key query payload headers
-                                silent unpaginate noerror reader
-                                username auth host
-                                callback errorback extra)
+(cl-defun ghub-delete (resource
+                       &optional params
+                       &key query payload headers
+                       silent unpaginate noerror reader
+                       username auth host
+                       callback errorback extra)
   "Make a `DELETE' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
   (ghub-request "DELETE" resource params
@@ -220,11 +226,12 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
                 :username username :auth auth :host host
                 :callback callback :errorback errorback :extra extra))
 
-(cl-defun ghub-request (method resource &optional params
-                               &key query payload headers
-                               silent unpaginate noerror reader
-                               username auth host forge
-                               callback errorback value extra)
+(cl-defun ghub-request ( method resource
+                         &optional params
+                         &key query payload headers
+                         silent unpaginate noerror reader
+                         username auth host forge
+                         callback errorback value extra)
   "Make a request for RESOURCE and return the response body.
 
 Also place the response headers in `ghub-response-headers'.
@@ -384,8 +391,9 @@ called after the next request has finished.  Use the function
   (and (assq 'next (ghub-response-link-relations req))
        (or (ghub--retrieve nil req) t)))
 
-(cl-defun ghub-wait (resource &optional duration
-                              &key username auth host forge)
+(cl-defun ghub-wait (resource
+                     &optional duration
+                     &key username auth host forge)
   "Busy-wait up to DURATION seconds for RESOURCE to become available.
 
 DURATION specifies how many seconds to wait at most.  It defaults
