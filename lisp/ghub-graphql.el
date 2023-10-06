@@ -138,6 +138,7 @@ behave as for `ghub-request' (which see)."
                      (assignees [(:edges t)]
                                 id)
                      (comments  [(:edges t)]
+                                id
                                 databaseId
                                 (author login)
                                 createdAt
@@ -191,6 +192,7 @@ behave as for `ghub-request' (which see)."
                      (reviewRequests [(:edges t)]
                                      (requestedReviewer "... on User { id }\n"))
                      (comments  [(:edges t)]
+                                id
                                 databaseId
                                 (author login)
                                 createdAt
