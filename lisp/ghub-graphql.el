@@ -393,8 +393,11 @@ See Info node `(ghub)GraphQL Support'."
                      (listp (aref node 0)))
             (let ((alist (cl-coerce node 'list))
                   vars)
-              (when (cadr (assq :edges alist))
-                (push (list 'first ghub-graphql-items-per-request) vars)
+              (when-let ((edges (cadr (assq :edges alist))))
+                (push (list 'first (if (numberp edges)
+                                       edges
+                                     ghub-graphql-items-per-request))
+                      vars)
                 (setq loc  (treepy-up loc))
                 (setq node (treepy-node loc))
                 (setq loc  (treepy-replace
