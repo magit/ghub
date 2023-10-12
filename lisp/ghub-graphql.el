@@ -127,6 +127,7 @@ behave as for `ghub-request' (which see)."
                      number
                      id
                      state
+                     stateReason
                      (author login)
                      title
                      createdAt
