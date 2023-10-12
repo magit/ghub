@@ -124,6 +124,12 @@ behave as for `ghub-request' (which see)."
                       id
                       login
                       name)
+     (discussionCategories [(:edges t)]
+                            id
+                            name
+                            emoji
+                            isAnswerable
+                            description)
      (discussions    [(:edges t)
                       (:singular discussion number)
                       (orderBy ((field UPDATED_AT) (direction DESC)))]
