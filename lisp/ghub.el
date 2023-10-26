@@ -483,12 +483,12 @@ Signal an error if the id cannot be determined."
 First see https://github.com/magit/ghub/wiki/Known-Issues,
 for information about this bug and another related bug.
 
-Because our under of these bugs evolved over time, the possible
-values of this variable are a bit odd: If t, enable workaround if
-necessary (i.e., if Emacs < 26.3 and GnuTLS >= 3.6.3 are used).
-If `force', enable workaround even if that is believed to be
-unnecessary.  If nil, do not enable the workaround.  The default
-is t.")
+Because our understanding of these bugs evolved over time,
+the possible values of this variable are a bit odd: If t,
+enable workaround if necessary (i.e., if Emacs < 26.3 and
+GnuTLS >= 3.6.3 are used).  If `force', enable workaround
+even if that is believed to be unnecessary.  If nil, do
+not enable the workaround.  The default is t.")
 
 (defvar ghub-use-workaround-for-emacs-bug-54989 t
   "Whether to work around Emacs bug debbugs#54989.
