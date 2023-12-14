@@ -357,6 +357,16 @@ See Info node `(ghub)GraphQL Support'."
                             (substring host 0 -3)
                           host)))
     :method    "POST"
+    ;; https://docs.github.com/en/graphql/guides/migrating-graphql-global-node-ids
+    ;; https://docs.github.com/en/graphql/guides/using-global-node-ids
+    ;; https://developer.github.com/changes/2017-12-19-graphql-node-id (obsolete)
+    ;; 1. https://github.blog/2021-02-10-new-global-id-format-coming-to-graphql
+    ;; 2. https://github.blog/2021-11-16-graphql-global-id-migration-update/
+    ;; 3. I don't think this is finished.
+    ;; https://github.com/orgs/community/discussions/39777
+    ;; :headers   (ghub--headers (cons (cons "X-Github-Next-Global-ID" "1")
+    ;;                                 headers)
+    ;;                           host auth username forge)
     :headers   (ghub--headers headers host auth username forge)
     :handler   #'ghub--graphql-handle-response
     :query     query
