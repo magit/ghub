@@ -204,7 +204,36 @@ behave as for `ghub-request' (which see)."
                                 updatedAt
                                 body)
                      (labels    [(:edges t)]
-                                id)))))
+                                id)
+                     (commits   [(:edges 10)]
+                                (commit
+                                 oid
+                                 (checkSuites [(:edges t)]
+                                              id
+                                              databaseId
+                                              conclusion
+                                              status
+                                              resourcePath
+                                              url
+                                              (workflowRun
+                                               id
+                                               databaseId
+                                               runNumber
+                                               (workflow name))
+                                              (checkRuns [(:edges t)]
+                                                         id
+                                                         databaseId
+                                                         name
+                                                         conclusion
+                                                         status
+                                                         permalink
+                                                         ;; (isRequired
+                                                         ;;  [(pullRequestNumber 586)])
+                                                         )
+                                              )))
+                     ))))
+
+;; (ghub-fetch-pullreq "magit" "forge" 586 #'ghub--graphql-pp-response)
 
 (defconst ghub-fetch-repository-review-threads
   '(query
