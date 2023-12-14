@@ -378,7 +378,7 @@ See Info node `(ghub)GraphQL Support'."
                                       (fboundp 'magit-get)
                                       (magit-get "forge.graphqlItemLimit"))))
                      (string-to-number p)))
-    :callback  (and (not (eq callback 'synchronous))
+    :callback  (and (not (eq callback 'synchronous)) ;FIXME
                     (let ((buf (current-buffer)))
                       (if narrow
                           (lambda (data)
