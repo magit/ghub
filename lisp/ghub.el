@@ -500,9 +500,10 @@ Setting this variable only has an effect if it is done before
 Also see https://github.com/magit/ghub/wiki/Known-Issues.")
 
 (cl-defun ghub--retrieve (payload req)
-  (let ((url-request-extra-headers
+  (let* ((url-request-extra-headers
          (let ((headers (ghub--req-headers req)))
            (if (functionp headers) (funcall headers) headers)))
+        ;;(_ (message ">>>> %S" url-request-extra-headers))
         (url-request-method (ghub--req-method req))
         (url-request-data payload)
         (url-show-status nil)
