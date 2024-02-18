@@ -170,6 +170,7 @@ behave as for `ghub-request' (which see)."
                      number
                      id
                      state
+                     isReadByViewer
                      (author login)
                      title
                      createdAt
