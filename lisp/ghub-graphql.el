@@ -128,6 +128,7 @@ behave as for `ghub-request' (which see)."
                      id
                      state
                      stateReason
+                     isReadByViewer
                      (author login)
                      title
                      createdAt
