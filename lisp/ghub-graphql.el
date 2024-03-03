@@ -37,6 +37,8 @@
 
 ;;; Api
 
+(define-error 'ghub-graphql-error "GraphQL Error" 'ghub-error)
+
 (defvar ghub-graphql-items-per-request 100
   "Number of GraphQL items to query for entities that return a collection.
 
