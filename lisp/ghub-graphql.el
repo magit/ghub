@@ -320,6 +320,9 @@ data as the only argument."
 
 ;;; Internal
 
+(defvar ghub--graphql-debug nil
+  "Whether `ghub--graphql-retrieve' updates the \" *gsexp-encode*\" buffer.")
+
 (cl-defstruct (ghub--graphql-req
                (:include ghub--req)
                (:constructor ghub--make-graphql-req)
@@ -381,6 +384,10 @@ See Info node `(ghub)GraphQL Support'."
          (ghub--graphql-prepare-query
           (ghub--graphql-req-query req)
           lineage cursor)))
+  (when ghub--graphql-debug
+    (with-current-buffer (get-buffer-create " *gsexp-encode*")
+      (erase-buffer)
+      (insert (ghub--graphql-req-query-str req))))
   (ghub--retrieve
    (let ((json-false nil))
      (ghub--encode-payload
