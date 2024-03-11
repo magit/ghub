@@ -415,9 +415,10 @@ See Info node `(ghub)GraphQL Support'."
                   vars)
               (when-let ((edges (cadr (assq :edges alist))))
                 (push (list 'first
-                            (or (and (numberp edges) edges)
-                                paginate
-                                ghub-graphql-items-per-request))
+                            (min
+                             (delq nil (list (and (numberp edges) edges)
+                                             paginate
+                                             ghub-graphql-items-per-request))))
                       vars)
                 (setq loc  (treepy-up loc))
                 (setq node (treepy-node loc))
