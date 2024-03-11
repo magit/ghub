@@ -262,7 +262,7 @@ data as the only argument."
   "Asynchronously fetch forge data about the specified issue.
 Once all data has been collected, CALLBACK is called with the
 data as the only argument."
-  (ghub--graphql-vacuum (ghub--graphql-prepare-query
+  (ghub--graphql-vacuum (ghub--graphql-narrow-query
                          ghub-fetch-repository
                          `(repository issues (issue . ,number)))
                         `((owner . ,owner)
@@ -283,7 +283,7 @@ data as the only argument."
   "Asynchronously fetch forge data about the specified pull-request.
 Once all data has been collected, CALLBACK is called with the
 data as the only argument."
-  (ghub--graphql-vacuum (ghub--graphql-prepare-query
+  (ghub--graphql-vacuum (ghub--graphql-narrow-query
                          ghub-fetch-repository
                          `(repository pullRequests (pullRequest . ,number)))
                         `((owner . ,owner)
@@ -304,7 +304,7 @@ data as the only argument."
   "Asynchronously fetch forge data about the review threads from a pull-request.
 Once all data has been collected, CALLBACK is called with the
 data as the only argument."
-  (ghub--graphql-vacuum (ghub--graphql-prepare-query
+  (ghub--graphql-vacuum (ghub--graphql-narrow-query
                          ghub-fetch-repository-review-threads
                          `(repository pullRequests (pullRequest . ,number)))
                         `((owner . ,owner)
@@ -517,7 +517,7 @@ See Info node `(ghub)GraphQL Support'."
         (setq data (assq key (cdr data))))))
   data)
 
-(defun ghub--graphql-narrow-query (query lineage cursor)
+(defun ghub--graphql-narrow-query (query lineage &optional cursor)
   (if (consp (car lineage))
       (let* ((child  (cddr query))
              (alist  (cl-coerce (cadr query) 'list))
