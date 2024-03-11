@@ -237,7 +237,7 @@ behave as for `ghub-request' (which see)."
 (cl-defun ghub-fetch-repository ( owner name callback
                                   &optional until
                                   &key username auth host forge
-                                  headers errorback sparse)
+                                  headers paginate errorback sparse)
   "Asynchronously fetch forge data about the specified repository.
 Once all data has been collected, CALLBACK is called with the
 data as the only argument."
@@ -253,12 +253,13 @@ data as the only argument."
                         :host     host
                         :forge    forge
                         :headers  headers
+                        :paginate paginate
                         :errorback errorback))
 
 (cl-defun ghub-fetch-issue ( owner name number callback
                              &optional until
                              &key username auth host forge
-                             headers errorback)
+                             headers paginate errorback)
   "Asynchronously fetch forge data about the specified issue.
 Once all data has been collected, CALLBACK is called with the
 data as the only argument."
@@ -274,12 +275,13 @@ data as the only argument."
                         :host     host
                         :forge    forge
                         :headers  headers
+                        :paginate paginate
                         :errorback errorback))
 
 (cl-defun ghub-fetch-pullreq ( owner name number callback
                                &optional until
                                &key username auth host forge
-                               headers errorback)
+                               headers paginate errorback)
   "Asynchronously fetch forge data about the specified pull-request.
 Once all data has been collected, CALLBACK is called with the
 data as the only argument."
@@ -295,12 +297,13 @@ data as the only argument."
                         :host     host
                         :forge    forge
                         :headers  headers
+                        :paginate paginate
                         :errorback errorback))
 
 (cl-defun ghub-fetch-review-threads ( owner name number callback
                                       &optional until
                                       &key username auth host forge
-                                      headers errorback)
+                                      headers paginate errorback)
   "Asynchronously fetch forge data about the review threads from a pull-request.
 Once all data has been collected, CALLBACK is called with the
 data as the only argument."
@@ -316,6 +319,7 @@ data as the only argument."
                         :host     host
                         :forge    forge
                         :headers  headers
+                        :paginate paginate
                         :errorback errorback))
 
 ;;; Internal
@@ -332,12 +336,13 @@ data as the only argument."
   (variables nil :read-only t)
   (until     nil :read-only t)
   (buffer    nil :read-only t)
-  (pages     0   :read-only nil))
+  (pages     0   :read-only nil)
+  (paginate  nil :read-only nil))
 
 (cl-defun ghub--graphql-vacuum ( query variables callback
                                  &optional until
                                  &key narrow username auth host forge
-                                 headers errorback)
+                                 headers paginate errorback)
   "Make a GraphQL request using QUERY and VARIABLES.
 See Info node `(ghub)GraphQL Support'."
   (unless host
@@ -358,6 +363,7 @@ See Info node `(ghub)GraphQL Support'."
     :variables variables
     :until     until
     :buffer    (current-buffer)
+    :paginate  paginate
     :callback  (and (not (eq callback 'synchronous))
                     (let ((buf (current-buffer)))
                       (if narrow
@@ -395,7 +401,7 @@ See Info node `(ghub)GraphQL Support'."
         (variables . ,(ghub--graphql-req-variables req)))))
    req))
 
-(defun ghub--graphql-prepare-query (query &optional lineage cursor)
+(defun ghub--graphql-prepare-query (query &optional lineage cursor paginate)
   (when lineage
     (setq query (ghub--graphql-narrow-query query lineage cursor)))
   (let ((loc (ghub--alist-zip query))
@@ -408,9 +414,10 @@ See Info node `(ghub)GraphQL Support'."
             (let ((alist (cl-coerce node 'list))
                   vars)
               (when-let ((edges (cadr (assq :edges alist))))
-                (push (list 'first (if (numberp edges)
-                                       edges
-                                     ghub-graphql-items-per-request))
+                (push (list 'first
+                            (or (and (numberp edges) edges)
+                                paginate
+                                ghub-graphql-items-per-request))
                       vars)
                 (setq loc  (treepy-up loc))
                 (setq node (treepy-node loc))
