@@ -419,7 +419,8 @@ See Info node `(ghub)GraphQL Support'."
                   vars)
               (when-let ((edges (cadr (assq :edges alist))))
                 (push (list 'first
-                            (min
+                            (apply
+                             #'min
                              (delq nil (list (and (numberp edges) edges)
                                              paginate
                                              ghub-graphql-items-per-request))))
