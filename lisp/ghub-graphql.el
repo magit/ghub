@@ -363,7 +363,11 @@ See Info node `(ghub)GraphQL Support'."
     :variables variables
     :until     until
     :buffer    (current-buffer)
-    :paginate  paginate
+    :paginate  (or paginate
+                   (and-let* ((p (and (eq auth 'forge)
+                                      (fboundp 'magit-get)
+                                      (magit-get "forge.graphqlItemLimit"))))
+                     (string-to-number p)))
     :callback  (and (not (eq callback 'synchronous))
                     (let ((buf (current-buffer)))
                       (if narrow
