@@ -1030,7 +1030,7 @@ package in personal scripts.
 
 When the @code{AUTH} argument is not specified, then a request is made on
 behalf of the @code{ghub} package itself.  Like for any other package you
-have to create a dedicated token of coures.
+have to create a dedicated token of course.
 
 @node Using Ghub in Your Own Package
 @section Using Ghub in Your Own Package
