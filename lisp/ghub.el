@@ -526,9 +526,10 @@ done before `ghub' is loaded.")
     (if (or (ghub--req-callback  req)
             (ghub--req-errorback req))
         (url-retrieve url handler (list req) silent)
-      (with-current-buffer
-          (url-retrieve-synchronously url silent)
-        (funcall handler (car url-callback-arguments) req)))))
+      (if-let ((buf (url-retrieve-synchronously url silent)))
+          (with-current-buffer buf
+            (funcall handler (car url-callback-arguments) req))
+        (error "ghub--retrieve: No buffer returned")))))
 
 (defun ghub--handle-response (status req)
   (let ((buffer (current-buffer)))
