@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2016-2024 Jonas Bernoulli
 
-;; Author: Jonas Bernoulli <jonas@bernoul.li>
+;; Author: Jonas Bernoulli <emacs.ghub@jonas.bernoulli.dev>
 ;; Homepage: https://github.com/magit/ghub
 ;; Keywords: tools
 
