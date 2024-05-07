@@ -481,29 +481,15 @@ Signal an error if the id cannot be determined."
 
 ;;;; Internal
 
-(defvar ghub-use-workaround-for-emacs-bug t
-  "Whether to work around Emacs bug debbugs#34341.
-
-First see https://github.com/magit/ghub/wiki/Known-Issues,
-for information about this bug and another related bug.
-
-Because our understanding of these bugs evolved over time,
-the possible values of this variable are a bit odd: If t,
-enable workaround if necessary (i.e., if Emacs < 26.3 and
-GnuTLS >= 3.6.3 are used).  If `force', enable workaround
-even if that is believed to be unnecessary.  If nil, do
-not enable the workaround.  The default is t.")
-
 (defvar ghub-use-workaround-for-emacs-bug-54989 t
   "Whether to work around Emacs bug debbugs#54989.
 
-First see https://github.com/magit/ghub/wiki/Known-Issues,
-for information about this bug and another related bug.
+If t (the default), work around the bug if necessary (i.e., if not
+using Emacs 29 or later).  If nil, then don't work around the bug.
+Setting this variable only has an effect if it is done before
+`ghub' is loaded.
 
-If t, work around the bug if necessary (i.e., if not using Emacs'
-\"master\" branch).  If nil, then don't work around the bug.  The
-default is t.  Setting this variable only has an effect if it is
-done before `ghub' is loaded.")
+Also see https://github.com/magit/ghub/wiki/Known-Issues.")
 
 (cl-defun ghub--retrieve (payload req)
   (let ((url-request-extra-headers
@@ -514,17 +500,7 @@ done before `ghub' is loaded.")
         (url-show-status nil)
         (url     (ghub--req-url req))
         (handler (ghub--req-handler req))
-        (silent  (ghub--req-silent req))
-        (gnutls-algorithm-priority
-         (if (and ghub-use-workaround-for-emacs-bug
-                  (or (eq ghub-use-workaround-for-emacs-bug 'force)
-                      (and (not gnutls-algorithm-priority)
-                           (>= libgnutls-version 30603)
-                           (version< emacs-version "26.3")
-                           ;; (memq (ghub--req-forge req) '(github nil))
-                           )))
-             "NORMAL:-VERS-TLS1.3"
-           gnutls-algorithm-priority)))
+        (silent  (ghub--req-silent req)))
     (if (or (ghub--req-callback  req)
             (ghub--req-errorback req))
         (url-retrieve url handler (list req) silent)
@@ -874,17 +850,6 @@ or (info \"(ghub)Getting Started\") for instructions.
               (plist-get plist k))
             keys)))
 
-(when (version< emacs-version "26.2")
-  ;; Fixed by Emacs commit 60ff8101449eea3a5ca4961299501efd83d011bd.
-  (advice-add 'auth-source-netrc-parse-next-interesting :around
-              'auth-source-netrc-parse-next-interesting@save-match-data)
-  (defun auth-source-netrc-parse-next-interesting@save-match-data (fn)
-    "Save match-data for the benefit of caller `auth-source-netrc-parse-one'.
-Without wrapping this function in `save-match-data' the caller
-won't see the secret from a line that is followed by a commented
-line."
-    (save-match-data (funcall fn))))
-
 (when (< emacs-major-version 28)
   ;; Fixed by Emacs commit 0b98ea5fbe276c67206896dca111c000f984ee0f.
   (advice-add 'url-http-handle-authentication :around
@@ -903,14 +868,18 @@ the user being asked for their name."
 (when (and (< emacs-major-version 29)
            ghub-use-workaround-for-emacs-bug-54989)
   ;; Fixed in Emacs commit 0829c6836eff14dda0cf8b3047376967f7b000f4.
+  ;; Discussed in https://debbugs.gnu.org/cgi/bugreport.cgi?bug=54989
+  ;; and https://github.com/magit/ghub/issues/81#issuecomment-1100700165.
+  ;;
   ;; Cleanup from 26faa2b943675107e1664b2fea7174137c473475 is not
   ;; included in this copy because doing that would require changes
-  ;; to more functions.  This function has seen a few other changes
-  ;; since Emacs 25.1, the oldest version we still support.  Of these
-  ;; only 4f1df40db36b221e7842bd75d6281922dcb268ee makes a functional
-  ;; change, fixing debbug#35658.  The first release to contain that
-  ;; commit is 27.1.  That commit either fixes a related bug or it
-  ;; deals with the same bug but only partially fixes it.
+  ;; to more functions.
+  ;;
+  ;; This function has seen a few other changes since Emacs 25.1.
+  ;; Of these only 4f1df40db36b221e7842bd75d6281922dcb268ee makes
+  ;; a functional change, fixing debbug#35658.  The first release to
+  ;; contain that commit is 27.1.  That commit either fixes a related
+  ;; bug or it deals with the same bug but only partially fixes it.
   (advice-add 'url-http-chunked-encoding-after-change-function :override
               'url-http-chunked-encoding-after-change-function@54989-backport)
   (defvar url-http-chunked-last-crlf-missing nil)
