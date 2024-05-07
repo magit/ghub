@@ -814,11 +814,11 @@ or (info \"(ghub)Getting Started\") for instructions.
               (format "bitbucket.%s.user" host)))
            (gitea
             (when (zerop (call-process "git" nil nil nil "config" "gitea.host"))
-              (error "gitea.host is set but always ignored"))
+              (message "WARNING: gitea.host is set but always ignored"))
             (format "gitea.%s.user" host))
            (gogs
             (when (zerop (call-process "git" nil nil nil "config" "gogs.host"))
-              (error "gogs.host is set but always ignored"))
+              (message "WARNING: gogs.host is set but always ignored"))
             (format "gogs.%s.user"  host)))))
     (condition-case nil
         (car (process-lines "git" "config" var))
