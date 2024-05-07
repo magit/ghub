@@ -119,6 +119,7 @@ See https://github.com/magit/ghub/pull/149.")
   (unpaginate nil :read-only nil)
   (noerror    nil :read-only t)
   (reader     nil :read-only t)
+  (buffer     nil :read-only t)
   (callback   nil :read-only t)
   (errorback  nil :read-only t)
   (value      nil :read-only nil)
@@ -369,6 +370,7 @@ Both callbacks are called with four arguments.
     :unpaginate unpaginate
     :noerror    noerror
     :reader     reader
+    :buffer     (current-buffer)
     :callback   callback
     :errorback  errorback
     :value      value
@@ -554,7 +556,8 @@ done before `ghub' is loaded.")
                      (or (eq unpaginate t)
                          (>  unpaginate 0))
                      (ghub-continue req))
-                (let ((callback  (ghub--req-callback req))
+                (let ((buffer    (ghub--req-buffer req))
+                      (callback  (ghub--req-callback req))
                       (errorback (ghub--req-errorback req))
                       (err       (plist-get status :error)))
                   (cond ((and err errorback)
@@ -564,7 +567,9 @@ done before `ghub' is loaded.")
                                     errorback)
                                   err headers status req))
                         (callback
-                         (funcall callback value headers status req))
+                         (with-current-buffer
+                             (if (buffer-live-p buffer) buffer (current-buffer))
+                           (funcall callback value headers status req)))
                         (t value))))))
       (when (buffer-live-p buffer)
         (kill-buffer buffer)))))

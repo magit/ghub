@@ -335,7 +335,6 @@ data as the only argument."
   (query-str nil :read-only nil)
   (variables nil :read-only t)
   (until     nil :read-only t)
-  (buffer    nil :read-only t)
   (pages     0   :read-only nil)
   (paginate  nil :read-only nil))
 
