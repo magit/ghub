@@ -545,12 +545,11 @@ See Info node `(ghub)GraphQL Support'."
     lineage))
 
 (defun ghub--graphql-narrow-data (data lineage)
-  (let (key)
-    (while (setq key (pop lineage))
-      (if (consp (car lineage))
-          (progn (pop lineage)
-                 (setf data (cadr data)))
-        (setq data (assq key (cdr data))))))
+  (while-let ((key (pop lineage)))
+    (if (consp (car lineage))
+        (progn (pop lineage)
+               (setf data (cadr data)))
+      (setq data (assq key (cdr data)))))
   data)
 
 (defun ghub--graphql-narrow-query (query lineage &optional cursor)
