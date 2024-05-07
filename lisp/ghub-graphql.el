@@ -599,14 +599,13 @@ See Info node `(ghub)GraphQL Support'."
         (make-node (lambda (_ children) children)))
     (treepy-zipper branchp #'identity make-node root)))
 
-(defun ghub--graphql-set-mode-line (buf string &rest args)
-  (when (ghub--graphql-req-p buf)
-    (setq buf (ghub--graphql-req-buffer buf)))
-  (when (buffer-live-p buf)
-    (with-current-buffer buf
-      (setq mode-line-process
-            (and string (concat " " (apply #'format string args))))
-      (force-mode-line-update t))))
+(defun ghub--graphql-set-mode-line (req string &rest args)
+  (let ((buffer (ghub--graphql-req-buffer req)))
+    (when (buffer-live-p buffer)
+      (with-current-buffer buffer
+        (setq mode-line-process
+              (and string (concat " " (apply #'format string args))))
+        (force-mode-line-update t)))))
 
 (defun ghub--graphql-pp-response (data)
   (require 'pp) ; needed for Emacs < 29.
