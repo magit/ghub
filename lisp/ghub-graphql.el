@@ -473,16 +473,22 @@ See Info node `(ghub)GraphQL Support'."
 
 (defun ghub--graphql-handle-failure (req errors headers status)
   (if-let ((errorback (ghub--req-errorback req)))
-      (funcall errorback errors headers status req)
+      (let ((buffer (ghub--req-buffer req)))
+        (with-current-buffer
+            (if (buffer-live-p buffer) buffer (current-buffer))
+          (funcall errorback errors headers status req)))
     (ghub--signal-error errors)))
 
 (defun ghub--graphql-handle-success (req data)
   (let ((callback (ghub--req-callback req))
+        (buffer   (ghub--req-buffer req))
         (narrow   (ghub--graphql-req-narrow req)))
     (while-let ((key (pop narrow)))
       (setq data (cdr (assq key data))))
-    (funcall (or callback #'ghub--graphql-pp-response)
-             data)))
+    (with-current-buffer
+        (if (buffer-live-p buffer) buffer (current-buffer))
+      (funcall (or callback #'ghub--graphql-pp-response)
+               data))))
 
 (defun ghub--graphql-walk-response (req data)
   (let* ((loc (ghub--req-value req))
