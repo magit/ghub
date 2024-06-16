@@ -39,7 +39,7 @@
 
 (define-error 'ghub-graphql-error "GraphQL Error" 'ghub-error)
 
-(defvar ghub-graphql-items-per-request 100
+(defvar ghub-graphql-items-per-request 50
   "Number of GraphQL items to query for entities that return a collection.
 
 Adjust this value if you're hitting query timeouts against larger
