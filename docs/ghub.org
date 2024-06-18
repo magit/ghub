@@ -48,19 +48,6 @@ to make the request".  If for example, the human known as "tarsius" is
 using the ~forge~ package, then that is represented in some places using
 the string "tarsius^forge".
 
-This package used to attempt to get the answers to these questions
-using a setup wizard.  Unfortunately that had to be removed because
-(a) it only ever supported Github, (b) by now Github has removed
-support for that on their end, (c) it did not always work, and (d)
-when it couldn't be used, or failed, then it made things /more/
-complicated.
-
-So now it is necessary for users to read some documentation and
-because many things can go wrong, those instructions have to be fairly
-detailed.  You can of course skip over most of this, but if things go
-wrong, then I would like to kindly request that you take another
-look before asking me for help.
-
 ** Basic Concepts, Arguments and Variables
 
 Originally Ghub supported only Github but now it also supports Gitlab,
