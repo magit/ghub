@@ -44,20 +44,23 @@ you are, and how you are going to prove the latter to the former.
 Additionally Ghub wants to know on behalf of which Emacs package it is
 making a request.  So the question of "who is making the request" has
 to be rephrased as "which human (or bot) is using what (Emacs) package
-to make the request".  If for example, the human known as "tarsius" is
+to make the request".  If, for example, the human known as "tarsius" is
 using the ~forge~ package, then that is represented in some places using
 the string "tarsius^forge".
 
 ** Basic Concepts, Arguments and Variables
 
-Originally Ghub supported only Github but now it also supports Gitlab,
-Gitea, Gogs and Bitbucket.  For the historic reason just given, the
-function ~ghub-request~ defaults to acting on a ~github~ forge, but can
-be told to act on another forge using the FORGE argument.
+(If you are trying to configure Forge for https://github.com and/or
+https://gitlab.com, then you can skip this section.)
 
-The FORGE argument only specifies what kind of forge to act on, not
-which instance.  The HOST argument can be used to select the instance.
-For some forges a default instance is defined:
+Originally Ghub supported only Github but now it also supports Gitlab,
+Gitea, Gogs and Bitbucket.  Because of that, the function ~ghub-request~
+defaults to acting on a ~github~ forge, but can be told to act on other
+forges using the FORGE argument.
+
+The FORGE argument only specifies what kind of forge we are accessing,
+not which host specifically.  The HOST argument can be used to select
+the instance.  For some forges a default instance is defined:
 
 - Forge ~github~ defaults to host ~api.github.com~.
 - Forge ~gitlab~ defaults to host ~gitlab.com/api/v4~.
@@ -127,10 +130,10 @@ for these two forges:
 
 ** Setting the Username
 
-Ghub needs to know your username that you use on the host that you
+Ghub needs to know your username, which you use on the host that you
 want it to connect to.  For each host a different Git variable has to
-be set to specify the username on that host.  More than one variable
-is needed because you might use different usernames on different
+be set, to specify the username on that host.  More than one variable
+is needed, because you might use different usernames on different
 hosts.
 
 *** Setting your Github.com Username
@@ -232,7 +235,7 @@ then you have to set that variable locally:
 ** Creating and Storing a Token
 *** Creating a Token
 
-To create a token, use the web interface of the forge/host you want to
+To create a token, use the web interface of the host you want to
 connect to.  Here is a list of pages to do this for certain popular
 hosts:
 
@@ -259,7 +262,7 @@ Please also see [[info:auth]] for all the gory details about Auth-Source.
 The variable ~auth-sources~ controls how and where Auth-Source keeps its
 secrets.  The default value is a list of three files: ~("~/.authinfo"
 "~/.authinfo.gpg" "~/.netrc")~, but to avoid confusion you should make
-sure that only one of these files exists and then you should also
+sure that only one of these files exists, and then you should also
 adjust the value of the variable to only ever use that file, for
 example:
 
