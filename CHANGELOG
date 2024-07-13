@@ -1,4 +1,46 @@
 # -*- mode: org -*-
+* v4.0.0    UNRELEASED
+
+- When calling the callback for a REST request, the same buffer which
+  was current when the request was made, is now temporarily made
+  current.  2061136
+
+- When calling the callback or errorback for a GraphQL request, the
+  same buffer which was current when the request was made, is now
+  temporarily made current.  2241135
+
+- The default value of ~ghub-graphql-items-per-request~ had to be
+  halved.  We use deeply nested requests and Github's default (and
+  suggested) limit of 100, often leads to timeouts on the server side.
+  b3dd176
+
+- It is now possible to specify how many items to fetch for a specific
+  GraphQL edge using ~:edges INTEGER~.  e6af790
+
+- Added new ~paginate~ argument to ~ghub--graphql-vacuum~ and all its public
+  callers (such as ~ghub-fetch-repository~).  337b884, b9c1600
+
+- Taught ~ghub--graphql-vacuum~ to respects ~forge.graphqlItemLimit~.
+  11c31d1
+
+- Added support for synchronous GraphQL queries, using the new
+  ~ghub--graphql-synchronous~ function.  a61da16
+
+- Since there are now multiple ways to paginate results, make sure
+  that the smallest value is used.  ce7adcd
+
+- Setting the new ~ghub--graphql-debug~ variable causes debug information
+  to be inserted into the ~*gsexp-encode*~ buffer.  87321cd
+
+- ~ghub-fetch-repository~ now also fetches the ~id~ of ~comments~, the
+  ~stateReason~ of ~issues~, and ~isReadByViewer~ of ~issues~ and ~pullRequests~
+  78a370f, 636a463, 13f3627, c59de91
+
+Bug fixes:
+- 0d7c81e ghub-response-link-relations: Fix for GitLab
+- 2dc1cee ghub-graphql-error: Define missing error type
+- 3647748 ghub--retrieve: Better error if buffer is nil
+
 * v3.6.0    2023-05-13
 
 - Queries can now be passed to ~ghub-graphql~ in the gsexp format.
