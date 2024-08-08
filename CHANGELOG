@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v4.0.0    UNRELEASED
+* v4.0.0    2024-08-08
 
 - When calling the callback for a REST request, the same buffer which
   was current when the request was made, is now temporarily made

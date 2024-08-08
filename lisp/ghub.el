@@ -6,6 +6,13 @@
 ;; Homepage: https://github.com/magit/ghub
 ;; Keywords: tools
 
+;; Package-Version: 4.0.0
+;; Package-Requires: (
+;;     (emacs "26.3")
+;;     (compat "30.0.0.0")
+;;     (let-alist "1.0.6")
+;;     (treepy "0.1.2"))
+
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;; This file is free software: you can redistribute it and/or modify
