@@ -606,7 +606,7 @@ Also see https://github.com/magit/ghub/wiki/Known-Issues.")
                     (let ((code (car (cdr-safe data))))
                       (list code
                             (nth 2 (assq code url-http-codes))
-                            (and req (url-filename (ghub--req-url req)))
+                            (and req (url-recreate-url (ghub--req-url req)))
                             payload)))
           (signal 'ghub-error data))
       (signal symb data))))
