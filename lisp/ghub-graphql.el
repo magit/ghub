@@ -453,13 +453,17 @@ See Info node `(ghub)GraphQL Support'."
               (cl-return node))
           (setq loc (treepy-next loc)))))))
 
-(defun ghub--graphql-handle-response (status req)
-  (let ((buf (current-buffer)))
+(cl-defun ghub--graphql-handle-response (status req &optional (buffer nil sbuf))
+  (let ((buf (if sbuf
+                 (and (buffer-live-p buffer) buffer)
+               (and status (current-buffer)))))
     (unwind-protect
-        (progn
-          (set-buffer-multibyte t)
-          (let* ((headers (ghub--handle-response-headers status req))
-                 (payload (ghub--handle-response-payload req))
+        (save-current-buffer
+          (when buf
+            (set-buffer buf)
+            (set-buffer-multibyte t))
+          (let* ((headers (and (ghub--handle-response-headers status req)))
+                 (payload (and (ghub--handle-response-payload req)))
                  (payload (ghub--handle-response-error status payload req))
                  (err     (plist-get status :error))
                  (errors  (cdr (assq 'errors payload)))
