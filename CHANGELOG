@@ -1,4 +1,12 @@
 # -*- mode: org -*-
+* v4.1.0    UNRELEASED
+
+- Updated tooling.
+
+Bug fix:
+
+- Timeouts are now handled properly.  03d7161
+
 * v4.0.0    2024-08-08
 
 - When calling the callback for a REST request, the same buffer which
@@ -37,6 +45,7 @@
   78a370f, 636a463, 13f3627, c59de91
 
 Bug fixes:
+
 - 0d7c81e ghub-response-link-relations: Fix for GitLab
 - 2dc1cee ghub-graphql-error: Define missing error type
 - 3647748 ghub--retrieve: Better error if buffer is nil
