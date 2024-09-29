@@ -1,4 +1,10 @@
 # -*- mode: org -*-
+* v4.1.1    UNRELEASED
+
+Bug fix:
+
+- Fix the timeout handling from the previous release.
+
 * v4.1.0    2024-09-01
 
 - Updated tooling.

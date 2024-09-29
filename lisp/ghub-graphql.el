@@ -462,8 +462,8 @@ See Info node `(ghub)GraphQL Support'."
           (when buf
             (set-buffer buf)
             (set-buffer-multibyte t))
-          (let* ((headers (and (ghub--handle-response-headers status req)))
-                 (payload (and (ghub--handle-response-payload req)))
+          (let* ((headers (and buf (ghub--handle-response-headers status req)))
+                 (payload (and buf (ghub--handle-response-payload req)))
                  (payload (ghub--handle-response-error status payload req))
                  (err     (plist-get status :error))
                  (errors  (cdr (assq 'errors payload)))
