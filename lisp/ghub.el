@@ -446,10 +446,10 @@ to the value of `ghub-response-headers', for later use when
 this function is called with nil for PAYLOAD."
   (if (eq (ghub--req-forge req) 'bitbucket)
       (if payload
-          (let* ((page (cl-mapcan (lambda (key)
-                                    (and-let* ((elt (assq key payload)))
-                                      (list elt)))
-                                  '(size page pagelen next previous)))
+          (let* ((page (mapcan (lambda (key)
+                                 (and-let* ((elt (assq key payload)))
+                                   (list elt)))
+                               '(size page pagelen next previous)))
                  (headers (cons (cons 'link-alist page) headers)))
             (if (and req (or (ghub--req-callback req)
                              (ghub--req-errorback req)))
