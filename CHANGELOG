@@ -1,4 +1,11 @@
 # -*- mode: org -*-
+* v4.2.0    UNRELEASED
+
+Bug fix:
+
+- Revert timeout changes from previous two releases.  Url.el is
+  such a pain.  See https://github.com/magit/forge/issues/709.
+
 * v4.1.1    2024-10-01
 
 Bug fix:
