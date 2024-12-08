@@ -7,7 +7,7 @@
 #+texinfo_dir_category: Emacs
 #+texinfo_dir_title: Ghub: (ghub).
 #+texinfo_dir_desc: Client library for the Github API.
-#+subtitle: for version 4.1.1
+#+subtitle: for version 4.2.0
 
 #+setupfile: .orgconfig
 
@@ -15,7 +15,7 @@ Ghub is an Emacs library that is used by various packages to access
 the APIs of various instances of various Git forge implementations.
 
 #+texinfo: @noindent
-This manual is for Ghub version 4.1.1.
+This manual is for Ghub version 4.2.0.
 
 #+texinfo: @insertcopying
 :END:
