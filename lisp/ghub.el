@@ -549,12 +549,12 @@ Signal an error if the id cannot be determined."
         (kill-buffer buf)))))
 
 (defun ghub--handle-response-headers (_status req)
-  (goto-char (point-min))
-  (forward-line 1)
   (let (headers)
     (when (memq url-http-end-of-headers '(nil 0))
       (unless url-debug (setq url-debug t))
       (error "BUG: Missing headers in response buffer %s" (current-buffer)))
+    (goto-char (point-min))
+    (forward-line 1)
     (while (re-search-forward "^\\([^:]*\\): \\(.+\\)"
                               url-http-end-of-headers t)
       (push (cons (match-string 1)
