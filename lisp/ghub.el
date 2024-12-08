@@ -8,7 +8,7 @@
 
 ;; Package-Version: 4.1.1
 ;; Package-Requires: (
-;;     (emacs "26.3")
+;;     (emacs "29.1")
 ;;     (compat "30.0.0.0")
 ;;     (let-alist "1.0.6")
 ;;     (treepy "0.1.2"))
@@ -488,16 +488,6 @@ Signal an error if the id cannot be determined."
 
 ;;;; Internal
 
-(defvar ghub-use-workaround-for-emacs-bug-54989 t
-  "Whether to work around Emacs bug debbugs#54989.
-
-If t (the default), work around the bug if necessary (i.e., if not
-using Emacs 29 or later).  If nil, then don't work around the bug.
-Setting this variable only has an effect if it is done before
-`ghub' is loaded.
-
-Also see https://github.com/magit/ghub/wiki/Known-Issues.")
-
 (cl-defun ghub--retrieve (payload req)
   (let ((url-request-extra-headers
          (let ((headers (ghub--req-headers req)))
@@ -563,9 +553,8 @@ Also see https://github.com/magit/ghub/wiki/Known-Issues.")
   (forward-line 1)
   (let (headers)
     (when (memq url-http-end-of-headers '(nil 0))
-      (setq url-debug t)
-      (error "BUG: missing headers; but there's a patch for that \
-see https://github.com/magit/ghub/wiki/Known-Issues"))
+      (unless url-debug (setq url-debug t))
+      (error "BUG: Missing headers in response buffer %s" (current-buffer)))
     (while (re-search-forward "^\\([^:]*\\): \\(.+\\)"
                               url-http-end-of-headers t)
       (push (cons (match-string 1)
@@ -855,148 +844,6 @@ or (info \"(ghub)Getting Started\") for instructions.
     (mapcar (lambda (k)
               (plist-get plist k))
             keys)))
-
-(when (< emacs-major-version 28)
-  ;; Fixed by Emacs commit 0b98ea5fbe276c67206896dca111c000f984ee0f.
-  (advice-add 'url-http-handle-authentication :around
-              'url-http-handle-authentication@unauthorized-bugfix)
-  (defun url-http-handle-authentication@unauthorized-bugfix (fn proxy)
-    "If authorization failed then don't try again but fail properly.
-For Emacs 27.1 prevent a useful `http' error from being replaced
-by a generic one that omits all useful information.  For earlier
-releases prevent a new request from being made, which would
-either result in an infinite loop or (e.g., in the case of `ghub')
-the user being asked for their name."
-    (if (assoc "Authorization" url-http-extra-headers)
-        t ; Return "success", here also known as "successfully failed".
-      (funcall fn proxy))))
-
-(when (and (< emacs-major-version 29)
-           ghub-use-workaround-for-emacs-bug-54989)
-  ;; Fixed in Emacs commit 0829c6836eff14dda0cf8b3047376967f7b000f4.
-  ;; Discussed in https://debbugs.gnu.org/cgi/bugreport.cgi?bug=54989
-  ;; and https://github.com/magit/ghub/issues/81#issuecomment-1100700165.
-  ;;
-  ;; Cleanup from 26faa2b943675107e1664b2fea7174137c473475 is not
-  ;; included in this copy because doing that would require changes
-  ;; to more functions.
-  ;;
-  ;; This function has seen a few other changes since Emacs 25.1.
-  ;; Of these only 4f1df40db36b221e7842bd75d6281922dcb268ee makes
-  ;; a functional change, fixing debbug#35658.  The first release to
-  ;; contain that commit is 27.1.  That commit either fixes a related
-  ;; bug or it deals with the same bug but only partially fixes it.
-  (advice-add 'url-http-chunked-encoding-after-change-function :override
-              'url-http-chunked-encoding-after-change-function@54989-backport)
-  (defvar url-http-chunked-last-crlf-missing nil)
-  (defvar url-http-content-type)
-  (defvar url-http-chunked-start)
-  (defvar url-http-chunked-length)
-  (defvar url-http-chunked-counter)
-  (defun url-http-chunked-encoding-after-change-function@54989-backport
-      (st nd length)
-    "Backport bugfix from https://debbugs.gnu.org/cgi/bugreport.cgi?bug=54989."
-    (if url-http-chunked-last-crlf-missing
-        (progn
-          (goto-char url-http-chunked-last-crlf-missing)
-          (if (not (looking-at "\r\n"))
-              (url-http-debug
-               "Still spinning for the terminator of last chunk...")
-            (url-http-debug "Saw the last CRLF.")
-            (delete-region (match-beginning 0) (match-end 0))
-            (when (url-http-parse-headers)
-              (url-http-activate-callback))))
-      (save-excursion
-        (goto-char st)
-        (let ((read-next-chunk t)
-              (case-fold-search t)
-              (regexp nil)
-              (no-initial-crlf nil))
-          ;; We need to loop thru looking for more chunks even within
-          ;; one after-change-function call.
-          (while read-next-chunk
-            (setq no-initial-crlf (= 0 url-http-chunked-counter))
-            (with-no-warnings
-              (if url-http-content-type
-                  (url-display-percentage nil
-                                          "Reading [%s]... chunk #%d"
-                                          url-http-content-type url-http-chunked-counter)
-                (url-display-percentage nil
-                                        "Reading... chunk #%d"
-                                        url-http-chunked-counter)))
-            (url-http-debug "Reading chunk %d (%d %d %d)"
-                            url-http-chunked-counter st nd length)
-            (setq regexp (if no-initial-crlf
-                             "\\([0-9a-z]+\\).*\r?\n"
-                           "\r?\n\\([0-9a-z]+\\).*\r?\n"))
-
-            (if url-http-chunked-start
-                ;; We know how long the chunk is supposed to be, skip over
-                ;; leading crap if possible.
-                (if (> nd (+ url-http-chunked-start url-http-chunked-length))
-                    (progn
-                      (url-http-debug "Got to the end of chunk #%d!"
-                                      url-http-chunked-counter)
-                      (goto-char (+ url-http-chunked-start
-                                    url-http-chunked-length)))
-                  (url-http-debug "Still need %d bytes to hit end of chunk"
-                                  (- (+ url-http-chunked-start
-                                        url-http-chunked-length)
-                                     nd))
-                  (setq read-next-chunk nil)))
-            (if (not read-next-chunk)
-                (url-http-debug "Still spinning for next chunk...")
-              (if no-initial-crlf (skip-chars-forward "\r\n"))
-              (if (not (looking-at regexp))
-                  (progn
-                    ;; Must not have received the entirety of the chunk header,
-                    ;; need to spin some more.
-                    (url-http-debug "Did not see start of chunk @ %d!" (point))
-                    (setq read-next-chunk nil))
-                ;; The data we got may have started in the middle of the
-                ;; initial chunk header, so move back to the start of the
-                ;; line and re-compute.
-                (when (= url-http-chunked-counter 0)
-                  (beginning-of-line)
-                  (looking-at regexp))
-                (add-text-properties (match-beginning 0) (match-end 0)
-                                     (list 'chunked-encoding t
-                                           'face 'cursor
-                                           'invisible t))
-                (setq url-http-chunked-length
-                      (string-to-number (buffer-substring (match-beginning 1)
-                                                          (match-end 1))
-                                        16)
-                      url-http-chunked-counter (1+ url-http-chunked-counter)
-                      url-http-chunked-start (set-marker
-                                              (or url-http-chunked-start
-                                                  (make-marker))
-                                              (match-end 0)))
-                (delete-region (match-beginning 0) (match-end 0))
-                (url-http-debug "Saw start of chunk %d (length=%d, start=%d"
-                                url-http-chunked-counter url-http-chunked-length
-                                (marker-position url-http-chunked-start))
-                (if (= 0 url-http-chunked-length)
-                    (progn
-                      ;; Found the end of the document!  Wheee!
-                      (url-http-debug "Saw end of stream chunk!")
-                      (setq read-next-chunk nil)
-                      (with-no-warnings
-                        (url-display-percentage nil nil))
-                      ;; Every chunk, even the last 0-length one, is
-                      ;; terminated by CRLF.  Skip it.
-                      (if (not (looking-at "\r?\n"))
-                          (progn
-                            (url-http-debug
-                             "Spinning for the terminator of last chunk...")
-                            (setq-local url-http-chunked-last-crlf-missing
-                                        (point)))
-                        (url-http-debug "Removing terminator of last chunk")
-                        (delete-region (match-beginning 0) (match-end 0))
-                        (when (re-search-forward "^\r?\n" nil t)
-                          (url-http-debug "Saw end of trailers..."))
-                        (when (url-http-parse-headers)
-                          (url-http-activate-callback)))))))))))))
 
 ;;; _
 (provide 'ghub)

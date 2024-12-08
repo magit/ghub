@@ -1,6 +1,8 @@
 # -*- mode: org -*-
 * v4.2.0    UNRELEASED
 
+- At least Emacs 29.1 is required now.
+
 Bug fix:
 
 - Revert timeout changes from previous two releases.  Url.el is
