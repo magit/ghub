@@ -500,7 +500,22 @@ Signal an error if the id cannot be determined."
       (if-let ((buf (url-retrieve-synchronously url silent)))
           (with-current-buffer buf
             (funcall handler (car url-callback-arguments) req))
-        (error "ghub--retrieve: No buffer returned")))))
+        ;; A reading of `url-retrieve-synchronously' indicates that when
+        ;; nil is returned instead of a buffer, the most likely cause is
+        ;; a timeout.  Since it would be appropriate for url to instead
+        ;; provide some documented error condition, we look for such data,
+        ;; so that if that is added in the future, we are informed about
+        ;; it.  `url-callback-arguments' resembles a plist, but the same
+        ;; key may appear multiple times.  In the "likely a timeout" case,
+        ;; we do not expect an error in the first pair, and even less so
+        ;; in a later pair, but let's check and make noise if find any.
+        (when (memq :error url-callback-arguments)
+          (error "BUG: Unexpected error data %S" url-callback-arguments))
+        ;; However a redirect would not be surprising, so only report that
+        ;; in debug mode.
+        (url-debug 'ghub "Buffer is nil and url-callback-arguments is %S"
+                   url-callback-arguments)
+        (funcall handler (list :error 'timeout) req)))))
 
 (defun ghub--handle-response (status req)
   (let ((buf (current-buffer)))
