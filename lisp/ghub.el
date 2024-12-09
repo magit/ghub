@@ -769,9 +769,14 @@ and call `auth-source-forget+'."
 
 (defun ghub--token (host username package &optional nocreate forge)
   (let* ((user (ghub--ident username package))
+         (host* (and (string-match "/" host)
+                     (substring host 0 (match-beginning 0))))
          (token
           (or (car (ghub--auth-source-get (list :secret)
                      :host host :user user))
+              (and host*
+                   (car (ghub--auth-source-get (list :secret)
+                          :host host :user user)))
               (progn
                 ;; Auth-Source caches the information that there is no
                 ;; value, but in our case that is a situation that needs
@@ -780,6 +785,8 @@ and call `auth-source-forget+'."
                 ;; The (:max 1) is needed and has to be placed at the
                 ;; end for Emacs releases before 26.1.  #24 #64 #72
                 (auth-source-forget (list :host host :user user :max 1))
+                (when host*
+                  (auth-source-forget (list :host host* :user user :max 1)))
                 (and (not nocreate)
                      (error "\
 Required %s token (\"%s\" for \"%s\") does not exist.
