@@ -204,7 +204,8 @@ behave as for `ghub-request' (which see)."
                                 updatedAt
                                 body)
                      (labels    [(:edges t)]
-                                id)))))
+                                id))
+     (owner "... on Organization { " (teams [(:edges t)] combinedSlug) " }\n"))))
 
 (defconst ghub-fetch-repository-review-threads
   '(query
