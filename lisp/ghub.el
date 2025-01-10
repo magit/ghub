@@ -68,11 +68,6 @@
 
 (eval-when-compile (require 'subr-x))
 
-;; Needed for Emacs < 27.
-(eval-when-compile (require 'json))
-(declare-function json-read-from-string "json" (string))
-(declare-function json-encode "json" (object))
-
 (declare-function glab-repository-id "glab" (owner name &key username auth host))
 (declare-function gtea-repository-id "gtea" (owner name &key username auth host))
 (declare-function gogs-repository-id "gogs" (owner name &key username auth host))
@@ -761,9 +756,7 @@ and call `auth-source-forget+'."
                 ;; value, but in our case that is a situation that needs
                 ;; fixing so we want to keep trying by invalidating that
                 ;; information.
-                ;; The (:max 1) is needed and has to be placed at the
-                ;; end for Emacs releases before 26.1.  #24 #64 #72
-                (auth-source-forget (list :host host :user user :max 1))
+                (auth-source-forget (list :host host :user user))
                 (and (not nocreate)
                      (error "\
 Required %s token (\"%s\" for \"%s\") does not exist.

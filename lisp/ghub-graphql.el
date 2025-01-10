@@ -27,12 +27,6 @@
 (require 'gsexp)
 (require 'treepy)
 
-;; Needed for Emacs < 27.
-(eval-when-compile (require 'json))
-(declare-function json-read-from-string "json" (string))
-(declare-function json-encode "json" (object))
-
-(eval-when-compile (require 'pp)) ; Needed for Emacs < 29.
 (eval-when-compile (require 'subr-x))
 
 ;;; Api
@@ -608,7 +602,6 @@ See Info node `(ghub)GraphQL Support'."
         (force-mode-line-update t)))))
 
 (defun ghub--graphql-pp-response (data)
-  (require 'pp) ; needed for Emacs < 29.
   (pp-display-expression data "*Pp Eval Output*"))
 
 ;;; _
