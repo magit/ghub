@@ -748,7 +748,11 @@ and call `auth-source-forget+'."
 
 (defun ghub--token (host username package &optional nocreate forge)
   (let* ((user (ghub--ident username package))
-         (token (ghub--auth-source-get :secret :host host :user user)))
+         (token (or (ghub--auth-source-get :secret :host host :user user)
+                    (and (string-match "\\`\\([^/]+\\)" host)
+                         (ghub--auth-source-get :secret
+                           :host (match-string 1 host)
+                           :user user)))))
     (unless (or token nocreate)
       (error "\
 Required %s token (%S for %s%sS) does not exist.
@@ -757,7 +761,9 @@ or (info \"(ghub)Getting Started\") for instructions.
 \(The setup wizard no longer exists.)"
              (capitalize (symbol-name (or forge 'github)))
              user
-             (if host* (format "either \"%s\" or" host*) "")
+             (if (string-match "\\`\\([^/]+\\)" host)
+                 (format "either \"%s\" or"  (match-string 1 host))
+               "")
              host))
     (if (functionp token) (funcall token) token)))
 
