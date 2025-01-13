@@ -748,22 +748,17 @@ and call `auth-source-forget+'."
 
 (defun ghub--token (host username package &optional nocreate forge)
   (let* ((user (ghub--ident username package))
-         (token
-          (or (ghub--auth-source-get :secret :host host :user user)
-              (progn
-                ;; Auth-Source caches the information that there is no
-                ;; value, but in our case that is a situation that needs
-                ;; fixing so we want to keep trying by invalidating that
-                ;; information.
-                (auth-source-forget (list :host host :user user))
-                (and (not nocreate)
-                     (error "\
-Required %s token (\"%s\" for \"%s\") does not exist.
+         (token (ghub--auth-source-get :secret :host host :user user)))
+    (unless (or token nocreate)
+      (error "\
+Required %s token (%S for %s%sS) does not exist.
 See https://magit.vc/manual/ghub/Getting-Started.html
 or (info \"(ghub)Getting Started\") for instructions.
 \(The setup wizard no longer exists.)"
-                            (capitalize (symbol-name (or forge 'github)))
-                            user host))))))
+             (capitalize (symbol-name (or forge 'github)))
+             user
+             (if host* (format "either \"%s\" or" host*) "")
+             host))
     (if (functionp token) (funcall token) token)))
 
 (cl-defgeneric ghub--host (&optional forge)
@@ -831,11 +826,16 @@ or (info \"(ghub)Getting Started\") for instructions.
 
 (defun ghub--auth-source-get (keys &rest spec)
   (declare (indent 1))
-  (let ((plist (car (apply #'auth-source-search
-                           (append spec (list :max 1))))))
-    (if (keywordp keys)
-        (plist-get plist keys)
-      (mapcar (lambda (k) (plist-get plist k)) keys))))
+  (if-let ((plist (car (apply #'auth-source-search
+                              (append spec (list :max 1))))))
+      (if (keywordp keys)
+          (plist-get plist keys)
+        (mapcar (lambda (k) (plist-get plist k)) keys))
+    ;; Auth-Source caches the information that there is no value, but in
+    ;; our case that is a situation that needs fixing, so we want to keep
+    ;; trying, by invalidating that information.
+    (auth-source-forget spec)
+    nil))
 
 ;;; _
 (provide 'ghub)
