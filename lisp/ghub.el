@@ -749,8 +749,7 @@ and call `auth-source-forget+'."
 (defun ghub--token (host username package &optional nocreate forge)
   (let* ((user (ghub--ident username package))
          (token
-          (or (car (ghub--auth-source-get (list :secret)
-                     :host host :user user))
+          (or (ghub--auth-source-get :secret :host host :user user)
               (progn
                 ;; Auth-Source caches the information that there is no
                 ;; value, but in our case that is a situation that needs
@@ -834,9 +833,9 @@ or (info \"(ghub)Getting Started\") for instructions.
   (declare (indent 1))
   (let ((plist (car (apply #'auth-source-search
                            (append spec (list :max 1))))))
-    (mapcar (lambda (k)
-              (plist-get plist k))
-            keys)))
+    (if (keywordp keys)
+        (plist-get plist keys)
+      (mapcar (lambda (k) (plist-get plist k)) keys))))
 
 ;;; _
 (provide 'ghub)
