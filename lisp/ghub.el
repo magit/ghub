@@ -757,8 +757,7 @@ and call `auth-source-forget+'."
       (error "\
 Required %s token (%S for %s%sS) does not exist.
 See https://magit.vc/manual/ghub/Getting-Started.html
-or (info \"(ghub)Getting Started\") for instructions.
-\(The setup wizard no longer exists.)"
+or (info \"(ghub)Getting Started\") for instructions."
              (capitalize (symbol-name (or forge 'github)))
              user
              (if (string-match "\\`\\([^/]+\\)" host)
