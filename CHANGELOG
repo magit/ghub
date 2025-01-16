@@ -1,4 +1,14 @@
 # -*- mode: org -*-
+* v4.2.1    UNRELEASED
+
+- ~ghub-fetch-repository~ now also fetches the organization's teams.
+  568b795
+
+Bug fix:
+
+- When ~ghub--token~ does not find a token for ~host/path~, it now falls
+  back to ~host~.  See https://github.com/magit/forge/issues/720.
+
 * v4.2.0    2024-12-08
 
 - At least Emacs 29.1 is required now.
