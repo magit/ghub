@@ -96,6 +96,18 @@ behave as for `ghub-request' (which see)."
     (repository
      [(owner $owner String!)
       (name  $name  String!)]
+     ;; (assignableUsers [(:edges t)]
+     ;;                  id
+     ;;                  login
+     ;;                  name)
+     ;; (collaborators [(:edges t)]
+     ;;                id
+     ;;                login
+     ;;                name)
+     ;; (mentionableUsers [(:edges t)]
+     ;;                   id
+     ;;                   login
+     ;;                   name)
      name
      id
      createdAt
@@ -121,6 +133,9 @@ behave as for `ghub-request' (which see)."
   `(query
     (repository
      ,@(cdr (cadr ghub-fetch-repository-sparse))
+     ;; assignableUsers -- A list of users that can be assigned to issues in this repository.
+     ;; collaborators -- A list of collaborators associated with the repository.
+     ;; mentionableUsers -- A list of Users that can be mentioned in the context of the repository.
      (assignableUsers [(:edges t)]
                       id
                       login
@@ -235,6 +250,10 @@ behave as for `ghub-request' (which see)."
                      (assignees [(:edges t)]
                                 id)
                      (reviewRequests [(:edges t)]
+                                     id
+                                     (requestedReviewer "... on Bot { id }")
+                                     (requestedReviewer "... on Mannequin { id }")
+                                     (requestedReviewer "... on Team { id }")
                                      (requestedReviewer "... on User { id }\n"))
                      (comments  [(:edges t)]
                                 id
@@ -301,6 +320,12 @@ behave as for `ghub-request' (which see)."
                                               (replyTo databaseId)
                                               (originalCommit oid)
                                               path))))))
+
+;; (ghub-fetch-review-threads "magit" "magit" 5261 #'ghub--graphql-pp-response)
+;; (ghub-fetch-pullreq "magit" "magit" 5261 #'ghub--graphql-pp-response)
+;; (ghub-fetch-issue "magit" "magit" 2993 #'ghub--graphql-pp-response)
+;; (ghub-fetch-issue "magit" "magit" 4377 #'ghub--graphql-pp-response)
+;; (ghub-fetch-repository "magit" "magit" #'ghub--graphql-pp-response nil :sparse t)
 
 (cl-defun ghub-fetch-repository ( owner name callback
                                   &optional until
