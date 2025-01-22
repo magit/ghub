@@ -588,7 +588,7 @@ See Info node `(ghub)GraphQL Support'."
                 child))))))
 
 (defun ghub--alist-zip (root)
-  (let ((branchp (lambda (elt) (and (listp elt) (listp (cdr elt)))))
+  (let ((branchp (##and (listp %) (listp (cdr %))))
         (make-node (lambda (_ children) children)))
     (treepy-zipper branchp #'identity make-node root)))
 

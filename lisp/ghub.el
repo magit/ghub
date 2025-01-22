@@ -11,6 +11,7 @@
 ;;     (emacs "29.1")
 ;;     (compat "30.0.0.0")
 ;;     (let-alist "1.0.6")
+;;     (llama "0.5.0")
 ;;     (treepy "0.1.2"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
@@ -62,6 +63,7 @@
 (require 'compat)
 (require 'gnutls)
 (require 'let-alist)
+(require 'llama)
 (require 'url)
 (require 'url-auth)
 (require 'url-http)
@@ -440,7 +442,7 @@ to the value of `ghub-response-headers', for later use when
 this function is called with nil for PAYLOAD."
   (if (eq (ghub--req-forge req) 'bitbucket)
       (if payload
-          (let* ((page (seq-keep (lambda (key) (assq key payload))
+          (let* ((page (seq-keep (##assq % payload)
                                  '(size page pagelen next previous)))
                  (headers (cons (cons 'link-alist page) headers)))
             (if (and req (or (ghub--req-callback req)
@@ -833,7 +835,7 @@ or (info \"(ghub)Getting Started\") for instructions."
                               (append spec (list :max 1))))))
       (if (keywordp keys)
           (plist-get plist keys)
-        (mapcar (lambda (k) (plist-get plist k)) keys))
+        (mapcar (##plist-get plist %) keys))
     ;; Auth-Source caches the information that there is no value, but in
     ;; our case that is a situation that needs fixing, so we want to keep
     ;; trying, by invalidating that information.

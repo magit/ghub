@@ -12,6 +12,7 @@ ELS  += buck.el
 ELCS  = $(ELS:.el=.elc)
 
 DEPS  = compat
+DEPS += llama
 DEPS += treepy
 
 DOMAIN      ?= magit.vc
