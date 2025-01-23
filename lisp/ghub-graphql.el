@@ -33,6 +33,13 @@
 
 (define-error 'ghub-graphql-error "GraphQL Error" 'ghub-error)
 
+(defvar ghub-graphql-message-progress nil
+  "Whether to show \"Fetching page N...\" in echo area during requests.
+By default this information is only shown in the mode-line of the buffer
+from which the request was initiated, and if you kill that buffer, then
+nowhere.  That may make it desirable to display the same message in the
+echo area as well.")
+
 (defvar ghub-graphql-items-per-request 50
   "Number of GraphQL items to query for entities that return a collection.
 
@@ -384,6 +391,9 @@ See Info node `(ghub)GraphQL Support'."
 
 (cl-defun ghub--graphql-retrieve (req &optional lineage cursor)
   (let ((p (cl-incf (ghub--graphql-req-pages req))))
+    (when ghub-graphql-message-progress
+      (let ((message-log-max nil))
+        (message "Fetching page %s..." p)))
     (when (> p 1)
       (ghub--graphql-set-mode-line req "Fetching page %s" p)))
   (setf (ghub--graphql-req-query-str req)
