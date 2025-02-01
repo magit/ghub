@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v4.2.1    UNRELEASED
+* v4.2.1    2025-02-01
 
 - Added new variable ~ghub-graphql-message-progress~.  magit/forge#633
 
