@@ -1,8 +1,7 @@
 # -*- mode: org -*-
 * v4.2.1    UNRELEASED
 
-- ~ghub-fetch-repository~ now also fetches the organization's teams.
-  568b795
+- Added new variable ~ghub-graphql-message-progress~.  magit/forge#633
 
 Bug fix:
 
