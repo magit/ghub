@@ -755,13 +755,13 @@ and call `auth-source-forget+'."
                            :user user)))))
     (unless (or token nocreate)
       (error "\
-Required %s token (%S for %s%sS) does not exist.
+Required %s token (%S for %s%S) does not exist.
 See https://magit.vc/manual/ghub/Getting-Started.html
 or (info \"(ghub)Getting Started\") for instructions."
              (capitalize (symbol-name (or forge 'github)))
              user
              (if (string-match "\\`\\([^/]+\\)" host)
-                 (format "either \"%s\" or"  (match-string 1 host))
+                 (format "either %S or " (match-string 1 host))
                "")
              host))
     (if (functionp token) (funcall token) token)))
