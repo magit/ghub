@@ -1,4 +1,4 @@
-;;; ghub-graphql.el --- Access Github API using GrapthQL  -*- lexical-binding:t -*-
+;;; ghub-graphql.el --- Access Github API using GraphQL  -*- lexical-binding:t -*-
 
 ;; Copyright (C) 2016-2025 Jonas Bernoulli
 
@@ -20,6 +20,10 @@
 ;;
 ;; You should have received a copy of the GNU General Public License
 ;; along with this file.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; This library implements GraphQL queries for Github.
 
 ;;; Code:
 
