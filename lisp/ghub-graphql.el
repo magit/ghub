@@ -45,7 +45,7 @@ nowhere.  That may make it desirable to display the same message in the
 echo area as well.")
 
 (defvar ghub--graphql-debug nil
-  "Whether `ghub--graphql-retrieve' updates the \" *gsexp-encode*\" buffer.")
+  "TODO")
 
 (defvar ghub-graphql-items-per-request 50
   "Number of GraphQL items to query for entities that return a collection.
@@ -524,10 +524,12 @@ See Info node `(ghub)GraphQL Support'."
                  (err     (plist-get status :error))
                  (errors  (cdr (assq 'errors payload)))
                  (errors  (and errors (cons 'ghub-graphql-error errors))))
-            (if (or err errors)
-                (ghub--graphql-handle-failure
-                 req (or err errors) headers status)
-              (ghub--graphql-walk-response req (assq 'data payload)))))
+            (cond ((or err errors)
+                   (when (and (not err) ghub--graphql-debug)
+                     (pp-display-expression payload "*ghub-graphql error*"))
+                   (ghub--graphql-handle-failure
+                    req (or err errors) headers status))
+                  ((ghub--graphql-walk-response req (assq 'data payload))))))
       (when (buffer-live-p buf)
         (kill-buffer buf)))))
 
