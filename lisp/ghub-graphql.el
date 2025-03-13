@@ -33,9 +33,9 @@
 
 (eval-when-compile (require 'subr-x))
 
-;;; Api
-
 (define-error 'ghub-graphql-error "GraphQL Error" 'ghub-error)
+
+;;; Settings
 
 (defvar ghub-graphql-message-progress nil
   "Whether to show \"Fetching page N...\" in echo area during requests.
@@ -44,11 +44,16 @@ from which the request was initiated, and if you kill that buffer, then
 nowhere.  That may make it desirable to display the same message in the
 echo area as well.")
 
+(defvar ghub--graphql-debug nil
+  "Whether `ghub--graphql-retrieve' updates the \" *gsexp-encode*\" buffer.")
+
 (defvar ghub-graphql-items-per-request 50
   "Number of GraphQL items to query for entities that return a collection.
 
 Adjust this value if you're hitting query timeouts against larger
 repositories.")
+
+;;; Mutations
 
 (cl-defun ghub-graphql (graphql
                         &optional variables
@@ -75,25 +80,14 @@ behave as for `ghub-request' (which see)."
                 :callback callback :errorback errorback
                 :extra extra :value value))
 
+;;; Queries
+
 (cl-defun ghub-graphql-rate-limit (&key username auth host)
   "Return rate limit information."
   (let-alist (ghub-graphql
               '(query (rateLimit limit cost remaining resetAt))
               nil :username username :auth auth :host host)
     .data.rateLimit))
-
-(cl-defun ghub--repository-id (owner name &key username auth host)
-  "Return the id of the repository specified by OWNER, NAME and HOST."
-  (let-alist (ghub-graphql
-              '(query (repository [(owner $owner String!)
-                                   (name  $name  String!)]
-                                  id))
-              `((owner . ,owner)
-                (name  . ,name))
-              :username username :auth auth :host host)
-    .data.repository.id))
-
-;;; Api (drafts)
 
 (defconst ghub-fetch-repository-sparse
   '(query
@@ -390,9 +384,6 @@ data as the only argument."
 
 ;;; Internal
 
-(defvar ghub--graphql-debug nil
-  "Whether `ghub--graphql-retrieve' updates the \" *gsexp-encode*\" buffer.")
-
 (cl-defstruct (ghub--graphql-req
                (:include ghub--req)
                (:constructor ghub--make-graphql-req)
@@ -677,6 +668,17 @@ See Info node `(ghub)GraphQL Support'."
 
 (defun ghub--graphql-pp-response (data)
   (pp-display-expression data "*Pp Eval Output*"))
+
+(cl-defun ghub--repository-id (owner name &key username auth host)
+  "Return the id of the repository specified by OWNER, NAME and HOST."
+  (let-alist (ghub-graphql
+              '(query (repository [(owner $owner String!)
+                                   (name  $name  String!)]
+                                  id))
+              `((owner . ,owner)
+                (name  . ,name))
+              :username username :auth auth :host host)
+    .data.repository.id))
 
 ;;; _
 (provide 'ghub-graphql)
