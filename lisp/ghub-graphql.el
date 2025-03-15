@@ -405,7 +405,10 @@ See Info node `(ghub)GraphQL Support'."
   (when ghub-debug
     (with-current-buffer (get-buffer-create " *gsexp-encode*")
       (erase-buffer)
-      (insert (ghub--graphql-req-query-str req))))
+      (insert (ghub--graphql-req-query-str req) "\n\n")
+      (let ((pos (point)))
+        (insert (ghub--encode-payload (ghub--graphql-req-variables req)) "\n")
+        (ignore-errors (json-pretty-print pos (point))))))
   (ghub--retrieve
    (let ((json-false nil))
      (ghub--encode-payload
