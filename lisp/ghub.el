@@ -102,12 +102,6 @@ globally because doing that is likely to break other packages
 that use `ghub'.  As a user also do not enable this yet.
 See https://github.com/magit/ghub/pull/149.")
 
-(defvar ghub-json-object-type 'alist
-  "The object type that is used for json payload decoding.")
-
-(defvar ghub-json-array-type 'list
-  "The array type that is used for json payload decoding.")
-
 (defvar ghub-debug nil
   "Record additional debug information.")
 
@@ -614,13 +608,13 @@ Signal an error if the id cannot be determined."
                       (fboundp 'json-parse-string))
                  (json-parse-string
                   raw
-                  :object-type  ghub-json-object-type
-                  :array-type   ghub-json-array-type
+                  :object-type  'alist
+                  :array-type   'list
                   :false-object nil
                   :null-object  nil)
                (require 'json)
-               (let ((json-object-type ghub-json-object-type)
-                     (json-array-type  ghub-json-array-type)
+               (let ((json-object-type 'alist)
+                     (json-array-type  'list)
                      (json-false       nil)
                      (json-null        nil))
                  (json-read-from-string raw)))
