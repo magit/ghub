@@ -77,6 +77,21 @@ behave as for `ghub-request' (which see)."
                 :callback callback :errorback errorback
                 :extra extra :value value))
 
+(cl-defun ghub--graphql (graphql
+                         &optional variables
+                         &key username auth host forge
+                         headers
+                         callback errorback)
+  "An experimental and unfinished replacement for `ghub-graphql'."
+  (let ((ghub-graphql-message-progress nil))
+    (ghub--graphql-vacuum graphql variables callback nil
+                          :username  username
+                          :auth      auth
+                          :host      host
+                          :forge     forge
+                          :headers   headers
+                          :errorback errorback)))
+
 ;;; Queries
 
 (cl-defun ghub-graphql-rate-limit (&key username auth host)
