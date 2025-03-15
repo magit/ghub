@@ -476,7 +476,8 @@ See Info node `(ghub)GraphQL Support'."
                 (ghub--graphql-handle-failure
                  req (or err errors) headers status)
               (ghub--graphql-walk-response req (assq 'data payload)))))
-      (when (buffer-live-p buf)
+      (when (and (buffer-live-p buf)
+                 (not (buffer-local-value 'ghub-debug buf)))
         (kill-buffer buf)))))
 
 (defun ghub--graphql-handle-failure (req errors headers status)
