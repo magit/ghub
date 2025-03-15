@@ -472,10 +472,14 @@ See Info node `(ghub)GraphQL Support'."
                  (err     (plist-get status :error))
                  (errors  (cdr (assq 'errors payload)))
                  (errors  (and errors (cons 'ghub-graphql-error errors))))
-            (if (or err errors)
-                (ghub--graphql-handle-failure
-                 req (or err errors) headers status)
-              (ghub--graphql-walk-response req (assq 'data payload)))))
+            (cond ((or err errors)
+                   (when (and (not err) ghub-debug)
+                     ;; (pp-display-expression payload "*ghub-graphql error*")
+                     (ignore-errors (json-pretty-print (point) (point-max)))
+                     (pop-to-buffer buf))
+                   (ghub--graphql-handle-failure
+                    req (or err errors) headers status))
+                  ((ghub--graphql-walk-response req (assq 'data payload))))))
       (when (and (buffer-live-p buf)
                  (not (buffer-local-value 'ghub-debug buf)))
         (kill-buffer buf)))))
