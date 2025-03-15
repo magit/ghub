@@ -660,10 +660,7 @@ Signal an error if the id cannot be determined."
                          (json-array-type  ghub-json-array-type)
                          (json-false       nil)
                          (json-null        :null))
-                     ;; Unfortunately `json-encode' may modify the input.
-                     ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=40693.
-                     ;; and https://github.com/magit/forge/issues/267
-                     (json-encode (copy-tree payload))))))
+                     (json-encode payload)))))
          (encode-coding-string payload 'utf-8))))
 
 (defun ghub--url-encode-params (params)
