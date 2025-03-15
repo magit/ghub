@@ -543,7 +543,8 @@ Signal an error if the id cannot be determined."
                              (set-buffer req-buf))
                            (funcall callback value headers status req)))
                         (t value))))))
-      (when (buffer-live-p buf)
+      (when (and (buffer-live-p buf)
+                 (not (buffer-local-value 'ghub-debug buf)))
         (kill-buffer buf)))))
 
 (defun ghub--handle-response-headers (_status req)
