@@ -108,6 +108,9 @@ See https://github.com/magit/ghub/pull/149.")
 (defvar ghub-json-array-type 'list
   "The array type that is used for json payload decoding.")
 
+(defvar ghub-debug nil
+  "Record additional debug information.")
+
 ;;; Request
 ;;;; Object
 
