@@ -95,13 +95,6 @@ only serves as documentation.")
 (defvar ghub-insecure-hosts nil
   "List of hosts that use http instead of https.")
 
-(defvar ghub-json-use-jansson nil
-  "Whether to use the Jansson library, if available.
-This is experimental.  Only let-bind this but do not enable it
-globally because doing that is likely to break other packages
-that use `ghub'.  As a user also do not enable this yet.
-See https://github.com/magit/ghub/pull/149.")
-
 (defvar ghub-debug nil
   "Record additional debug information.")
 
@@ -601,35 +594,25 @@ Signal an error if the id cannot be determined."
            url-http-response-status))
 
 (defun ghub--read-json-payload (_status)
-  (let ((raw (ghub--decode-payload)))
-    (and raw
-         (condition-case nil
-             (if (and ghub-json-use-jansson
-                      (fboundp 'json-parse-string))
-                 (json-parse-string
-                  raw
-                  :object-type  'alist
-                  :array-type   'list
-                  :false-object nil
-                  :null-object  nil)
-               (require 'json)
-               (let ((json-object-type 'alist)
-                     (json-array-type  'list)
-                     (json-false       nil)
-                     (json-null        nil))
-                 (json-read-from-string raw)))
-           ((json-parse-error json-readtable-error)
-            (pop-to-buffer (current-buffer))
-            (setq-local ghub-debug t)
-            `((message
-               . ,(if (looking-at "<!DOCTYPE html>")
-                      (if (re-search-forward
-                           "<p>\\(?:<strong>\\)?\\([^<]+\\)" nil t)
-                          (match-string 1)
-                        "error description missing")
-                    (string-trim (buffer-substring (point) (point-max)))))
-              (documentation_url
-               . "https://github.com/magit/ghub/wiki/Github-Errors")))))))
+  (and-let* ((payload (ghub--decode-payload)))
+    (ghub--assert-json-available)
+    (condition-case nil
+        (json-parse-string payload
+                           :object-type 'alist
+                           :array-type 'list
+                           :null-object nil
+                           :false-object nil)
+      (json-parse-error
+       (pop-to-buffer (current-buffer))
+       (setq-local ghub-debug t)
+       `((message . ,(if (looking-at "<!DOCTYPE html>")
+                         (if (re-search-forward
+                              "<p>\\(?:<strong>\\)?\\([^<]+\\)" nil t)
+                             (match-string 1)
+                           "error description missing")
+                       (string-trim (buffer-substring (point) (point-max)))))
+         (documentation_url
+          . "https://github.com/magit/ghub/wiki/Github-Errors"))))))
 
 (defun ghub--decode-payload (&optional _status)
   (and (not (eobp))
@@ -638,24 +621,15 @@ Signal an error if the id cannot be determined."
         'utf-8)))
 
 (defun ghub--encode-payload (payload)
-  (and payload
-       (progn
-         (unless (stringp payload)
-           (setq payload
-                 (if (and ghub-json-use-jansson
-                          (fboundp 'json-serialize))
-                     (json-serialize payload
-                                     ;; :object-type and :array-type
-                                     ;; are not supported here.
-                                     :false-object nil
-                                     :null-object  :null)
-                   (require 'json)
-                   (let ((json-object-type ghub-json-object-type)
-                         (json-array-type  ghub-json-array-type)
-                         (json-false       nil)
-                         (json-null        :null))
-                     (json-encode payload)))))
-         (encode-coding-string payload 'utf-8))))
+  (cl-typecase payload
+    (null nil)
+    (string (encode-coding-string payload 'utf-8))
+    (t (ghub--assert-json-available)
+       (encode-coding-string
+        (json-serialize payload
+                        :null-object :null
+                        :false-object nil)
+        'utf-8))))
 
 (defun ghub--url-encode-params (params)
   (mapconcat (lambda (param)
@@ -666,6 +640,11 @@ Signal an error if the id cannot be determined."
                            (boolean (if val "true" "false"))
                            (t (url-hexify-string val))))))
              params "&"))
+
+(defun ghub--assert-json-available ()
+  (unless (and (fboundp 'json-available-p)
+               (json-available-p))
+    (error "Ghub requires Emacs 29 --with-json or Emacs >= 30")))
 
 ;;; Authentication
 ;;;; API
