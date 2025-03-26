@@ -120,6 +120,7 @@ behave as for `ghub-request' (which see)."
      isLocked
      isMirror
      isPrivate
+     hasDiscussionsEnabled
      hasIssuesEnabled
      hasWikiEnabled
      (licenseInfo name)
@@ -134,6 +135,39 @@ behave as for `ghub-request' (which see)."
                       id
                       login
                       name)
+     (discussions    [(:edges t)
+                      (:singular discussion number)
+                      (orderBy ((field UPDATED_AT) (direction DESC)))]
+                     id
+                     databaseId
+                     number
+                     url
+                     stateReason
+                     ;; Discussions lack isReadByViewer.
+                     (answer id)
+                     (author login)
+                     title
+                     createdAt
+                     updatedAt
+                     closedAt
+                     locked
+                     body
+                     (comments  [(:edges t)]
+                                id
+                                databaseId
+                                (author login)
+                                createdAt
+                                updatedAt
+                                body
+                                (replies [(:edges 20)]
+                                         id
+                                         databaseId
+                                         (author login)
+                                         createdAt
+                                         updatedAt
+                                         body))
+                     (labels    [(:edges t)]
+                                id))
      (issues         [(:edges t)
                       (:singular issue number)
                       (orderBy ((field UPDATED_AT) (direction DESC)))]
@@ -265,6 +299,27 @@ data as the only argument."
                         :forge    forge
                         :headers  headers
                         :paginate paginate
+                        :errorback errorback))
+
+(cl-defun ghub-fetch-discussion ( owner name number callback
+                                  &optional until
+                                  &key username auth host forge
+                                  headers errorback)
+  "Asynchronously fetch forge data about the specified discussion.
+Once all data has been collected, CALLBACK is called with the
+data as the only argument."
+  (ghub--graphql-vacuum (ghub--graphql-prepare-query
+                         ghub-fetch-repository
+                         `(repository discussions (discussion . ,number)))
+                        `((owner . ,owner)
+                          (name  . ,name))
+                        callback until
+                        :narrow   '(repository discussion)
+                        :username username
+                        :auth     auth
+                        :host     host
+                        :forge    forge
+                        :headers  headers
                         :errorback errorback))
 
 (cl-defun ghub-fetch-issue ( owner name number callback
