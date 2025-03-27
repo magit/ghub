@@ -1,4 +1,18 @@
 # -*- mode: org -*-
+* v4.3.0    UNRELEASED
+
+- Use the built-in native JSON support added in Emacs 30.  In Emacs
+  29 the built-in support used the jansson library, but only if it
+  was built with ~--with-json~.  We already required Emacs 29 before,
+  now we require "Emacs 29 with ~--with-json~, or Emacs 30".  Support
+  for the old ~json.el~ interface is dropped.  #168
+
+- ~ghub-fetch-repository~ now also fetches discussions and discussion
+  categories.  26d5da1, a57baff
+
+- Display more debugging information; some of it only if ~ghub-debug~ is
+  non-nil.
+
 * v4.2.2    2025-03-01
 
 Thoughts and whitespace.
