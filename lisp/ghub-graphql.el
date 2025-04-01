@@ -542,7 +542,6 @@ See Info node `(ghub)GraphQL Support'."
                  (errors  (and errors (cons 'ghub-graphql-error errors))))
             (cond ((or err errors)
                    (when (and (not err) ghub-debug)
-                     ;; (pp-display-expression payload "*ghub-graphql error*")
                      (ignore-errors (json-pretty-print (point) (point-max)))
                      (pop-to-buffer buf))
                    (ghub--graphql-handle-failure
