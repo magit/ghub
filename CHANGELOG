@@ -5,13 +5,18 @@
   29 the built-in support used the jansson library, but only if it
   was built with ~--with-json~.  We already required Emacs 29 before,
   now we require "Emacs 29 with ~--with-json~, or Emacs 30".  Support
-  for the old ~json.el~ interface is dropped.  #168
+  for the old ~json.el~ interface is dropped.
+
+  Decoding should work as before.  When it comes to encoding we
+  inherit a backward incompatible change.  Lists, or more accurately
+  "JSON arrays", now have to be specified using Lisp vectors, not
+  Lisp lists.  #168
 
 - ~ghub-fetch-repository~ now also fetches discussions and discussion
   categories.  26d5da1, a57baff
 
-- Display more debugging information; some of it only if ~ghub-debug~ is
-  non-nil.
+- Display more debugging information; some of it only if ~ghub-debug~
+  is non-nil.
 
 * v4.2.2    2025-03-01
 
