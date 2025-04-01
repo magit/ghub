@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v4.3.0    UNRELEASED
+* v4.3.0    2025-04-01
 
 - Use the built-in native JSON support added in Emacs 30.  In Emacs
   29 the built-in support used the jansson library, but only if it
