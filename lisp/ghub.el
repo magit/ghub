@@ -34,7 +34,7 @@
 ;; Ghub provides basic support for using the APIs of various Git forges
 ;; from Emacs packages.  Originally it only supported the Github REST
 ;; API, but now it also supports the Github GraphQL API as well as the
-;; REST APIs of Gitlab, Gitea, Gogs and Bitbucket.
+;; REST APIs of Gitlab, Gitea, Forgejo, Gogs and Bitbucket.
 
 ;; Ghub abstracts access to API resources using only a handful of basic
 ;; functions such as `ghub-get'.  These are convenience wrappers around
@@ -75,6 +75,7 @@
 (declare-function gtea-repository-id "gtea" (owner name &key username auth host))
 (declare-function gogs-repository-id "gogs" (owner name &key username auth host))
 (declare-function buck-repository-id "buck" (owner name &key username auth host))
+(declare-function forgejo-repository-id "forgejo" (owner name &key username auth host))
 
 (defvar url-callback-arguments)
 (defvar url-http-end-of-headers)
@@ -452,6 +453,7 @@ Signal an error if the id cannot be determined."
               ((nil ghub github) #'ghub--repository-id)
               (gitlab            #'glab-repository-id)
               (gitea             #'gtea-repository-id)
+              (forgejo           #'forgejo-repository-id)
               (gogs              #'gogs-repository-id)
               (bitbucket         #'buck-repository-id)
               (t (intern (format "%s-repository-id" forge))))))
@@ -679,13 +681,13 @@ and call `auth-source-forget+'."
     (setq username (ghub--username host forge)))
   (if (eq auth 'basic)
       (cl-ecase forge
-        ((nil gitea gogs bitbucket)
+        ((nil gitea forgejo gogs bitbucket)
          (cons "Authorization" (ghub--basic-auth host username)))
         ((github gitlab)
          (error "%s does not support basic authentication"
                 (capitalize (symbol-name forge)))))
     (cons (cl-ecase forge
-            ((nil github gitea gogs bitbucket)
+            ((nil github gitea forgejo gogs bitbucket)
              "Authorization")
             (gitlab
              "Private-Token"))
@@ -750,6 +752,9 @@ or (info \"(ghub)Getting Started\") for instructions."
     (gitea
      (or (ignore-errors (car (process-lines "git" "config" "gitea.host")))
          (bound-and-true-p gtea-default-host)))
+    (forgejo
+     (or (ignore-errors (car (process-lines "git" "config" "forgejo.host")))
+         (bound-and-true-p gtea-default-host)))
     (gogs
      (or (ignore-errors (car (process-lines "git" "config" "gogs.host")))
          (bound-and-true-p gogs-default-host)))
@@ -776,6 +781,10 @@ or (info \"(ghub)Getting Started\") for instructions."
             (when (zerop (call-process "git" nil nil nil "config" "gitea.host"))
               (message "WARNING: gitea.host is set but always ignored"))
             (format "gitea.%s.user" host))
+           (forgejo
+            (when (zerop (call-process "git" nil nil nil "config" "forgejo.host"))
+              (message "WARNING: forgejo.host is set but always ignored"))
+            (format "forgejo.%s.user" host))
            (gogs
             (when (zerop (call-process "git" nil nil nil "config" "gogs.host"))
               (message "WARNING: gogs.host is set but always ignored"))
