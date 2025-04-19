@@ -49,6 +49,7 @@
   "Make a `GET' request for RESOURCE, with optional query PARAMS.
 Like calling `ghub-request' (which see) with \"GET\" as METHOD
 and `gitea' as FORGE."
+  (declare (obsolete ghub-get "4.3.1"))
   (ghub-request "GET" resource params :forge 'gitea
                 :query query :payload payload :headers headers
                 :silent silent :unpaginate unpaginate
@@ -64,6 +65,7 @@ and `gitea' as FORGE."
   "Make a `PUT' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"PUT\" as METHOD
 and `gitea' as FORGE."
+  (declare (obsolete ghub-put "4.3.1"))
   (ghub-request "PUT" resource params :forge 'gitea
                 :query query :payload payload :headers headers
                 :silent silent :unpaginate unpaginate
@@ -79,6 +81,7 @@ and `gitea' as FORGE."
   "Make a `POST' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"POST\" as METHOD
 and `gitea' as FORGE."
+  (declare (obsolete ghub-post "4.3.1"))
   (ghub-request "POST" resource params :forge 'gitea
                 :query query :payload payload :headers headers
                 :silent silent :unpaginate unpaginate
@@ -94,6 +97,7 @@ and `gitea' as FORGE."
   "Make a `PATCH' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"PATCH\" as METHOD
 and `gitea' as FORGE."
+  (declare (obsolete ghub-patch "4.3.1"))
   (ghub-request "PATCH" resource params :forge 'gitea
                 :query query :payload payload :headers headers
                 :silent silent :unpaginate unpaginate
@@ -109,6 +113,7 @@ and `gitea' as FORGE."
   "Make a `DELETE' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"DELETE\" as METHOD
 and `gitea' as FORGE."
+  (declare (obsolete ghub-delete "4.3.1"))
   (ghub-request "DELETE" resource params :forge 'gitea
                 :query query :payload payload :headers headers
                 :silent silent :unpaginate unpaginate
@@ -123,6 +128,7 @@ and `gitea' as FORGE."
                                callback errorback extra)
   "Make a request for RESOURCE and return the response body.
 Like calling `ghub-request' (which see) with `gitea' as FORGE."
+  (declare (obsolete ghub-request "4.3.1"))
   (ghub-request method resource params :forge 'gitea
                 :query query :payload payload :headers headers
                 :silent silent :unpaginate unpaginate
@@ -133,8 +139,9 @@ Like calling `ghub-request' (which see) with `gitea' as FORGE."
 (cl-defun gtea-repository-id (owner name &key username auth host)
   "Return the id of the repository specified by OWNER, NAME and HOST."
   (number-to-string
-   (cdr (assq 'id (gtea-get (format "/repos/%s/%s" owner name)
-                            nil :username username :auth auth :host host)))))
+   (cdr (assq 'id (ghub-get (format "/repos/%s/%s" owner name)
+                            nil :forge 'gitea
+                            :username username :auth auth :host host)))))
 
 ;;; _
 (provide 'gtea)
