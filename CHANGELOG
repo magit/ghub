@@ -1,4 +1,10 @@
 # -*- mode: org -*-
+* v4.3.1    2025-04-28
+
+- Fixed following paging links for Forgejo.  #170
+
+- Deprecated ~{buck,gogs,gtea}-{VERB}~ functions.
+
 * v4.3.0    2025-04-01
 
 - Use the built-in native JSON support added in Emacs 30.  In Emacs
