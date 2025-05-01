@@ -98,6 +98,52 @@ only serves as documentation.")
 (defvar ghub-debug nil
   "Record additional debug information.")
 
+(defvar ghub-json-object-type 'alist
+  "The Lisp object used to represent the JSON key-value mappings.
+
+One of `alist' (the default), `plist' or `hash-table'.
+
+This overrides `json-parse-string's `:object-type' argument,
+  which defaults to `hash-table'.
+This overrides obsolete `json-object-type',
+  which defaults to `alist'.
+
+Only ever let-bind this or you would break other packages.")
+
+(defvar ghub-json-array-type 'list
+  "The Lisp object used to represent the JSON array.
+
+One of `list' (the default) or `array'.
+
+This overrides `json-parse-string's `:array-type' argument,
+  which defaults to `array'.
+This overrides obsolete `json-array-type',
+  which defaults to `vector'. (Use `array' as the value of
+  this option; it will be treated like `vector' when using
+  the Lisp implementation.  Do not use `vector'; doing that
+  would break the native implementation.)
+
+Only ever let-bind this or you would break other packages.")
+
+(defvar ghub-json-null-object :null
+  "The Lisp object used to represent the JSON keyword `null'.
+
+This overrides `json-parse-string's and `json-serialize's
+  `:null-object' argument, which also default to `:null'.
+This overrides obsolete `json-null',
+  which defaults to nil.
+
+Only ever let-bind this or you would break other packages.")
+
+(defvar ghub-json-false-object nil
+  "The Lisp object used to represent the JSON keyword `false'.
+
+This overrides `json-parse-string's and `json-serialize's
+  `:false-object' argument, which also default to `:false'.
+This overrides obsolete `json-false',
+  which defaults to `:json-false'.
+
+Only ever let-bind this or you would break other packages.")
 ;;; Request
 ;;;; Object
 
@@ -360,7 +406,16 @@ Both callbacks are called with four arguments.
     ;; Encode in case caller used (symbol-name 'GET). #35
     :method     (encode-coding-string method 'utf-8)
     :headers    (ghub--headers headers host auth username forge)
-    :handler    #'ghub--handle-response
+    :handler    (let ((object-type  ghub-json-object-type)
+                      (array-type   ghub-json-array-type)
+                      (null-object  ghub-json-null-object)
+                      (false-object ghub-json-false-object))
+                  (lambda (&rest args)
+                    (let ((ghub-json-object-type  object-type)
+                          (ghub-json-array-type   array-type)
+                          (ghub-json-null-object  null-object)
+                          (ghub-json-false-object false-object))
+                      (apply #'ghub--handle-response args))))
     :unpaginate unpaginate
     :noerror    noerror
     :reader     reader
@@ -598,10 +653,10 @@ Signal an error if the id cannot be determined."
     (ghub--assert-json-available)
     (condition-case nil
         (json-parse-string payload
-                           :object-type 'alist
-                           :array-type 'list
-                           :null-object nil
-                           :false-object nil)
+                           :object-type ghub-json-object-type
+                           :array-type ghub-json-array-type
+                           :null-object ghub-json-null-object
+                           :false-object ghub-json-false-object)
       (json-parse-error
        (pop-to-buffer (current-buffer))
        (setq-local ghub-debug t)
