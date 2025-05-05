@@ -593,15 +593,16 @@ Signal an error if the id cannot be determined."
                'ghub--read-json-payload)
            url-http-response-status))
 
-(defun ghub--read-json-payload (_status)
+(defun ghub--read-json-payload (_status &optional json-type-args)
   (and-let* ((payload (ghub--decode-payload)))
     (ghub--assert-json-available)
     (condition-case nil
-        (json-parse-string payload
-                           :object-type 'alist
-                           :array-type 'list
-                           :null-object nil
-                           :false-object nil)
+        (apply #'json-parse-string payload
+               (or json-type-args
+                   '( :object-type alist
+                      :array-type list
+                      :null-object nil
+                      :false-object nil)))
       (json-parse-error
        (pop-to-buffer (current-buffer))
        (setq-local ghub-debug t)
