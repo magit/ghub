@@ -1,4 +1,9 @@
 # -*- mode: org -*-
+* v4.3.2    2025-06-01
+
+- It's now possible to wrap ~ghub--read-json-payload~ to depart from
+  how it encodes json by default.  #172
+
 * v4.3.1    2025-04-28
 
 - Fixed following paging links for Forgejo.  #170
