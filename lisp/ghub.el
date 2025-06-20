@@ -618,7 +618,8 @@ Signal an error if the id cannot be determined."
                       :null-object nil
                       :false-object nil)))
       (json-parse-error
-       (pop-to-buffer (current-buffer))
+       (when ghub-debug
+         (pop-to-buffer (current-buffer)))
        (setq-local ghub-debug t)
        `((message . ,(if (looking-at "<!DOCTYPE html>")
                          (if (re-search-forward
