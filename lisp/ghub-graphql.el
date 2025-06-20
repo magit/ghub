@@ -494,8 +494,8 @@ See Info node `(ghub)GraphQL Support'."
         (let ((node (treepy-node loc)))
           (when (and (vectorp node)
                      (listp (aref node 0)))
-            (let ((alist (cl-coerce node 'list))
-                  vars)
+            (let ((alist (append node ()))
+                  (vars nil))
               (when-let ((edges (cadr (assq :edges alist))))
                 (push (list 'first
                             (apply
@@ -524,7 +524,7 @@ See Info node `(ghub)GraphQL Support'."
         (if (treepy-end-p loc)
             (let ((node (copy-sequence (treepy-node loc))))
               (when variables
-                (push (cl-coerce variables 'vector)
+                (push (vconcat variables)
                       (cdr node)))
               (throw :done node))
           (setq loc (treepy-next loc)))))))
@@ -635,7 +635,7 @@ See Info node `(ghub)GraphQL Support'."
 (defun ghub--graphql-narrow-query (query lineage &optional cursor)
   (if (consp (car lineage))
       (let* ((child  (cddr query))
-             (alist  (cl-coerce (cadr query) 'list))
+             (alist  (append (cadr query) ()))
              (single (cdr (assq :singular alist))))
         `(,(car single)
           ,(vector (list (cadr single) (cdr (car lineage))))
@@ -653,8 +653,7 @@ See Info node `(ghub)GraphQL Support'."
                                      (and (listp c)
                                           (vectorp (cadr c))
                                           (eq (cadr (assq :singular
-                                                          (cl-coerce (cadr c)
-                                                                     'list)))
+                                                          (append (cadr c) ())))
                                               (car lineage))))
                                    (cdr query))
                        (error "BUG: Failed to narrow query")))
