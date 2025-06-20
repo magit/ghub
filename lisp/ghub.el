@@ -490,15 +490,13 @@ Signal an error if the id cannot be determined."
 ;;;; Internal
 
 (cl-defun ghub--retrieve (payload req)
-  (let ((url-request-extra-headers
-         (let ((headers (ghub--req-headers req)))
-           (if (functionp headers) (funcall headers) headers)))
-        (url-request-method (ghub--req-method req))
-        (url-request-data payload)
-        (url-show-status nil)
-        (url     (ghub--req-url req))
-        (handler (ghub--req-handler req))
-        (silent  (ghub--req-silent req)))
+  (pcase-let*
+      (((cl-struct ghub--req headers method url handler silent) req)
+       (url-request-extra-headers
+        (if (functionp headers) (funcall headers) headers))
+       (url-request-method method)
+       (url-request-data payload)
+       (url-show-status nil))
     (if (or (ghub--req-callback  req)
             (ghub--req-errorback req))
         (url-retrieve url handler (list req) silent)
