@@ -689,17 +689,6 @@ See Info node `(ghub)GraphQL Support'."
 (defun ghub--graphql-pp-response (data)
   (pp-display-expression data "*Pp Eval Output*"))
 
-(cl-defun ghub--repository-id (owner name &key username auth host)
-  "Return the id of the repository specified by OWNER, NAME and HOST."
-  (let-alist (ghub-graphql
-              '(query (repository [(owner $owner String!)
-                                   (name  $name  String!)]
-                                  id))
-              `((owner . ,owner)
-                (name  . ,name))
-              :username username :auth auth :host host)
-    .data.repository.id))
-
 ;;; _
 (provide 'ghub-graphql)
 ;;; ghub-graphql.el ends here

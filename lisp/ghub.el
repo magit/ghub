@@ -70,11 +70,6 @@
 
 (eval-when-compile (require 'subr-x))
 
-(declare-function glab-repository-id "glab" (owner name &key username auth host))
-(declare-function gtea-repository-id "gtea" (owner name &key username auth host))
-(declare-function gogs-repository-id "gogs" (owner name &key username auth host))
-(declare-function buck-repository-id "buck" (owner name &key username auth host))
-
 (defvar url-callback-arguments)
 (defvar url-http-end-of-headers)
 (defvar url-http-extra-headers)
@@ -458,23 +453,44 @@ this function is called with nil for PAYLOAD."
 (cl-defun ghub-repository-id (owner name &key username auth host forge noerror)
   "Return the id of the specified repository.
 Signal an error if the id cannot be determined."
-  (let ((fn (cl-case forge
-              ((nil ghub github) #'ghub--repository-id)
-              (gitlab            #'glab-repository-id)
-              (gitea             #'gtea-repository-id)
-              (gogs              #'gogs-repository-id)
-              (bitbucket         #'buck-repository-id)
-              (t (intern (format "%s-repository-id" forge))))))
-    (unless (fboundp fn)
-      (error "ghub-repository-id: Forge type/abbreviation `%s' is unknown"
-             forge))
-    (or (funcall fn owner name :username username :auth auth :host host)
-        (and (not noerror)
-             (error "Repository %S does not exist on %S.\n%s%S?"
-                    (concat owner "/" name)
-                    (or host (ghub--host forge))
-                    "Maybe it was renamed and you have to update "
-                    "remote.<remote>.url")))))
+  (or (pcase forge
+        ((or 'nil 'ghub 'github)
+         (let-alist (ghub-graphql
+                     '(query (repository [(owner $owner String!)
+                                          (name  $name  String!)]
+                                         id))
+                     `((owner . ,owner)
+                       (name  . ,name))
+                     :username username :auth auth :host host)
+           .data.repository.id))
+        ('gitlab
+         (number-to-string
+          (alist-get
+           'id (ghub-get (format "/projects/%s%%2F%s"
+                                 (string-replace "/" "%2F" owner)
+                                 name)
+                         nil :forge 'gitlab
+                         :username username :auth auth :host host))))
+        ((or 'gitea 'gogs)
+         (number-to-string
+          (alist-get
+           'id (ghub-get (format "/repos/%s/%s" owner name)
+                         nil :forge forge
+                         :username username :auth auth :host host))))
+        ('bitbucket
+         (substring
+          (alist-get 'uuid
+                     (ghub-get (format "/repositories/%s/%s" owner name)
+                               nil :forge 'bitbucket
+                               :username username :auth auth :host host))
+          1 -1))
+        (_ (error "ghub-repository-id: Forge type `%s' is unknown" forge)))
+      (and (not noerror)
+           (error "Repository %S does not exist on %S.\n%s%S?"
+                  (concat owner "/" name)
+                  (or host (ghub--host forge))
+                  "Maybe it was renamed and you have to update "
+                  "remote.<remote>.url"))))
 
 ;;;; Internal
 
