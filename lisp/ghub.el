@@ -696,17 +696,15 @@ and call `auth-source-forget+'."
   (unless username
     (setq username (ghub--username host forge)))
   (if (eq auth 'basic)
-      (cl-ecase forge
-        ((nil gitea gogs bitbucket)
+      (pcase-exhaustive forge
+        ((or 'nil 'gitea 'gogs 'bitbucket)
          (cons "Authorization" (ghub--basic-auth host username)))
-        ((github gitlab)
+        ((or 'github 'gitlab)
          (error "%s does not support basic authentication"
                 (capitalize (symbol-name forge)))))
-    (cons (cl-ecase forge
-            ((nil github gitea gogs bitbucket)
-             "Authorization")
-            (gitlab
-             "Private-Token"))
+    (cons (pcase-exhaustive forge
+            ((or 'nil 'github 'gitea 'gogs 'bitbucket) "Authorization")
+            ('gitlab "Private-Token"))
           (if (eq forge 'bitbucket)
               ;; For some undocumented reason Bitbucket supports
               ;; values of the form "token <token>" only for GET
