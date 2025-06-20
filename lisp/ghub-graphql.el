@@ -489,7 +489,7 @@ See Info node `(ghub)GraphQL Support'."
     (setq query (ghub--graphql-narrow-query query lineage cursor)))
   (let ((loc (ghub--alist-zip query))
         variables)
-    (cl-block nil
+    (catch :done
       (while t
         (let ((node (treepy-node loc)))
           (when (and (vectorp node)
@@ -526,7 +526,7 @@ See Info node `(ghub)GraphQL Support'."
               (when variables
                 (push (cl-coerce variables 'vector)
                       (cdr node)))
-              (cl-return node))
+              (throw :done node))
           (setq loc (treepy-next loc)))))))
 
 (defun ghub--graphql-handle-response (status req)
@@ -581,7 +581,7 @@ See Info node `(ghub)GraphQL Support'."
                               (or (alist-get 'edges data)
                                   (error "BUG: Expected new nodes"))))
                 (treepy-replace loc data))))
-    (cl-block nil
+    (catch :done
       (while t
         (when (eq (car-safe (treepy-node loc)) 'edges)
           (setq loc (treepy-up loc))
@@ -605,17 +605,17 @@ See Info node `(ghub)GraphQL Support'."
                        (ghub--graphql-retrieve req
                                                (ghub--graphql-lineage loc)
                                                cursor)
-                       (cl-return))
+                       (throw :done nil))
                       ((setq loc (treepy-replace loc (cons key nodes)))))))))
         (cond ((not (treepy-end-p loc))
                (setq loc (treepy-next loc)))
               ((ghub--req-callback req)
                (ghub--graphql-handle-success req (treepy-root loc))
                (ghub--graphql-set-mode-line req nil)
-               (cl-return))
+               (throw :done nil))
               (t
                (setq ghub--graphql-synchronous-value (treepy-root loc))
-               (cl-return)))))))
+               (throw :done nil)))))))
 
 (defun ghub--graphql-lineage (loc)
   (let (lineage)
