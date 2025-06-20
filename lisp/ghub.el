@@ -454,7 +454,7 @@ this function is called with nil for PAYLOAD."
   "Return the id of the specified repository.
 Signal an error if the id cannot be determined."
   (or (pcase forge
-        ((or 'nil 'ghub 'github)
+        ((or 'nil 'github)
          (let-alist (ghub-graphql
                      '(query (repository [(owner $owner String!)
                                           (name  $name  String!)]
