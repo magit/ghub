@@ -8,10 +8,6 @@ loaddefs: $(PKG)-autoloads.el
 ghub.elc:
 gsexp.elc:
 ghub-graphql.elc: ghub.elc gsexp.elc
-buck.elc: ghub.elc
-glab.elc: ghub.elc
-gogs.elc: ghub.elc
-gtea.elc: ghub.elc
 
 %.elc: %.el
 	@printf "Compiling $<\n"

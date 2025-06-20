@@ -38,10 +38,7 @@
 
 ;; Ghub abstracts access to API resources using only a handful of basic
 ;; functions such as `ghub-get'.  These are convenience wrappers around
-;; `ghub-request'.  Additional forge-specific wrappers like `glab-put',
-;; `gtea-put', `gogs-post' and `buck-delete' are also available.  Ghub
-;; does not provide any resource-specific functions, with the exception
-;; of `FORGE-repository-id'.
+;; `ghub-request'.
 
 ;; When accessing Github, then Ghub handles the creation and storage of
 ;; access tokens using a setup wizard to make it easier for users to get
@@ -294,10 +291,9 @@ If HOST is non-nil, then connect to that Github instance.  This
   that using the Git variable `github.host' instead of using this
   argument.
 
-If FORGE is `gitlab', then connect to Gitlab.com or, depending
-  on HOST, to another Gitlab instance.  This is only intended for
-  internal use.  Instead of using this argument you should use
-  function `glab-request' and other `glab-*' functions.
+If optional FORGE is nil, then it is assumed that HOST is a
+  Github host.  When connecting to another forge type, then
+  FORGE must be one of `gitlab', `gitea', `gogs' or `bitbucket'.
 
 If CALLBACK and/or ERRORBACK is non-nil, then make one or more
   asynchronous requests and call CALLBACK or ERRORBACK when

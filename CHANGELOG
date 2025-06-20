@@ -1,4 +1,13 @@
 # -*- mode: org -*-
+* v5.0.0    UNRELEASED
+
+- Removed the libraries "buck.el", "glab.el", "gogs.el" and "gtea.el",
+  defining the functions ~{buck,glab,gogs,gtea}-{VERB,repository-id}~.
+  For now these libraries are available as new transitional packages
+  ~buck~, ~glab~, ~gogs~ and ~gtea~.  I recommend you stop using these wrapper
+  functions and instead use ~(ghub-VERB ... :forge FORGE)~, where FORGE
+  is one of ~bitbucket~, ~gitlab~, ~gogs~ and ~gitea~.
+
 * v4.3.2    2025-06-01
 
 - It's now possible to wrap ~ghub--read-json-payload~ to depart from

@@ -447,9 +447,7 @@ manuals:
     argument.
 
   - If ~FORGE~ is ~gitlab~, then connect to Gitlab.com or, depending
-    on ~HOST~, to another Gitlab instance.  This is only intended for
-    internal use.  Instead of using this argument you should use
-    function ~glab-request~ and other ~glab-*~ functions.
+    on ~HOST~, to another Gitlab instance.
 
   - If ~CALLBACK~ and/or ~ERRORBACK~ is non-nil, then this function makes
     one or more asynchronous requests and calls ~CALLBACK~ or ~ERRORBACK~
@@ -720,67 +718,6 @@ making an initial request.
   See ~ghub-request~'s documentation above for information about the
   other arguments.
   
-** Non-Github Convenience Wrappers
-
-~ghub-request~ and ~ghub-METHOD~ can be used to make a request for any
-of the supported forge types, but except when making a request for
-a ~github~ instance, then that requires the use of the FORGE argument.
-
-To avoid that, functions named ~FORGE-request~ and ~FORGE-METHOD~ are also
-available.  The following forms are equivalent, for example:
-
-#+begin_src emacs-lisp
-  (ghub-get ... :auth 'PACKAGE :forge 'gitlab)
-  (glab-get ... :auth 'PACKAGE)
-#+end_src
-
-These forms would remain equivalent even if you did not specify a
-value for the AUTH arguments — but you should not do that if you plan
-to share your code with others (see [[*Using Ghub in Your Own Package]]).
-If you do omit AUTH, then the request is made on behalf of the ~ghub~
-package, *regardless* of the symbol prefix of the function you use to do
-so.
-
-All ~FORGE-request~ and ~FORGE-METHOD~ functions, including but not
-limited to ~ghub-METHOD~, are very simple wrappers around ~ghub-request~.
-They take fewer arguments than ~ghub-request~ and instead pass constant
-values for the arguments METHOD and/or FORGE.
-
-- Function: buck-request resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: glab-request resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: gogs-request resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-
-  Wrappers around ~ghub-request~ which hardcode the FORGE to either
-  ~bitbucket~, ~gitlab~, ~gogs~ or ~gitea~.
-
-- Function: buck-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: buck-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: buck-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: buck-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: glab-head resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: glab-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: glab-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: glab-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: glab-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: glab-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: gogs-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: gogs-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: gogs-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: gogs-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: gogs-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: gtea-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: gtea-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: gtea-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: gtea-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-- Function: gtea-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback ::
-
-  Wrappers around ~FORGE-METHOD~ which hardcode the FORGE to either
-  ~bitbucket~, ~gitlab~, ~gogs~ or ~gitea~, and the METHOD to the implied
-  method.
-
-  Note that ~buck-head~, ~buck-patch~, ~gogs-head~ and ~gtea-head~ do not exist
-  because the respective APIs do not appear to support these methods.
-
 * Notes
 ** Using Ghub in Personal Scripts
 
@@ -843,7 +780,8 @@ needs; and explain what they are needed for.
   to use ~user%2Frepo~ when accessing Gitlab, e.g.:
 
   #+BEGIN_SRC emacs-lisp
-    (glab-get "/projects/python-mode-devs%2Fpython-mode")
+    (ghub-get "/projects/python-mode-devs%2Fpython-mode"
+              nil :forge 'gitlab)
   #+END_SRC
 
 * Function Index
