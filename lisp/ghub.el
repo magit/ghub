@@ -351,10 +351,9 @@ Both callbacks are called with four arguments.
                         (host))
                   resource
                   (and query (concat "?" (ghub--url-encode-params query)))))
-    :forge forge
-    :silent silent
-    ;; Encode in case caller used (symbol-name 'GET). #35
-    :method     (encode-coding-string method 'utf-8)
+    :forge      forge
+    :silent     silent
+    :method     (encode-coding-string method 'utf-8) ;#35
     :headers    (ghub--headers headers host auth username forge)
     :handler    #'ghub--handle-response
     :unpaginate unpaginate
