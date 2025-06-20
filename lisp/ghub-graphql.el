@@ -478,10 +478,10 @@ See Info node `(ghub)GraphQL Support'."
         (insert (ghub--encode-payload (ghub--graphql-req-variables req)) "\n")
         (ignore-errors (json-pretty-print pos (point))))))
   (ghub--retrieve
-   (let ((json-false nil))
-     (ghub--encode-payload
-      `((query     . ,(ghub--graphql-req-query-str req))
-        (variables . ,(ghub--graphql-req-variables req)))))
+   (ghub--encode-payload
+    `((query . ,(ghub--graphql-req-query-str req))
+      ,@(and-let* ((variables (ghub--graphql-req-variables req)))
+          `((variables . ,variables)))))
    req))
 
 (defun ghub--graphql-prepare-query (query &optional lineage cursor paginate)
