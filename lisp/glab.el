@@ -36,9 +36,6 @@
 
 (require 'ghub)
 
-(defconst glab-default-host "gitlab.com/api/v4"
-  "The default host that is used if `glab.host' is not set.")
-
 (cl-defun glab-head (resource &optional params
                               &key query payload headers
                               silent unpaginate noerror reader

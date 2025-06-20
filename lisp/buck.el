@@ -36,9 +36,6 @@
 
 (require 'ghub)
 
-(defconst buck-default-host "api.bitbucket.org/2.0"
-  "The default host that is used if `buck.host' is not set.")
-
 ;; HEAD and PATCH are not supported according to
 ;; https://developer.atlassian.com/bitbucket/api/2/reference/meta/uri-uuid
 

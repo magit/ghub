@@ -82,8 +82,13 @@
 
 ;;; Settings
 
-(defconst ghub-default-host "api.github.com"
-  "The default host that is used if `ghub.host' is not set.")
+(defvar ghub-default-host-alist
+  '((github    . "api.github.com")
+    (gitlab    . "gitlab.com/api/v4")
+    (gitea     . "localhost:3000/api/v1")
+    (gogs      . "localhost:3000/api/v1")
+    (bitbucket . "api.bitbucket.org/2.0"))
+  "Alist of default hosts used when the respective `FORGE.host' is not set.")
 
 (defvar ghub-github-token-scopes '(repo)
   "The Github API scopes that your private tools need.
@@ -743,65 +748,19 @@ or (info \"(ghub)Getting Started\") for instructions."
              host))
     (if (functionp token) (funcall token) token)))
 
-(cl-defgeneric ghub--host (&optional forge)
-  (cl-ecase forge
-    ((nil github)
-     (or (ignore-errors (car (process-lines "git" "config" "github.host")))
-         ghub-default-host))
-    (gitlab
-     (or (ignore-errors (car (process-lines "git" "config" "gitlab.host")))
-         (bound-and-true-p glab-default-host)))
-    (gitea
-     (or (ignore-errors (car (process-lines "git" "config" "gitea.host")))
-         (bound-and-true-p gtea-default-host)))
-    (gogs
-     (or (ignore-errors (car (process-lines "git" "config" "gogs.host")))
-         (bound-and-true-p gogs-default-host)))
-    (bitbucket
-     (or (ignore-errors (car (process-lines "git" "config" "bitbucket.host")))
-         (bound-and-true-p buck-default-host)))))
+(cl-defmethod ghub--host (&optional (forge 'github))
+  (or (ghub--git-get (format "%s.host" forge))
+      (alist-get forge ghub-default-host-alist)))
 
-(cl-defgeneric ghub--username (host &optional forge)
-  (let ((var
-         (cl-ecase forge
-           ((nil github)
-            (if (equal host ghub-default-host)
-                "github.user"
-              (format "github.%s.user" host)))
-           (gitlab
-            (if (equal host "gitlab.com/api/v4")
-                "gitlab.user"
-              (format "gitlab.%s.user" host)))
-           (bitbucket
-            (if (equal host "api.bitbucket.org/2.0")
-                "bitbucket.user"
-              (format "bitbucket.%s.user" host)))
-           (gitea
-            (when (zerop (call-process "git" nil nil nil "config" "gitea.host"))
-              (message "WARNING: gitea.host is set but always ignored"))
-            (format "gitea.%s.user" host))
-           (gogs
-            (when (zerop (call-process "git" nil nil nil "config" "gogs.host"))
-              (message "WARNING: gogs.host is set but always ignored"))
-            (format "gogs.%s.user"  host)))))
-    (condition-case nil
-        (car (process-lines "git" "config" var))
-      (error
-       (let ((user (read-string
-                    (format "Git variable `%s' is unset.  Set to: " var))))
-         (if (equal user "")
-             (user-error "The empty string is not a valid username")
-           (call-process
-            "git" nil nil nil "config"
-            (if (eq (read-char-choice
-                     (format "Set %s=%s [g]lobally (recommended) or [l]ocally? "
-                             var user)
-                     (list ?g ?l))
-                    ?g)
-                "--global"
-              "--local")
-            var user)
-           user))))))
+(cl-defmethod ghub--username (host &optional (forge 'github))
+  (let ((var (format "%s.%s.user" forge host)))
+    (or (ghub--git-get var)
+        (if-let (((equal host (alist-get forge ghub-default-host-alist)))
+                 (default-var (format "%s.user" forge)))
+            (or (ghub--git-get default-var)
+                (user-error "%s; `%s' and `%s' are both unset"
+                            "Cannot determine username" var default-var))
+          (user-error "Cannot determine username; `%s' is unset" var)))))
 
 (defun ghub--ident (username package)
   (format "%s^%s" username package))
@@ -818,6 +777,9 @@ or (info \"(ghub)Getting Started\") for instructions."
     ;; trying, by invalidating that information.
     (auth-source-forget spec)
     nil))
+
+(defun ghub--git-get (var)
+  (car (process-lines-ignore-status "git" "config" "get" var)))
 
 ;;; _
 (provide 'ghub)
