@@ -83,14 +83,13 @@ behave as for `ghub-request' (which see)."
                          headers
                          callback errorback)
   "An experimental and unfinished replacement for `ghub-graphql'."
-  (let ((ghub-graphql-message-progress nil))
-    (ghub--graphql-vacuum graphql variables callback nil
-                          :username  username
-                          :auth      auth
-                          :host      host
-                          :forge     forge
-                          :headers   headers
-                          :errorback errorback)))
+  (ghub--graphql-vacuum graphql variables callback nil
+                        :username  username
+                        :auth      auth
+                        :host      host
+                        :forge     forge
+                        :headers   headers
+                        :errorback errorback))
 
 ;;; Queries
 
@@ -460,10 +459,10 @@ See Info node `(ghub)GraphQL Support'."
 
 (cl-defun ghub--graphql-retrieve (req &optional lineage cursor)
   (let ((p (cl-incf (ghub--graphql-req-pages req))))
-    (when ghub-graphql-message-progress
-      (let ((message-log-max nil))
-        (message "Fetching page %s..." p)))
     (when (> p 1)
+      (when ghub-graphql-message-progress
+        (let ((message-log-max nil))
+          (message "Fetching page %s..." p)))
       (ghub--graphql-set-mode-line req "Fetching page %s" p)))
   (setf (ghub--graphql-req-query-str req)
         (gsexp-encode
