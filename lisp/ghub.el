@@ -790,7 +790,7 @@ or (info \"(ghub)Getting Started\") for instructions."
     nil))
 
 (defun ghub--git-get (var)
-  (car (process-lines-ignore-status "git" "config" "get" var)))
+  (car (process-lines-ignore-status "git" "config" "--get" var)))
 
 ;;; _
 (provide 'ghub)
