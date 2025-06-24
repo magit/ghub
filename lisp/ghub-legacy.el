@@ -265,20 +265,21 @@
   "Asynchronously fetch forge data about the specified repository.
 Once all data has been collected, CALLBACK is called with the
 data as the only argument."
-  (ghub--graphql-vacuum (if sparse
-                            ghub-fetch-repository-sparse
-                          ghub-fetch-repository)
-                        `((owner . ,owner)
-                          (name  . ,name))
-                        callback until
-                        :narrow   '(repository)
-                        :username username
-                        :auth     auth
-                        :host     host
-                        :forge    forge
-                        :headers  headers
-                        :paginate paginate
-                        :errorback errorback))
+  (ghub-query (if sparse
+                  ghub-fetch-repository-sparse
+                ghub-fetch-repository)
+              `((owner . ,owner)
+                (name  . ,name))
+              :until     until
+              :narrow    '(repository)
+              :username  username
+              :auth      auth
+              :host      host
+              :forge     forge
+              :headers   headers
+              :paginate  paginate
+              :callback  callback
+              :errorback errorback))
 
 (cl-defun ghub-fetch-discussion ( owner name number callback
                                   &optional until
@@ -287,19 +288,20 @@ data as the only argument."
   "Asynchronously fetch forge data about the specified discussion.
 Once all data has been collected, CALLBACK is called with the
 data as the only argument."
-  (ghub--graphql-vacuum (ghub--graphql-prepare-query
-                         ghub-fetch-repository
-                         `(repository discussions (discussion . ,number)))
-                        `((owner . ,owner)
-                          (name  . ,name))
-                        callback until
-                        :narrow   '(repository discussion)
-                        :username username
-                        :auth     auth
-                        :host     host
-                        :forge    forge
-                        :headers  headers
-                        :errorback errorback))
+  (ghub-query (ghub--graphql-prepare-query
+               ghub-fetch-repository
+               `(repository discussions (discussion . ,number)))
+              `((owner . ,owner)
+                (name  . ,name))
+              :until     until
+              :narrow    '(repository discussion)
+              :username  username
+              :auth      auth
+              :host      host
+              :forge     forge
+              :headers   headers
+              :callback  callback
+              :errorback errorback))
 
 (cl-defun ghub-fetch-issue ( owner name number callback
                              &optional until
@@ -308,20 +310,21 @@ data as the only argument."
   "Asynchronously fetch forge data about the specified issue.
 Once all data has been collected, CALLBACK is called with the
 data as the only argument."
-  (ghub--graphql-vacuum (ghub--graphql-narrow-query
-                         ghub-fetch-repository
-                         `(repository issues (issue . ,number)))
-                        `((owner . ,owner)
-                          (name  . ,name))
-                        callback until
-                        :narrow   '(repository issue)
-                        :username username
-                        :auth     auth
-                        :host     host
-                        :forge    forge
-                        :headers  headers
-                        :paginate paginate
-                        :errorback errorback))
+  (ghub-query (ghub--graphql-narrow-query
+               ghub-fetch-repository
+               `(repository issues (issue . ,number)))
+              `((owner . ,owner)
+                (name  . ,name))
+              :until     until
+              :narrow    '(repository issue)
+              :username  username
+              :auth      auth
+              :host      host
+              :forge     forge
+              :headers   headers
+              :paginate  paginate
+              :callback  callback
+              :errorback errorback))
 
 (cl-defun ghub-fetch-pullreq ( owner name number callback
                                &optional until
@@ -330,20 +333,21 @@ data as the only argument."
   "Asynchronously fetch forge data about the specified pull-request.
 Once all data has been collected, CALLBACK is called with the
 data as the only argument."
-  (ghub--graphql-vacuum (ghub--graphql-narrow-query
-                         ghub-fetch-repository
-                         `(repository pullRequests (pullRequest . ,number)))
-                        `((owner . ,owner)
-                          (name  . ,name))
-                        callback until
-                        :narrow   '(repository pullRequest)
-                        :username username
-                        :auth     auth
-                        :host     host
-                        :forge    forge
-                        :headers  headers
-                        :paginate paginate
-                        :errorback errorback))
+  (ghub-query (ghub--graphql-narrow-query
+               ghub-fetch-repository
+               `(repository pullRequests (pullRequest . ,number)))
+              `((owner . ,owner)
+                (name  . ,name))
+              :until     until
+              :narrow    '(repository pullRequest)
+              :username  username
+              :auth      auth
+              :host      host
+              :forge     forge
+              :headers   headers
+              :paginate  paginate
+              :callback  callback
+              :errorback errorback))
 
 (cl-defun ghub-fetch-review-threads ( owner name number callback
                                       &optional until
@@ -352,20 +356,21 @@ data as the only argument."
   "Asynchronously fetch forge data about the review threads from a pull-request.
 Once all data has been collected, CALLBACK is called with the
 data as the only argument."
-  (ghub--graphql-vacuum (ghub--graphql-narrow-query
-                         ghub-fetch-repository-review-threads
-                         `(repository pullRequests (pullRequest . ,number)))
-                        `((owner . ,owner)
-                          (name  . ,name))
-                        callback until
-                        :narrow   '(repository pullRequest)
-                        :username username
-                        :auth     auth
-                        :host     host
-                        :forge    forge
-                        :headers  headers
-                        :paginate paginate
-                        :errorback errorback))
+  (ghub-query (ghub--graphql-narrow-query
+               ghub-fetch-repository-review-threads
+               `(repository pullRequests (pullRequest . ,number)))
+              `((owner . ,owner)
+                (name  . ,name))
+              :until     until
+              :narrow    '(repository pullRequest)
+              :username  username
+              :auth      auth
+              :host      host
+              :forge     forge
+              :headers   headers
+              :paginate  paginate
+              :callback  callback
+              :errorback errorback))
 
 ;;; _
 (provide 'ghub-legacy)
