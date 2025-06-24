@@ -426,22 +426,6 @@ See Info node `(ghub)GraphQL Support'."
     :callback  (and (not (eq callback 'synchronous)) callback)
     :errorback (and (not (eq callback 'synchronous)) errorback))))
 
-(defvar ghub--graphql-synchronous-value nil)
-
-(cl-defun ghub--graphql-synchronous ( query variables
-                                      &optional until
-                                      &key narrow username auth host forge
-                                      headers paginate)
-  "Make a synchronous GraphQL request using QUERY and VARIABLES.
-See Info node `(ghub)GraphQL Support'."
-  (unwind-protect
-      (progn (ghub--graphql-vacuum query variables 'synchronous until
-                                   :narrow narrow :username username
-                                   :auth auth :host host :forge forge
-                                   :headers headers :paginate paginate)
-             ghub--graphql-synchronous-value)
-    (setq ghub--graphql-synchronous-value nil)))
-
 (cl-defun ghub--graphql-retrieve (req &optional lineage cursor)
   (let ((p (cl-incf (ghub--graphql-req-pages req))))
     (when (> p 1)
@@ -598,7 +582,6 @@ See Info node `(ghub)GraphQL Support'."
                (ghub--graphql-set-mode-line req nil)
                (throw :done nil))
               (t
-               (setq ghub--graphql-synchronous-value (treepy-root loc))
                (throw :done nil)))))))
 
 (defun ghub--graphql-lineage (loc)
