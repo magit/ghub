@@ -29,6 +29,26 @@
 
 (require 'ghub-graphql)
 
+(cl-defun ghub-graphql (graphql
+                        &optional variables
+                        &key username auth host forge
+                        headers silent
+                        callback errorback value extra)
+  (cl-assert (not (stringp variables)))
+  (cl-assert (or (stringp graphql)
+                 (memq (car-safe graphql) '(query mutation))))
+  (unless (stringp graphql)
+    (setq graphql (gsexp-encode (ghub--graphql-prepare-query graphql))))
+  (ghub-request "POST"
+                (if (eq forge 'gitlab) "/api/graphql" "/graphql")
+                nil
+                :payload `((query . ,graphql)
+                           ,@(and variables `((variables ,@variables))))
+                :headers headers :silent silent
+                :username username :auth auth :host host :forge forge
+                :callback callback :errorback errorback
+                :extra extra :value value))
+
 (cl-defun ghub--graphql (graphql
                          &optional variables
                          &key username auth host forge
