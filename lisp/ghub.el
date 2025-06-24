@@ -101,20 +101,21 @@ only serves as documentation.")
 (cl-defstruct (ghub--req
                (:constructor ghub--make-req)
                (:copier nil))
-  (url        nil :read-only nil)
-  (forge      nil :read-only t)
-  (silent     nil :read-only t)
-  (method     nil :read-only t)
-  (headers    nil :read-only t)
-  (handler    nil :read-only t)
-  (unpaginate nil :read-only nil)
-  (noerror    nil :read-only t)
-  (reader     nil :read-only t)
-  (buffer     nil :read-only t)
-  (callback   nil :read-only t)
-  (errorback  nil :read-only t)
-  (value      nil :read-only nil)
-  (extra      nil :read-only nil))
+  (url         nil :read-only nil)
+  (forge       nil :read-only t)
+  (silent      nil :read-only t)
+  (method      nil :read-only t)
+  (headers     nil :read-only t)
+  (handler     nil :read-only t)
+  (unpaginate  nil :read-only nil)
+  (noerror     nil :read-only t)
+  (reader      nil :read-only t)
+  (buffer      nil :read-only t)
+  (synchronous nil :read-only t)
+  (callback    nil :read-only t)
+  (errorback   nil :read-only t)
+  (value       nil :read-only nil)
+  (extra       nil :read-only nil))
 
 (defalias 'ghub-req-extra #'ghub--req-extra)
 
@@ -338,20 +339,21 @@ Both callbacks are called with four arguments.
   (ghub--retrieve
    (ghub--encode-payload payload)
    (ghub--make-req
-    :url        (ghub--encode-url host resource query)
-    :forge      forge
-    :silent     silent
-    :method     (encode-coding-string method 'utf-8) ;#35
-    :headers    (ghub--headers headers host auth username forge)
-    :handler    #'ghub--handle-response
-    :unpaginate unpaginate
-    :noerror    noerror
-    :reader     reader
-    :buffer     (current-buffer)
-    :callback   callback
-    :errorback  errorback
-    :value      value
-    :extra      extra)))
+    :url         (ghub--encode-url host resource query)
+    :forge       forge
+    :silent      silent
+    :method      (encode-coding-string method 'utf-8) ;#35
+    :headers     (ghub--headers headers host auth username forge)
+    :handler     #'ghub--handle-response
+    :unpaginate  unpaginate
+    :noerror     noerror
+    :reader      reader
+    :buffer      (current-buffer)
+    :synchronous (not (or callback errorback))
+    :callback    callback
+    :errorback   errorback
+    :value       value
+    :extra       extra)))
 
 (defun ghub-continue (req)
   "If there is a next page, then retrieve that.
@@ -479,19 +481,18 @@ Signal an error if the id cannot be determined."
 
 (cl-defun ghub--retrieve (payload req)
   (pcase-let*
-      (((cl-struct ghub--req headers method url handler silent) req)
+      (((cl-struct ghub--req headers method url handler silent synchronous) req)
        (url-request-extra-headers
         (if (functionp headers) (funcall headers) headers))
        (url-request-method method)
        (url-request-data payload)
        (url-show-status nil))
-    (if (or (ghub--req-callback  req)
-            (ghub--req-errorback req))
-        (url-retrieve url handler (list req) silent)
-      (if-let ((buf (url-retrieve-synchronously url silent)))
-          (with-current-buffer buf
-            (funcall handler (car url-callback-arguments) req))
-        (error "ghub--retrieve: No buffer returned")))))
+    (if synchronous
+        (if-let ((buf (url-retrieve-synchronously url silent)))
+            (with-current-buffer buf
+              (funcall handler (car url-callback-arguments) req))
+          (error "ghub--retrieve: No buffer returned"))
+      (url-retrieve url handler (list req) silent))))
 
 (defun ghub--handle-response (status req)
   (let ((buf (current-buffer)))
