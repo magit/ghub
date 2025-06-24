@@ -212,7 +212,7 @@ repositories.")
 
 (defun ghub--graphql-handle-success (req data)
   (ghub--graphql-set-mode-line req)
-  (let ((narrow (ghub--graphql-req-narrow req)))
+  (when-let ((narrow (ghub--graphql-req-narrow req)))
     (while-let ((key (pop narrow)))
       (setq data (cdr (assq key data)))))
   (setf (ghub--req-value req) data)
