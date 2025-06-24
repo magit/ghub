@@ -171,7 +171,7 @@ repositories.")
         (if (treepy-end-p loc)
             (let ((node (copy-sequence (treepy-node loc))))
               (when variables
-                (push (vconcat variables)
+                (push (vconcat (nreverse variables))
                       (cdr node)))
               (throw :done node))
           (setq loc (treepy-next loc)))))))
