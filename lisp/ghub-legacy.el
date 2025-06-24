@@ -42,6 +42,17 @@
                         :headers   headers
                         :errorback errorback))
 
+(cl-defun ghub--graphql-vacuum
+    ( query variables callback
+      &optional until
+      &key narrow username auth host forge
+      headers paginate errorback noerror synchronous)
+  (ghub-query query variables
+    :until until :narrow narrow :headers headers :paginate paginate
+    :callback callback
+    :errorback errorback :noerror noerror :synchronous synchronous
+    :username username :auth auth :host host :forge forge))
+
 ;;; _
 (provide 'ghub-legacy)
 ;;; ghub-legacy.el ends here

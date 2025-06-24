@@ -394,10 +394,12 @@ data as the only argument."
   (paginate  nil :read-only nil)
   (narrow    nil :read-only t))
 
-(cl-defun ghub--graphql-vacuum ( query variables callback
-                                 &optional until
-                                 &key narrow username auth host forge
-                                 headers paginate errorback noerror synchronous)
+(cl-defun ghub-query
+    (query &optional variables
+           &key until narrow headers paginate
+           callback errorback noerror synchronous
+           username auth host forge)
+  (declare (indent defun))
   (unless forge
     (setq forge 'github))
   (unless host
