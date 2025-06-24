@@ -522,24 +522,24 @@ data as the only argument."
   (ghub--graphql-set-mode-line req)
   (setf (ghub--req-value req) errors)
   (if-let ((errorback (ghub--req-errorback req)))
-      (let ((buffer (ghub--req-buffer req)))
-        (with-current-buffer
-            (if (buffer-live-p buffer) buffer (current-buffer))
-          (funcall errorback errors headers status req)))
+      (ghub--graphql-run-callback req errorback errors headers status req)
     (ghub--signal-error errors)))
 
 (defun ghub--graphql-handle-success (req data)
   (ghub--graphql-set-mode-line req)
-  (let ((callback (ghub--req-callback req))
-        (buffer   (ghub--req-buffer req))
-        (narrow   (ghub--graphql-req-narrow req)))
+  (let ((narrow (ghub--graphql-req-narrow req)))
     (while-let ((key (pop narrow)))
-      (setq data (cdr (assq key data))))
-    (setf (ghub--req-value req) data)
-    (with-current-buffer
-        (if (buffer-live-p buffer) buffer (current-buffer))
-      (funcall (or callback #'ghub--graphql-pp-response)
-               data))))
+      (setq data (cdr (assq key data)))))
+  (setf (ghub--req-value req) data)
+  (ghub--graphql-run-callback
+   req (or (ghub--req-callback req) #'ghub--graphql-pp-response) data))
+
+(defun ghub--graphql-run-callback (req callback &rest args)
+  (let ((buffer (ghub--req-buffer req)))
+    (if (buffer-live-p buffer)
+        (with-current-buffer buffer
+          (apply callback args))
+      (apply callback args))))
 
 (defun ghub--graphql-walk-response (req data)
   (let* ((loc (ghub--req-value req))
