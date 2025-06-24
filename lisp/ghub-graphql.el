@@ -449,7 +449,8 @@ data as the only argument."
     `((query . ,(ghub--graphql-req-query-str req))
       ,@(and-let* ((variables (ghub--graphql-req-variables req)))
           `((variables . ,variables)))))
-   req))
+   req)
+  (ghub--req-value req))
 
 (defun ghub--graphql-prepare-query (query &optional lineage cursor paginate)
   (when lineage
@@ -520,6 +521,7 @@ data as the only argument."
 
 (defun ghub--graphql-handle-failure (req errors headers status)
   (ghub--graphql-set-mode-line req)
+  (setf (ghub--req-value req) errors)
   (if-let ((errorback (ghub--req-errorback req)))
       (let ((buffer (ghub--req-buffer req)))
         (with-current-buffer
@@ -534,6 +536,7 @@ data as the only argument."
         (narrow   (ghub--graphql-req-narrow req)))
     (while-let ((key (pop narrow)))
       (setq data (cdr (assq key data))))
+    (setf (ghub--req-value req) data)
     (with-current-buffer
         (if (buffer-live-p buffer) buffer (current-buffer))
       (funcall (or callback #'ghub--graphql-pp-response)
