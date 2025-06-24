@@ -520,6 +520,7 @@ See Info node `(ghub)GraphQL Support'."
         (kill-buffer buf)))))
 
 (defun ghub--graphql-handle-failure (req errors headers status)
+  (ghub--graphql-set-mode-line req)
   (if-let ((errorback (ghub--req-errorback req)))
       (let ((buffer (ghub--req-buffer req)))
         (with-current-buffer
@@ -528,6 +529,7 @@ See Info node `(ghub)GraphQL Support'."
     (ghub--signal-error errors)))
 
 (defun ghub--graphql-handle-success (req data)
+  (ghub--graphql-set-mode-line req)
   (let ((callback (ghub--req-callback req))
         (buffer   (ghub--req-buffer req))
         (narrow   (ghub--graphql-req-narrow req)))
@@ -579,9 +581,9 @@ See Info node `(ghub)GraphQL Support'."
                (setq loc (treepy-next loc)))
               ((ghub--req-callback req)
                (ghub--graphql-handle-success req (treepy-root loc))
-               (ghub--graphql-set-mode-line req nil)
                (throw :done nil))
               (t
+               (ghub--graphql-set-mode-line req)
                (throw :done nil)))))))
 
 (defun ghub--graphql-lineage (loc)
@@ -644,12 +646,12 @@ See Info node `(ghub)GraphQL Support'."
         (make-node (lambda (_ children) children)))
     (treepy-zipper branchp #'identity make-node root)))
 
-(defun ghub--graphql-set-mode-line (req string &rest args)
+(defun ghub--graphql-set-mode-line (req &optional format &rest args)
   (let ((buffer (ghub--graphql-req-buffer req)))
     (when (buffer-live-p buffer)
       (with-current-buffer buffer
         (setq mode-line-process
-              (and string (concat " " (apply #'format string args))))
+              (and format (concat " " (apply #'format format args))))
         (force-mode-line-update t)))))
 
 (defun ghub--graphql-pp-response (data)
