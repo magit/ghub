@@ -226,6 +226,17 @@ repositories.")
           (apply callback args))
       (apply callback args))))
 
+(defun ghub--graphql-set-mode-line (req &optional format &rest args)
+  (let ((buffer (ghub--graphql-req-buffer req)))
+    (when (buffer-live-p buffer)
+      (with-current-buffer buffer
+        (setq mode-line-process
+              (and format (concat " " (apply #'format format args))))
+        (force-mode-line-update t)))))
+
+(defun ghub--graphql-pp-response (data)
+  (pp-display-expression data "*Pp Eval Output*"))
+
 (defun ghub--graphql-walk-response (req data)
   (let* ((loc (ghub--req-value req))
          (loc (if (not loc)
@@ -327,17 +338,6 @@ repositories.")
   (let ((branchp (##and (listp %) (listp (cdr %))))
         (make-node (lambda (_ children) children)))
     (treepy-zipper branchp #'identity make-node root)))
-
-(defun ghub--graphql-set-mode-line (req &optional format &rest args)
-  (let ((buffer (ghub--graphql-req-buffer req)))
-    (when (buffer-live-p buffer)
-      (with-current-buffer buffer
-        (setq mode-line-process
-              (and format (concat " " (apply #'format format args))))
-        (force-mode-line-update t)))))
-
-(defun ghub--graphql-pp-response (data)
-  (pp-display-expression data "*Pp Eval Output*"))
 
 ;;; _
 (provide 'ghub-graphql)
