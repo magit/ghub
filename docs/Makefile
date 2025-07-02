@@ -46,6 +46,7 @@ HTML_FIXUP_CSS    = '/<link rel="stylesheet" type="text\/css" href="\/assets\/pa
 \n<script src="/assets/js/simple-css-switch.js"></script>'
 HTML_FIXUP_ONLOAD = 's/<body lang="en">/<body lang="en" onload="simpleCssSwitch()">/'
 HTML_FIXUP_MENU   = '/<\/body>/i<div id="s-css-s--menu"><\/div>'
+HTML_FIXUP_HREF   = 's% href="\.\./\(.*\)_html/% href="../\1/%'
 
 %.html: %.texi
 	@printf "Generating $@\n"
@@ -57,7 +58,7 @@ HTML_FIXUP_MENU   = '/<\/body>/i<div id="s-css-s--menu"><\/div>'
 	@rm -rf $(PKG)
 	@$(MAKEINFO) --html -o $(PKG)/ $(MANUAL_HTML_ARGS) $<
 	@for f in $$(find $(PKG) -name '*.html') ; do \
-	sed -i -e $(HTML_FIXUP_CSS) -e $(HTML_FIXUP_ONLOAD) -e $(HTML_FIXUP_MENU) $$f ; \
+	sed -i -e $(HTML_FIXUP_CSS) -e $(HTML_FIXUP_ONLOAD) -e $(HTML_FIXUP_MENU) -e $(HTML_FIXUP_HREF) $$f ; \
 	done
 
 %.pdf: %.texi
