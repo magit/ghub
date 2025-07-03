@@ -466,7 +466,7 @@ Signal an error if the id cannot be determined."
                                  name)
                          nil :forge 'gitlab
                          :username username :auth auth :host host))))
-        ((or 'gitea 'gogs)
+        ((or 'forgejo 'gitea 'gogs)
          (number-to-string
           (alist-get
            'id (ghub-get (format "/repos/%s/%s" owner name)
@@ -698,13 +698,13 @@ and call `auth-source-forget+'."
     (setq username (ghub--username host forge)))
   (if (eq auth 'basic)
       (pcase-exhaustive forge
-        ((or 'nil 'gitea 'gogs 'bitbucket)
+        ((or 'nil 'forgejo 'gitea 'gogs 'bitbucket)
          (cons "Authorization" (ghub--basic-auth host username)))
         ((or 'github 'gitlab)
          (error "%s does not support basic authentication"
                 (capitalize (symbol-name forge)))))
     (cons (pcase-exhaustive forge
-            ((or 'nil 'github 'gitea 'gogs 'bitbucket) "Authorization")
+            ((or 'nil 'forgejo 'github 'gitea 'gogs 'bitbucket) "Authorization")
             ('gitlab "Private-Token"))
           (if (eq forge 'bitbucket)
               ;; For some undocumented reason Bitbucket supports
