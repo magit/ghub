@@ -397,7 +397,7 @@ data as the only argument."
 (cl-defun ghub--graphql-vacuum ( query variables callback
                                  &optional until
                                  &key narrow username auth host forge
-                                 headers paginate errorback synchronous)
+                                 headers paginate errorback noerror synchronous)
   (unless forge
     (setq forge 'github))
   (unless host
@@ -405,7 +405,8 @@ data as the only argument."
   (unless (or username (stringp auth) (eq auth 'none))
     (setq username (ghub--username host forge)))
   (when (eq callback 'pp)
-    (setq callback #'ghub--graphql-pp-response))
+    (setq callback #'ghub--graphql-pp-response)
+    (setq noerror t))
   (ghub--graphql-retrieve
    (ghub--make-graphql-req
     :url         (ghub--encode-url
@@ -423,6 +424,7 @@ data as the only argument."
                                         (fboundp 'magit-get)
                                         (magit-get "forge.graphqlItemLimit"))))
                        (string-to-number p)))
+    :noerror     noerror
     :synchronous synchronous
     :callback    callback
     :errorback   errorback)))
@@ -524,9 +526,12 @@ data as the only argument."
   (setf (ghub--req-value req) errors)
   (if-let ((errorback (ghub--req-errorback req)))
       (ghub--graphql-run-callback req errorback errors headers status req)
-    (ghub--signal-error (if (eq (car errors) 'errors)
-                            (cons 'ghub-graphql-error (cdr errors))
-                          errors))))
+    (if (ghub--req-noerror req)
+        (when-let ((callback (ghub--req-callback req)))
+          (ghub--graphql-run-callback req callback errors))
+      (ghub--signal-error (if (eq (car errors) 'errors)
+                              (cons 'ghub-graphql-error (cdr errors))
+                            errors)))))
 
 (defun ghub--graphql-handle-success (req data)
   (ghub--graphql-set-mode-line req)
