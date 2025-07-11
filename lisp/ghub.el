@@ -803,4 +803,5 @@ or (info \"(ghub)Getting Started\") for instructions."
 ;;; _
 (provide 'ghub)
 (require 'ghub-graphql)
+(require 'ghub-legacy)
 ;;; ghub.el ends here

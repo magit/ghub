@@ -5,6 +5,7 @@ PKG = ghub
 ELS   = $(PKG).el
 ELS  += gsexp.el
 ELS  += $(PKG)-graphql.el
+ELS  += $(PKG)-legacy.el
 ELCS  = $(ELS:.el=.elc)
 
 DEPS  = compat
