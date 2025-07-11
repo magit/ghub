@@ -397,7 +397,7 @@ data as the only argument."
 (cl-defun ghub--graphql-vacuum ( query variables callback
                                  &optional until
                                  &key narrow username auth host forge
-                                 headers paginate errorback)
+                                 headers paginate errorback synchronous)
   (unless forge
     (setq forge 'github))
   (unless host
@@ -406,23 +406,24 @@ data as the only argument."
     (setq username (ghub--username host forge)))
   (ghub--graphql-retrieve
    (ghub--make-graphql-req
-    :url       (ghub--encode-url
-                host (if (eq forge 'gitlab) "/api/graphql" "/graphql"))
-    :method    "POST"
-    :headers   (ghub--headers headers host auth username forge)
-    :handler   #'ghub--graphql-handle-response
-    :query     query
-    :variables variables
-    :until     until
-    :buffer    (current-buffer)
-    :narrow    narrow
-    :paginate  (or paginate
-                   (and-let* ((p (and (eq auth 'forge)
-                                      (fboundp 'magit-get)
-                                      (magit-get "forge.graphqlItemLimit"))))
-                     (string-to-number p)))
-    :callback  (and (not (eq callback 'synchronous)) callback)
-    :errorback (and (not (eq callback 'synchronous)) errorback))))
+    :url         (ghub--encode-url
+                  host (if (eq forge 'gitlab) "/api/graphql" "/graphql"))
+    :method      "POST"
+    :headers     (ghub--headers headers host auth username forge)
+    :handler     #'ghub--graphql-handle-response
+    :query       query
+    :variables   variables
+    :until       until
+    :buffer      (current-buffer)
+    :narrow      narrow
+    :paginate    (or paginate
+                     (and-let* ((p (and (eq auth 'forge)
+                                        (fboundp 'magit-get)
+                                        (magit-get "forge.graphqlItemLimit"))))
+                       (string-to-number p)))
+    :synchronous synchronous
+    :callback    callback
+    :errorback   errorback)))
 
 (cl-defun ghub--graphql-retrieve (req &optional lineage cursor)
   (let ((p (cl-incf (ghub--graphql-req-pages req))))
@@ -575,14 +576,10 @@ data as the only argument."
                                                cursor)
                        (throw :done nil))
                       ((setq loc (treepy-replace loc (cons key nodes)))))))))
-        (cond ((not (treepy-end-p loc))
-               (setq loc (treepy-next loc)))
-              ((ghub--req-callback req)
-               (ghub--graphql-handle-success req (treepy-root loc))
-               (throw :done nil))
-              (t
-               (ghub--graphql-set-mode-line req)
-               (throw :done nil)))))))
+        (if (treepy-end-p loc)
+            (progn (ghub--graphql-handle-success req (treepy-root loc))
+                   (throw :done nil))
+          (setq loc (treepy-next loc)))))))
 
 (defun ghub--graphql-lineage (loc)
   (let (lineage)
