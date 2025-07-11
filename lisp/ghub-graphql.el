@@ -404,6 +404,8 @@ data as the only argument."
     (setq host (ghub--host forge)))
   (unless (or username (stringp auth) (eq auth 'none))
     (setq username (ghub--username host forge)))
+  (when (eq callback 'pp)
+    (setq callback #'ghub--graphql-pp-response))
   (ghub--graphql-retrieve
    (ghub--make-graphql-req
     :url         (ghub--encode-url
@@ -532,8 +534,8 @@ data as the only argument."
     (while-let ((key (pop narrow)))
       (setq data (cdr (assq key data)))))
   (setf (ghub--req-value req) data)
-  (ghub--graphql-run-callback
-   req (or (ghub--req-callback req) #'ghub--graphql-pp-response) data))
+  (when-let ((callback (ghub--req-callback req)))
+    (ghub--graphql-run-callback req callback data)))
 
 (defun ghub--graphql-run-callback (req callback &rest args)
   (let ((buffer (ghub--req-buffer req)))
