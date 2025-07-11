@@ -29,6 +29,19 @@
 
 (require 'ghub-graphql)
 
+(cl-defun ghub--graphql (graphql
+                         &optional variables
+                         &key username auth host forge
+                         headers
+                         callback errorback)
+  (ghub--graphql-vacuum graphql variables callback nil
+                        :username  username
+                        :auth      auth
+                        :host      host
+                        :forge     forge
+                        :headers   headers
+                        :errorback errorback))
+
 ;;; _
 (provide 'ghub-legacy)
 ;;; ghub-legacy.el ends here
