@@ -398,8 +398,6 @@ data as the only argument."
                                  &optional until
                                  &key narrow username auth host forge
                                  headers paginate errorback)
-  "Make a GraphQL request using QUERY and VARIABLES.
-See Info node `(ghub)GraphQL Support'."
   (unless forge
     (setq forge 'github))
   (unless host
