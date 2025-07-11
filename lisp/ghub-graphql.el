@@ -35,8 +35,6 @@
 
 (define-error 'ghub-graphql-error "GraphQL Error" 'ghub-error)
 
-;;; Settings
-
 (defvar ghub-graphql-message-progress nil
   "Whether to show \"Fetching page N...\" in echo area during requests.
 By default this information is only shown in the mode-line of the buffer
@@ -50,43 +48,12 @@ echo area as well.")
 Adjust this value if you're hitting query timeouts against larger
 repositories.")
 
-;;; Mutations
-
-(cl-defun ghub-graphql (graphql
-                        &optional variables
-                        &key username auth host forge
-                        headers silent
-                        callback errorback value extra)
-  "Make a GraphQL request using GRAPHQL and VARIABLES.
-Return the response as a JSON-like alist.  Even if the response
-contains `errors', do not raise an error.  GRAPHQL is a GraphQL
-string.  VARIABLES is a JSON-like alist.  The other arguments
-behave as for `ghub-request' (which see)."
-  (cl-assert (not (stringp variables)))
-  (cl-assert (or (stringp graphql)
-                 (memq (car-safe graphql) '(query mutation))))
-  (unless (stringp graphql)
-    (setq graphql (gsexp-encode (ghub--graphql-prepare-query graphql))))
-  (ghub-request "POST"
-                (if (eq forge 'gitlab) "/api/graphql" "/graphql")
-                nil
-                :payload `((query . ,graphql)
-                           ,@(and variables `((variables ,@variables))))
-                :headers headers :silent silent
-                :username username :auth auth :host host :forge forge
-                :callback callback :errorback errorback
-                :extra extra :value value))
-
-;;; Queries
-
 (cl-defun ghub-graphql-rate-limit (&key username auth host)
   "Return rate limit information."
   (let-alist (ghub-query
               '(query (rateLimit limit cost remaining resetAt)) nil
               :synchronous t :username username :auth auth :host host)
     .data.rateLimit))
-
-;;; Internal
 
 (cl-defstruct (ghub--graphql-req
                (:include ghub--req)
