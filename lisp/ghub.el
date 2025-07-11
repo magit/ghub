@@ -338,19 +338,7 @@ Both callbacks are called with four arguments.
   (ghub--retrieve
    (ghub--encode-payload payload)
    (ghub--make-req
-    :url (url-generic-parse-url
-          (concat (if (member host ghub-insecure-hosts) "http://" "https://")
-                  (cond ((and (equal resource "/graphql")
-                              (string-suffix-p "/v3" host))
-                         ;; Needed for some Github Enterprise instances.
-                         (substring host 0 -3))
-                        ((and (equal resource "/api/graphql")
-                              (string-suffix-p "/api/v4" host))
-                         ;; Needed for all Gitlab instances.
-                         (substring host 0 -7))
-                        (host))
-                  resource
-                  (and query (concat "?" (ghub--url-encode-params query)))))
+    :url        (ghub--encode-url host resource query)
     :forge      forge
     :silent     silent
     :method     (encode-coding-string method 'utf-8) ;#35
@@ -646,6 +634,22 @@ Signal an error if the id cannot be determined."
                         :null-object :null
                         :false-object nil)
         'utf-8))))
+
+(defun ghub--encode-url (host resource &optional query)
+  (url-generic-parse-url
+   (concat (if (member host ghub-insecure-hosts) "http://" "https://")
+           ;; Needed for some Github Enterprise instances.
+           (cond
+            ((and (equal resource "/graphql")
+                  (string-suffix-p "/v3" host))
+             (substring host 0 -3))
+            ;; Needed for all Gitlab instances.
+            ((and (equal resource "/api/graphql")
+                  (string-suffix-p "/api/v4" host))
+             (substring host 0 -7))
+            (host))
+           resource
+           (and query (concat "?" (ghub--url-encode-params query))))))
 
 (defun ghub--url-encode-params (params)
   (mapconcat (lambda (param)

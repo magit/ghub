@@ -414,17 +414,16 @@ data as the only argument."
                                  headers paginate errorback)
   "Make a GraphQL request using QUERY and VARIABLES.
 See Info node `(ghub)GraphQL Support'."
+  (unless forge
+    (setq forge 'github))
   (unless host
     (setq host (ghub--host forge)))
   (unless (or username (stringp auth) (eq auth 'none))
     (setq username (ghub--username host forge)))
   (ghub--graphql-retrieve
    (ghub--make-graphql-req
-    :url       (url-generic-parse-url
-                (format "https://%s/graphql"
-                        (if (string-suffix-p "/v3" host)
-                            (substring host 0 -3)
-                          host)))
+    :url       (ghub--encode-url
+                host (if (eq forge 'gitlab) "/api/graphql" "/graphql"))
     :method    "POST"
     :headers   (ghub--headers headers host auth username forge)
     :handler   #'ghub--graphql-handle-response
