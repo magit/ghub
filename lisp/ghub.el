@@ -316,6 +316,7 @@ Both callbacks are called with four arguments.
      argument.
   4. A `ghub--req' struct, which can be passed to `ghub-continue'
      (which see) to retrieve the next page, if any."
+  (declare (indent defun))
   (cl-assert (or (booleanp unpaginate) (natnump unpaginate)))
   (unless (string-prefix-p "/" resource)
     (setq resource (concat "/" resource)))
