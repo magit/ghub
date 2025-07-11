@@ -81,9 +81,9 @@ behave as for `ghub-request' (which see)."
 
 (cl-defun ghub-graphql-rate-limit (&key username auth host)
   "Return rate limit information."
-  (let-alist (ghub-graphql
-              '(query (rateLimit limit cost remaining resetAt))
-              nil :username username :auth auth :host host)
+  (let-alist (ghub-query
+              '(query (rateLimit limit cost remaining resetAt)) nil
+              :synchronous t :username username :auth auth :host host)
     .data.rateLimit))
 
 (defconst ghub-fetch-repository-sparse
