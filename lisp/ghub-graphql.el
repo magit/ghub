@@ -504,7 +504,6 @@ data as the only argument."
           (set-buffer-multibyte t)
           (let* ((headers (ghub--handle-response-headers status req))
                  (payload (ghub--handle-response-payload req))
-                 (payload (ghub--handle-response-error status payload req))
                  (err     (plist-get status :error))
                  (errors  (cdr (assq 'errors payload)))
                  (errors  (and errors (cons 'ghub-graphql-error errors))))
