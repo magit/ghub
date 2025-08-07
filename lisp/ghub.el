@@ -772,7 +772,7 @@ or (info \"(ghub)Getting Started\") for instructions."
          (host (or host (ghub--host forge)))
          (var (format "%s.%s.user" forge host)))
     (or (ghub--git-get var)
-        (if-let (((equal host (alist-get forge ghub-default-host-alist)))
+        (if-let ((_(equal host (alist-get forge ghub-default-host-alist)))
                  (default-var (format "%s.user" forge)))
             (or (ghub--git-get default-var)
                 (user-error "%s; `%s' and `%s' are both unset"
