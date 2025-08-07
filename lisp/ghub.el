@@ -11,7 +11,7 @@
 ;;     (emacs "29.1")
 ;;     (compat "30.1")
 ;;     (let-alist "1.0.6")
-;;     (llama "0.6.3")
+;;     (llama "1.0")
 ;;     (treepy "0.1.2"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
