@@ -10,7 +10,6 @@
 ;; Package-Requires: (
 ;;     (emacs "29.1")
 ;;     (compat "30.1")
-;;     (let-alist "1.0.6")
 ;;     (llama "1.0")
 ;;     (treepy "0.1.2"))
 
