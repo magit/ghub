@@ -77,7 +77,6 @@ API
 * Making REST Requests::
 * Making GraphQL Requests::
 * Github Convenience Wrappers::
-* Non-Github Convenience Wrappers::
 
 Notes
 
@@ -457,7 +456,6 @@ change.)
 * Making REST Requests::
 * Making GraphQL Requests::
 * Github Convenience Wrappers::
-* Non-Github Convenience Wrappers::
 @end menu
 
 @node Their APIs
@@ -608,9 +606,7 @@ argument.
 
 @item
 If @code{FORGE} is @code{gitlab}, then connect to Gitlab.com or, depending
-on @code{HOST}, to another Gitlab instance.  This is only intended for
-internal use.  Instead of using this argument you should use
-function @code{glab-request} and other @code{glab-*} functions.
+on @code{HOST}, to another Gitlab instance.
 
 @item
 If @code{CALLBACK} and/or @code{ERRORBACK} is non-nil, then this function makes
@@ -896,89 +892,6 @@ See @code{ghub-request}'s documentation above for information about the
 other arguments.
 @end defun
 
-@node Non-Github Convenience Wrappers
-@section Non-Github Convenience Wrappers
-
-@code{ghub-request} and @code{ghub-METHOD} can be used to make a request for any
-of the supported forge types, but except when making a request for
-a @code{github} instance, then that requires the use of the FORGE argument.
-
-To avoid that, functions named @code{FORGE-request} and @code{FORGE-METHOD} are also
-available.  The following forms are equivalent, for example:
-
-@lisp
-(ghub-get ... :auth 'PACKAGE :forge 'gitlab)
-(glab-get ... :auth 'PACKAGE)
-@end lisp
-
-These forms would remain equivalent even if you did not specify a
-value for the AUTH arguments — but you should not do that if you plan
-to share your code with others (see @ref{Using Ghub in Your Own Package}).
-If you do omit AUTH, then the request is made on behalf of the @code{ghub}
-package, @strong{regardless} of the symbol prefix of the function you use to do
-so.
-
-All @code{FORGE-request} and @code{FORGE-METHOD} functions, including but not
-limited to @code{ghub-METHOD}, are very simple wrappers around @code{ghub-request}.
-They take fewer arguments than @code{ghub-request} and instead pass constant
-values for the arguments METHOD and/or FORGE@.
-
-@defun buck-request resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun glab-request resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun gogs-request resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-Wrappers around @code{ghub-request} which hardcode the FORGE to either
-@code{bitbucket}, @code{gitlab}, @code{gogs} or @code{gitea}.
-@end defun
-
-@defun buck-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun buck-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun buck-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun buck-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun glab-head resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun glab-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun glab-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun glab-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun glab-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun glab-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun gogs-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun gogs-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun gogs-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun gogs-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun gogs-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun gtea-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun gtea-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun gtea-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun gtea-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-@end defun
-@defun gtea-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
-Wrappers around @code{FORGE-METHOD} which hardcode the FORGE to either
-@code{bitbucket}, @code{gitlab}, @code{gogs} or @code{gitea}, and the METHOD to the implied
-method.
-
-Note that @code{buck-head}, @code{buck-patch}, @code{gogs-head} and @code{gtea-head} do not exist
-because the respective APIs do not appear to support these methods.
-@end defun
-
 @node Notes
 @chapter Notes
 
@@ -1058,7 +971,8 @@ Where one would use @code{user/repo} when accessing another forge, one has
 to use @code{user%2Frepo} when accessing Gitlab, e.g.:
 
 @lisp
-(glab-get "/projects/python-mode-devs%2Fpython-mode")
+(ghub-get "/projects/python-mode-devs%2Fpython-mode"
+          nil :forge 'gitlab)
 @end lisp
 @end itemize
 
