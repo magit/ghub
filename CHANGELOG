@@ -1,12 +1,32 @@
 # -*- mode: org -*-
 * v5.0.0    UNRELEASED
 
-- Removed the libraries "buck.el", "glab.el", "gogs.el" and "gtea.el",
-  defining the functions ~{buck,glab,gogs,gtea}-{VERB,repository-id}~.
-  For now these libraries are available as new transitional packages
-  ~buck~, ~glab~, ~gogs~ and ~gtea~.  I recommend you stop using these wrapper
-  functions and instead use ~(ghub-VERB ... :forge FORGE)~, where FORGE
-  is one of ~bitbucket~, ~gitlab~, ~gogs~ and ~gitea~.
+- Added new GraphQL query function ~ghub-query~, replacing
+  ~ghub--graphql-vacuum~, ~ghub-graphql~ and ~ghub--graphql~ (which for the
+  time being are still provided by the new ~ghub-legacy~ library), and
+  ~ghub--graphql-synchronous~ (which was removed).  9790607, 3a3d209,
+  508e763
+
+- Deprecated ~ghub-fetch-repository~, ~ghub-fetch-repository-discussion~,
+  ~ghub-fetch-repository-issue~, ~ghub-fetch-repository-pullreq~ and
+  ~ghub-fetch-repository-review-threads~.  For the time being these
+  functions are still defined in the new ~ghub-legacy~ library, but a
+  future release will remove that.  Such high-level and opinionated
+  (i.e., optimized for the Forge package) functions are now
+  considered to be beyond the scope of this package.  d9d6559
+
+- Removed the libraries ~buck~, ~glab~, ~gogs~ and ~gtea~, defining the
+  functions ~{buck,glab,gogs,gtea}-{VERB,repository-id}~.  For now
+  these libraries are available as new, transitional packages ~buck~,
+  ~glab~, ~gogs~ and ~gtea~.  I recommend you stop using these wrapper
+  functions and instead use ~(ghub-VERB ... :forge FORGE)~, where
+  FORGE is one of ~bitbucket~, ~gitlab~, ~gogs~ and ~gitea~.
+
+- Added very rudimentary support for Forgejo.  #177
+
+- Fixed and improved host and username lookup.  6997e47
+
+- Fixed bugs in getting the value of Git variables.  d0576a1
 
 * v4.3.2    2025-06-01
 
