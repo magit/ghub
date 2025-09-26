@@ -344,7 +344,7 @@ hosts:
 @item
 @uref{https://github.com/settings/tokens}
 @item
-@uref{https://gitlab.com/-/profile/personal_access_tokens}
+@uref{https://gitlab.com/-/user_settings/personal_access_tokens}
 @end itemize
 
 For other forges we cannot provide a functioning URL because they
@@ -470,35 +470,35 @@ manuals:
 Github:
 @itemize
 @item
-@uref{https://developer.github.com/v4} (GraphQl)
+@uref{https://docs.github.com/en/graphql} (GraphQl)
 @item
-@uref{https://developer.github.com/v3} (REST)
+@uref{https://docs.github.com/en/rest} (REST)
 @end itemize
 @item
 Gitlab:
 @itemize
 @item
-@uref{https://docs.gitlab.com/ee/api/README.html}
+@uref{https://docs.gitlab.com/api}
 @end itemize
 @item
 Gitea:
 @itemize
 @item
-@uref{https://docs.gitea.io/en-us/api-usage}
+@uref{https://docs.gitea.com/next/development/api-usage}
 @item
-@uref{https://try.gitea.io/api/swagger}
+@uref{https://demo.gitea.com}
 @end itemize
 @item
 Gogs:
 @itemize
 @item
-@uref{https://github.com/gogs/go-gogs-client/wiki}
+@uref{https://gogs.io/docs}
 @end itemize
 @item
 Bitbucket:
 @itemize
 @item
-@uref{https://developer.atlassian.com/bitbucket/api/2/reference}
+@uref{https://developer.atlassian.com/cloud/bitbucket}
 @end itemize
 @end itemize
 
