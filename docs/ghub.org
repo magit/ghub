@@ -352,7 +352,7 @@ manuals:
   - https://developer.github.com/v4 (GraphQl)
   - https://developer.github.com/v3 (REST)
 - Gitlab:
-  - https://docs.gitlab.com/ee/api/README.html
+  - https://docs.gitlab.com/api/
 - Gitea:
   - https://docs.gitea.io/en-us/api-usage
   - https://try.gitea.io/api/swagger
@@ -717,7 +717,7 @@ making an initial request.
 
   See ~ghub-request~'s documentation above for information about the
   other arguments.
-  
+
 * Notes
 ** Using Ghub in Personal Scripts
 
