@@ -717,7 +717,7 @@ making an initial request.
 
   See ~ghub-request~'s documentation above for information about the
   other arguments.
-  
+
 * Notes
 ** Using Ghub in Personal Scripts
 
