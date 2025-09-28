@@ -794,6 +794,14 @@ or (info \"(ghub)Getting Started\") for instructions."
     (auth-source-forget spec)
     nil))
 
+(define-advice auth-source-netrc-parse (:around (fn &rest args) handle-symlink)
+  "Follow symlinks for FILE before comparing modification times."
+  (let ((file (plist-get args :file)))
+    (when (and (stringp file)
+               (file-exists-p file))
+      (setq args (plist-put args :file (file-chase-links file)))))
+  (apply fn args))
+
 (defun ghub--git-get (var)
   (catch 'non-zero
     (car (process-lines-handling-status
