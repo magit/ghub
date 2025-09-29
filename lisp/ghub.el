@@ -783,8 +783,7 @@ or (info \"(ghub)Getting Started\") for instructions."
 
 (defun ghub--auth-source-get (keys &rest spec)
   (declare (indent 1))
-  (if-let ((plist (car (apply #'auth-source-search
-                              (append spec (list :max 1))))))
+  (if-let ((plist (car (apply #'auth-source-search spec))))
       (if (keywordp keys)
           (plist-get plist keys)
         (mapcar (##plist-get plist %) keys))
