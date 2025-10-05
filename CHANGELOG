@@ -1,4 +1,8 @@
 # -*- mode: org -*-
+* v5.0.1    UNRELEASED
+
+- Fixed two token cache invalidation failures.  #180
+
 * v5.0.0    2025-09-09
 
 - Added new GraphQL query function ~ghub-query~, replacing
