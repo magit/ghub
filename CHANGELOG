@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v5.0.1    UNRELEASED
+* v5.0.1    2025-10-06
 
 - Fixed two token cache invalidation failures.  #180
 
