@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Ghub User and Developer Manual
-@subtitle for version 5.0.1
+@subtitle for version 5.0.2
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -48,7 +48,7 @@ Ghub is an Emacs library that is used by various packages to access
 the APIs of various instances of various Git forge implementations.
 
 @noindent
-This manual is for Ghub version 5.0.1.
+This manual is for Ghub version 5.0.2.
 
 @insertcopying
 @end ifnottex

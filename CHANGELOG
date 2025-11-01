@@ -1,4 +1,8 @@
 # -*- mode: org -*-
+* v5.0.2    2025-11-01
+
+Thoughts and whitespace.
+
 * v5.0.1    2025-10-06
 
 - Fixed two token cache invalidation failures.  #180
