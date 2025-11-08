@@ -201,7 +201,7 @@ For @code{gitlab} and @code{bitbucket} forges similar variables are available:
 @code{gitlab.HOST.user} specifies the user for the HOST @code{gitlab} instance.
 @item
 @code{gitlab.host} specifies the @code{gitlab} host, unless the HOST argument
-is non-nil
+is non-@code{nil}
 @item
 @code{bitbucket.user} specifies the @uref{https://bitbucket.org} user.
 @item
@@ -209,7 +209,7 @@ is non-nil
 instance.
 @item
 @code{bitbucket.host} specifies the @code{bitbucket} host, unless the HOST
-argument is non-nil.
+argument is non-@code{nil}.
 @end itemize
 
 For the @code{gitea} and @code{gogs} forges some similar variables are available,
@@ -223,14 +223,14 @@ for these two forges:
 @code{gitea.HOST.user} specifies the user for the HOST @code{gitea} instance.
 @item
 @code{gitea.host} specifies the @code{gitea} host, unless the HOST argument is
-non-nil
+non-@code{nil}
 @item
 @code{gogs.user} is @strong{not} used because no canonical @code{gogs} instance exists.
 @item
 @code{gogs.HOST.user} specifies the user for the HOST @code{gogs} instance.
 @item
 @code{gogs.host} specifies the @code{gogs} host, unless the HOST argument is
-non-nil
+non-@code{nil}
 @end itemize
 
 @node Setting the Username
@@ -550,28 +550,28 @@ mentions it explicitly.
 @end itemize
 
 @item
-If @code{SILENT} is non-nil, then progress reports and the like are not
+If @code{SILENT} is non-@code{nil}, then progress reports and the like are not
 messaged.
 
 @item
-If @code{UNPAGINATE} is t, then this function makes as many requests as
+If @code{UNPAGINATE} is @code{t}, then this function makes as many requests as
 necessary to get all values.  If @code{UNPAGINATE} is a natural number,
-then it gets at most that many pages.  For any other non-nil value
+then it gets at most that many pages.  For any other non-@code{nil} value
 it raises an error.
 
 @item
-If @code{NOERROR} is non-nil, then no error is raised if the request
+If @code{NOERROR} is non-@code{nil}, then no error is raised if the request
 fails and @code{nil} is returned instead.  If @code{NOERROR} is @code{return},
 then the error payload is returned instead of @code{nil}.
 
 @item
-If @code{READER} is non-nil, then it is used to read and return from
+If @code{READER} is non-@code{nil}, then it is used to read and return from
 the response buffer.  The default is @code{ghub--read-json-payload}.
 For the very few resources that do not return JSON, you might want
 to use @code{ghub--decode-payload}.
 
 @item
-If @code{USERNAME} is non-nil, then the request is made on behalf of
+If @code{USERNAME} is non-@code{nil}, then the request is made on behalf of
 that user.  It is better to specify the user using the Git
 variable @code{github.user} for "api.github.com", or @code{github.HOST.user}
 if connecting to a Github Enterprise instance.
@@ -598,7 +598,7 @@ the variable @code{AUTH-github-token-scopes}.  It is an error if that
 is not specified.  See @code{ghub-github-token-scopes} for an example.
 
 @item
-If @code{HOST} is non-nil, then connect to that Github instance.
+If @code{HOST} is non-@code{nil}, then connect to that Github instance.
 This defaults to "api.github.com".  When a repository is connected
 to a Github Enterprise instance, then it is better to specify that
 using the Git variable @code{github.host} instead of using this
@@ -609,12 +609,12 @@ If @code{FORGE} is @code{gitlab}, then connect to Gitlab.com or, depending
 on @code{HOST}, to another Gitlab instance.
 
 @item
-If @code{CALLBACK} and/or @code{ERRORBACK} is non-nil, then this function makes
+If @code{CALLBACK} and/or @code{ERRORBACK} is non-@code{nil}, then this function makes
 one or more asynchronous requests and calls @code{CALLBACK} or @code{ERRORBACK}
 when finished.  If no error occurred, then it calls @code{CALLBACK},
 unless that is @code{nil}.
 
-If an error occurred, then it calls @code{ERRORBACK}, or if that is nil,
+If an error occurred, then it calls @code{ERRORBACK}, or if that is @code{nil},
 then @code{CALLBACK}.  @code{ERRORBACK} can also be @code{t}, in which case it signals
 instead.  @code{NOERROR} is ignored for all asynchronous requests.
 
@@ -643,8 +643,8 @@ If there is a next page, then this function retrieves that.
 
 This function is only intended to be called from callbacks.  If
 there is a next page, then that is retrieved and the buffer that
-the result will be loaded into is returned, or t if the process
-has already completed.  If there is no next page, then return nil.
+the result will be loaded into is returned, or @code{t} if the process
+has already completed.  If there is no next page, then return @code{nil}.
 
 Callbacks are called with four arguments (see @code{ghub-request}).
 The forth argument is a @code{ghub--req} struct, intended to be passed
@@ -697,7 +697,7 @@ has returned.
 
 @defun ghub-response-link-relations req headers payload
 This function returns an alist of the link relations in @code{HEADERS}, or
-if optional @code{HEADERS} is nil, then those in @code{ghub-response-headers}.
+if optional @code{HEADERS} is @code{nil}, then those in @code{ghub-response-headers}.
 
 When accessing a Bitbucket instance then the link relations are in
 @code{PAYLOAD} instead of @code{HEADERS}, making their API merely RESTish and
@@ -794,7 +794,7 @@ an example.  This is only useful if you "cache" the response locally
 and want to avoid fetching data again that you already have.
 
 Other arguments behave as for @code{ghub-graphql} and @code{ghub-request}, more or
-less.  If @code{CALLBACK} is nil, pretty-print the response.
+less.  If @code{CALLBACK} is @code{nil}, pretty-print the response.
 @end defun
 
 Using @code{ghub--graphql-vacuum}, the following resource specific functions

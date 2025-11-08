@@ -108,12 +108,12 @@ For ~gitlab~ and ~bitbucket~ forges similar variables are available:
 - ~gitlab.user~ specifies the https://gitlab.com user.
 - ~gitlab.HOST.user~ specifies the user for the HOST ~gitlab~ instance.
 - ~gitlab.host~ specifies the ~gitlab~ host, unless the HOST argument
-  is non-nil
+  is non-~nil~
 - ~bitbucket.user~ specifies the https://bitbucket.org user.
 - ~bitbucket.HOST.user~ specifies the user for the HOST ~bitbucket~
   instance.
 - ~bitbucket.host~ specifies the ~bitbucket~ host, unless the HOST
-  argument is non-nil.
+  argument is non-~nil~.
 
 For the ~gitea~ and ~gogs~ forges some similar variables are available,
 however for some of the ~ghub.*~ variables no equivalent variable exist
@@ -122,11 +122,11 @@ for these two forges:
 - ~gitea.user~ is *not* used because no canonical ~gitea~ instance exists.
 - ~gitea.HOST.user~ specifies the user for the HOST ~gitea~ instance.
 - ~gitea.host~ specifies the ~gitea~ host, unless the HOST argument is
-  non-nil
+  non-~nil~
 - ~gogs.user~ is *not* used because no canonical ~gogs~ instance exists.
 - ~gogs.HOST.user~ specifies the user for the HOST ~gogs~ instance.
 - ~gogs.host~ specifies the ~gogs~ host, unless the HOST argument is
-  non-nil
+  non-~nil~
 
 ** Setting the Username
 
@@ -398,24 +398,24 @@ manuals:
       When that is the case, then the Github API documentation usually
       mentions it explicitly.
 
-  - If ~SILENT~ is non-nil, then progress reports and the like are not
+  - If ~SILENT~ is non-~nil~, then progress reports and the like are not
     messaged.
 
-  - If ~UNPAGINATE~ is t, then this function makes as many requests as
+  - If ~UNPAGINATE~ is ~t~, then this function makes as many requests as
     necessary to get all values.  If ~UNPAGINATE~ is a natural number,
-    then it gets at most that many pages.  For any other non-nil value
+    then it gets at most that many pages.  For any other non-~nil~ value
     it raises an error.
 
-  - If ~NOERROR~ is non-nil, then no error is raised if the request
+  - If ~NOERROR~ is non-~nil~, then no error is raised if the request
     fails and ~nil~ is returned instead.  If ~NOERROR~ is ~return~,
     then the error payload is returned instead of ~nil~.
 
-  - If ~READER~ is non-nil, then it is used to read and return from
+  - If ~READER~ is non-~nil~, then it is used to read and return from
     the response buffer.  The default is ~ghub--read-json-payload~.
     For the very few resources that do not return JSON, you might want
     to use ~ghub--decode-payload~.
 
-  - If ~USERNAME~ is non-nil, then the request is made on behalf of
+  - If ~USERNAME~ is non-~nil~, then the request is made on behalf of
     that user.  It is better to specify the user using the Git
     variable ~github.user~ for "api.github.com", or ~github.HOST.user~
     if connecting to a Github Enterprise instance.
@@ -440,7 +440,7 @@ manuals:
     the variable ~AUTH-github-token-scopes~.  It is an error if that
     is not specified.  See ~ghub-github-token-scopes~ for an example.
 
-  - If ~HOST~ is non-nil, then connect to that Github instance.
+  - If ~HOST~ is non-~nil~, then connect to that Github instance.
     This defaults to "api.github.com".  When a repository is connected
     to a Github Enterprise instance, then it is better to specify that
     using the Git variable ~github.host~ instead of using this
@@ -449,12 +449,12 @@ manuals:
   - If ~FORGE~ is ~gitlab~, then connect to Gitlab.com or, depending
     on ~HOST~, to another Gitlab instance.
 
-  - If ~CALLBACK~ and/or ~ERRORBACK~ is non-nil, then this function makes
+  - If ~CALLBACK~ and/or ~ERRORBACK~ is non-~nil~, then this function makes
     one or more asynchronous requests and calls ~CALLBACK~ or ~ERRORBACK~
     when finished.  If no error occurred, then it calls ~CALLBACK~,
     unless that is ~nil~.
 
-    If an error occurred, then it calls ~ERRORBACK~, or if that is nil,
+    If an error occurred, then it calls ~ERRORBACK~, or if that is ~nil~,
     then ~CALLBACK~.  ~ERRORBACK~ can also be ~t~, in which case it signals
     instead.  ~NOERROR~ is ignored for all asynchronous requests.
 
@@ -476,8 +476,8 @@ manuals:
 
   This function is only intended to be called from callbacks.  If
   there is a next page, then that is retrieved and the buffer that
-  the result will be loaded into is returned, or t if the process
-  has already completed.  If there is no next page, then return nil.
+  the result will be loaded into is returned, or ~t~ if the process
+  has already completed.  If there is no next page, then return ~nil~.
 
   Callbacks are called with four arguments (see ~ghub-request~).
   The forth argument is a ~ghub--req~ struct, intended to be passed
@@ -530,7 +530,7 @@ manuals:
 - Function: ghub-response-link-relations req headers payload ::
 
   This function returns an alist of the link relations in ~HEADERS~, or
-  if optional ~HEADERS~ is nil, then those in ~ghub-response-headers~.
+  if optional ~HEADERS~ is ~nil~, then those in ~ghub-response-headers~.
 
   When accessing a Bitbucket instance then the link relations are in
   ~PAYLOAD~ instead of ~HEADERS~, making their API merely RESTish and
@@ -626,7 +626,7 @@ also more opinionated.
   and want to avoid fetching data again that you already have.
 
   Other arguments behave as for ~ghub-graphql~ and ~ghub-request~, more or
-  less.  If ~CALLBACK~ is nil, pretty-print the response.
+  less.  If ~CALLBACK~ is ~nil~, pretty-print the response.
 
 Using ~ghub--graphql-vacuum~, the following resource specific functions
 are implemented.  These functions are not part of the public API yet
