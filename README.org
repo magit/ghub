@@ -23,7 +23,7 @@ wide adoption would make life easier for users and maintainers alike,
 because then all packages that talk to forge APIs could be configured
 the same way.
 
-Please consult the [[https://magit.vc/manual/ghub][manual]] for more information.
+Please consult the [[https://docs.magit.vc/ghub][manual]] for more information.
 
 #+html: <br><br>
 #+html: <a href="https://github.com/magit/ghub/actions/workflows/compile.yml"><img alt="Compile" src="https://github.com/magit/ghub/actions/workflows/compile.yml/badge.svg"/></a>

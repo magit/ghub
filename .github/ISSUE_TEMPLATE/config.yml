@@ -13,5 +13,5 @@ contact_links:
     url: https://github.com/magit/ghub/wiki/FAQ
     about: Others might have had the same question before.
   - name: "ℹ️ Ghub Manual"
-    url: https://magit.vc/manual/ghub/#Top
+    url: https://docs.magit.vc/ghub/#Top
     about: The fine manual may also be of use.
