@@ -10,6 +10,7 @@
 ;; Package-Requires: (
 ;;     (emacs   "29.1")
 ;;     (compat  "30.1")
+;;     (cond-let "0.2")
 ;;     (llama    "1.0")
 ;;     (treepy "0.1.2"))
 
@@ -57,6 +58,7 @@
 (require 'auth-source)
 (require 'cl-lib)
 (require 'compat)
+(require 'cond-let)
 (require 'gnutls)
 (require 'let-alist)
 (require 'llama)
@@ -598,26 +600,27 @@ Signal an error if the id cannot be determined."
 
 (defun ghub--read-json-payload (_status &optional json-type-args)
   (and-let* ((payload (ghub--decode-payload)))
-    (ghub--assert-json-available)
-    (condition-case nil
-        (apply #'json-parse-string payload
-               (or json-type-args
-                   '( :object-type alist
-                      :array-type list
-                      :null-object nil
-                      :false-object nil)))
-      (json-parse-error
-       (when ghub-debug
-         (pop-to-buffer (current-buffer)))
-       (setq-local ghub-debug t)
-       `((message . ,(if (looking-at "<!DOCTYPE html>")
-                         (if (re-search-forward
-                              "<p>\\(?:<strong>\\)?\\([^<]+\\)" nil t)
-                             (match-string 1)
-                           "error description missing")
-                       (string-trim (buffer-substring (point) (point-max)))))
-         (documentation_url
-          . "https://github.com/magit/ghub/wiki/Github-Errors"))))))
+    (progn
+      (ghub--assert-json-available)
+      (condition-case nil
+          (apply #'json-parse-string payload
+                 (or json-type-args
+                     '( :object-type alist
+                        :array-type list
+                        :null-object nil
+                        :false-object nil)))
+        (json-parse-error
+         (when ghub-debug
+           (pop-to-buffer (current-buffer)))
+         (setq-local ghub-debug t)
+         `((message . ,(if (looking-at "<!DOCTYPE html>")
+                           (if (re-search-forward
+                                "<p>\\(?:<strong>\\)?\\([^<]+\\)" nil t)
+                               (match-string 1)
+                             "error description missing")
+                         (string-trim (buffer-substring (point) (point-max)))))
+           (documentation_url
+            . "https://github.com/magit/ghub/wiki/Github-Errors")))))))
 
 (defun ghub--decode-payload (&optional _status)
   (and (not (eobp))
@@ -809,6 +812,13 @@ or (info \"(ghub)Getting Started\") for instructions."
           "config" "--get" var))))
 
 ;;; _
+;; Local Variables:
+;; read-symbol-shorthands: (
+;;   ("and-let"   . "cond-let--and-let")
+;;   ("if-let"    . "cond-let--if-let")
+;;   ("when-let"  . "cond-let--when-let")
+;;   ("while-let" . "cond-let--while-let"))
+;; End:
 (provide 'ghub)
 (require 'ghub-graphql)
 (require 'ghub-legacy)

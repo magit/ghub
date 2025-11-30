@@ -11,6 +11,7 @@ ELS  += $(PKG)-legacy.el
 ELCS  = $(ELS:.el=.elc)
 
 DEPS  = compat
+DEPS += cond-let
 DEPS += llama
 DEPS += treepy
 
@@ -18,9 +19,7 @@ VERSION ?= $(shell test -e $(TOP).git && git describe --tags --abbrev=0 | cut -c
 REVDESC := $(shell test -e $(TOP).git && git describe --tags)
 
 EMACS      ?= emacs
-EMACS_ARGS ?= --eval "(progn \
-  (put 'if-let 'byte-obsolete-info nil) \
-  (put 'when-let 'byte-obsolete-info nil))"
+EMACS_ARGS ?=
 
 LOAD_PATH  ?= $(addprefix -L ../../,$(DEPS))
 LOAD_PATH  += -L .
