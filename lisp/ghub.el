@@ -772,14 +772,14 @@ or (info \"(ghub)Getting Started\") for instructions."
 (cl-defmethod ghub--username (host &optional forge)
   (let* ((forge (or forge 'github))
          (host (or host (ghub--host forge)))
-         (var (format "%s.%s.user" forge host)))
-    (or (ghub--git-get var)
-        (if-let ((_(equal host (alist-get forge ghub-default-host-alist)))
-                 (default-var (format "%s.user" forge)))
-            (or (ghub--git-get default-var)
-                (user-error "%s; `%s' and `%s' are both unset"
-                            "Cannot determine username" var default-var))
-          (user-error "Cannot determine username; `%s' is unset" var)))))
+         (var (format "%s.%s.user" forge host))
+         (default-var (format "%s.user" forge)))
+    (cond ((ghub--git-get var))
+          ((not (equal host (alist-get forge ghub-default-host-alist)))
+           (user-error "Cannot determine username; `%s' is unset" var))
+          ((ghub--git-get default-var))
+          ((user-error "%s; `%s' and `%s' are both unset"
+                       "Cannot determine username" var default-var)))))
 
 (defun ghub--ident (username package)
   (format "%s^%s" username package))
