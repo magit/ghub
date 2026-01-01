@@ -812,6 +812,9 @@ or (info \"(ghub)Getting Started\") for instructions."
           "config" "--get" var))))
 
 ;;; _
+(provide 'ghub)
+(require 'ghub-graphql)
+(require 'ghub-legacy)
 ;; Local Variables:
 ;; read-symbol-shorthands: (
 ;;   ("and-let"   . "cond-let--and-let")
@@ -819,7 +822,4 @@ or (info \"(ghub)Getting Started\") for instructions."
 ;;   ("when-let"  . "cond-let--when-let")
 ;;   ("while-let" . "cond-let--while-let"))
 ;; End:
-(provide 'ghub)
-(require 'ghub-graphql)
-(require 'ghub-legacy)
 ;;; ghub.el ends here

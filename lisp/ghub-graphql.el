@@ -341,6 +341,7 @@ repositories.")
     (treepy-zipper branchp #'identity make-node root)))
 
 ;;; _
+(provide 'ghub-graphql)
 ;; Local Variables:
 ;; read-symbol-shorthands: (
 ;;   ("and-let"   . "cond-let--and-let")
@@ -348,5 +349,4 @@ repositories.")
 ;;   ("when-let"  . "cond-let--when-let")
 ;;   ("while-let" . "cond-let--while-let"))
 ;; End:
-(provide 'ghub-graphql)
 ;;; ghub-graphql.el ends here
