@@ -644,14 +644,14 @@ Signal an error if the id cannot be determined."
    (concat (if (member host ghub-insecure-hosts) "http://" "https://")
            ;; Needed for some Github Enterprise instances.
            (cond
-            ((and (equal resource "/graphql")
-                  (string-suffix-p "/v3" host))
-             (substring host 0 -3))
-            ;; Needed for all Gitlab instances.
-            ((and (equal resource "/api/graphql")
-                  (string-suffix-p "/api/v4" host))
-             (substring host 0 -7))
-            (host))
+             ((and (equal resource "/graphql")
+                   (string-suffix-p "/v3" host))
+              (substring host 0 -3))
+             ;; Needed for all Gitlab instances.
+             ((and (equal resource "/api/graphql")
+                   (string-suffix-p "/api/v4" host))
+              (substring host 0 -7))
+             (host))
            resource
            (and query (concat "?" (ghub--url-encode-params query))))))
 
