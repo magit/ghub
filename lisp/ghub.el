@@ -139,11 +139,11 @@ response headers in this variable.")
   "Make a `HEAD' request for RESOURCE, with optional query PARAMS.
 Like calling `ghub-request' (which see) with \"HEAD\" as METHOD."
   (ghub-request "HEAD" resource params
-                :query query :payload payload :headers headers
-                :silent silent :unpaginate unpaginate
-                :noerror noerror :reader reader
-                :username username :auth auth :host host
-                :callback callback :errorback errorback :extra extra))
+    :query query :payload payload :headers headers
+    :silent silent :unpaginate unpaginate
+    :noerror noerror :reader reader
+    :username username :auth auth :host host
+    :callback callback :errorback errorback :extra extra))
 
 (cl-defun ghub-get (resource
                     &optional params
@@ -154,11 +154,11 @@ Like calling `ghub-request' (which see) with \"HEAD\" as METHOD."
   "Make a `GET' request for RESOURCE, with optional query PARAMS.
 Like calling `ghub-request' (which see) with \"GET\" as METHOD."
   (ghub-request "GET" resource params
-                :query query :payload payload :headers headers
-                :silent silent :unpaginate unpaginate
-                :noerror noerror :reader reader
-                :username username :auth auth :host host :forge forge
-                :callback callback :errorback errorback :extra extra))
+    :query query :payload payload :headers headers
+    :silent silent :unpaginate unpaginate
+    :noerror noerror :reader reader
+    :username username :auth auth :host host :forge forge
+    :callback callback :errorback errorback :extra extra))
 
 (cl-defun ghub-put (resource
                     &optional params
@@ -169,11 +169,11 @@ Like calling `ghub-request' (which see) with \"GET\" as METHOD."
   "Make a `PUT' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"PUT\" as METHOD."
   (ghub-request "PUT" resource params
-                :query query :payload payload :headers headers
-                :silent silent :unpaginate unpaginate
-                :noerror noerror :reader reader
-                :username username :auth auth :host host :forge forge
-                :callback callback :errorback errorback :extra extra))
+    :query query :payload payload :headers headers
+    :silent silent :unpaginate unpaginate
+    :noerror noerror :reader reader
+    :username username :auth auth :host host :forge forge
+    :callback callback :errorback errorback :extra extra))
 
 (cl-defun ghub-post (resource
                      &optional params
@@ -184,11 +184,11 @@ Like calling `ghub-request' (which see) with \"PUT\" as METHOD."
   "Make a `POST' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"POST\" as METHOD."
   (ghub-request "POST" resource params
-                :query query :payload payload :headers headers
-                :silent silent :unpaginate unpaginate
-                :noerror noerror :reader reader
-                :username username :auth auth :host host :forge forge
-                :callback callback :errorback errorback :extra extra))
+    :query query :payload payload :headers headers
+    :silent silent :unpaginate unpaginate
+    :noerror noerror :reader reader
+    :username username :auth auth :host host :forge forge
+    :callback callback :errorback errorback :extra extra))
 
 (cl-defun ghub-patch (resource
                       &optional params
@@ -199,11 +199,11 @@ Like calling `ghub-request' (which see) with \"POST\" as METHOD."
   "Make a `PATCH' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"PATCH\" as METHOD."
   (ghub-request "PATCH" resource params
-                :query query :payload payload :headers headers
-                :silent silent :unpaginate unpaginate
-                :noerror noerror :reader reader
-                :username username :auth auth :host host :forge forge
-                :callback callback :errorback errorback :extra extra))
+    :query query :payload payload :headers headers
+    :silent silent :unpaginate unpaginate
+    :noerror noerror :reader reader
+    :username username :auth auth :host host :forge forge
+    :callback callback :errorback errorback :extra extra))
 
 (cl-defun ghub-delete (resource
                        &optional params
@@ -214,11 +214,11 @@ Like calling `ghub-request' (which see) with \"PATCH\" as METHOD."
   "Make a `DELETE' request for RESOURCE, with optional payload PARAMS.
 Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
   (ghub-request "DELETE" resource params
-                :query query :payload payload :headers headers
-                :silent silent :unpaginate unpaginate
-                :noerror noerror :reader reader
-                :username username :auth auth :host host :forge forge
-                :callback callback :errorback errorback :extra extra))
+    :query query :payload payload :headers headers
+    :silent silent :unpaginate unpaginate
+    :noerror noerror :reader reader
+    :username username :auth auth :host host :forge forge
+    :callback callback :errorback errorback :extra extra))
 
 (cl-defun ghub-request ( method resource
                          &optional params
@@ -391,11 +391,11 @@ See `ghub-request' for information about the other arguments."
   (with-local-quit
     (let ((total 0))
       (while (not (ghub-request "GET" resource nil
-                                :noerror t
-                                :username username
-                                :auth auth
-                                :host host
-                                :forge forge))
+                    :noerror t
+                    :username username
+                    :auth auth
+                    :host host
+                    :forge forge))
         (message "Waited (%3ss of %ss) for %s..." total duration resource)
         (if (= total duration)
             (error "%s is taking too long to create %s"

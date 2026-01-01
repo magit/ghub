@@ -40,14 +40,14 @@
   (unless (stringp graphql)
     (setq graphql (gsexp-encode (ghub--graphql-prepare-query graphql))))
   (ghub-request "POST"
-                (if (eq forge 'gitlab) "/api/graphql" "/graphql")
-                nil
-                :payload `((query . ,graphql)
-                           ,@(and variables `((variables ,@variables))))
-                :headers headers :silent silent
-                :username username :auth auth :host host :forge forge
-                :callback callback :errorback errorback
-                :extra extra :value value))
+    (if (eq forge 'gitlab) "/api/graphql" "/graphql")
+    nil
+    :payload `((query . ,graphql)
+               ,@(and variables `((variables ,@variables))))
+    :headers headers :silent silent
+    :username username :auth auth :host host :forge forge
+    :callback callback :errorback errorback
+    :extra extra :value value))
 
 (cl-defun ghub--graphql (graphql
                          &optional variables
@@ -268,18 +268,18 @@ data as the only argument."
   (ghub-query (if sparse
                   ghub-fetch-repository-sparse
                 ghub-fetch-repository)
-              `((owner . ,owner)
-                (name  . ,name))
-              :until     until
-              :narrow    '(repository)
-              :username  username
-              :auth      auth
-              :host      host
-              :forge     forge
-              :headers   headers
-              :paginate  paginate
-              :callback  callback
-              :errorback errorback))
+    `((owner . ,owner)
+      (name  . ,name))
+    :until     until
+    :narrow    '(repository)
+    :username  username
+    :auth      auth
+    :host      host
+    :forge     forge
+    :headers   headers
+    :paginate  paginate
+    :callback  callback
+    :errorback errorback))
 
 (cl-defun ghub-fetch-discussion ( owner name number callback
                                   &optional until
@@ -291,17 +291,17 @@ data as the only argument."
   (ghub-query (ghub--graphql-prepare-query
                ghub-fetch-repository
                `(repository discussions (discussion . ,number)))
-              `((owner . ,owner)
-                (name  . ,name))
-              :until     until
-              :narrow    '(repository discussion)
-              :username  username
-              :auth      auth
-              :host      host
-              :forge     forge
-              :headers   headers
-              :callback  callback
-              :errorback errorback))
+    `((owner . ,owner)
+      (name  . ,name))
+    :until     until
+    :narrow    '(repository discussion)
+    :username  username
+    :auth      auth
+    :host      host
+    :forge     forge
+    :headers   headers
+    :callback  callback
+    :errorback errorback))
 
 (cl-defun ghub-fetch-issue ( owner name number callback
                              &optional until
@@ -313,18 +313,18 @@ data as the only argument."
   (ghub-query (ghub--graphql-narrow-query
                ghub-fetch-repository
                `(repository issues (issue . ,number)))
-              `((owner . ,owner)
-                (name  . ,name))
-              :until     until
-              :narrow    '(repository issue)
-              :username  username
-              :auth      auth
-              :host      host
-              :forge     forge
-              :headers   headers
-              :paginate  paginate
-              :callback  callback
-              :errorback errorback))
+    `((owner . ,owner)
+      (name  . ,name))
+    :until     until
+    :narrow    '(repository issue)
+    :username  username
+    :auth      auth
+    :host      host
+    :forge     forge
+    :headers   headers
+    :paginate  paginate
+    :callback  callback
+    :errorback errorback))
 
 (cl-defun ghub-fetch-pullreq ( owner name number callback
                                &optional until
@@ -336,18 +336,18 @@ data as the only argument."
   (ghub-query (ghub--graphql-narrow-query
                ghub-fetch-repository
                `(repository pullRequests (pullRequest . ,number)))
-              `((owner . ,owner)
-                (name  . ,name))
-              :until     until
-              :narrow    '(repository pullRequest)
-              :username  username
-              :auth      auth
-              :host      host
-              :forge     forge
-              :headers   headers
-              :paginate  paginate
-              :callback  callback
-              :errorback errorback))
+    `((owner . ,owner)
+      (name  . ,name))
+    :until     until
+    :narrow    '(repository pullRequest)
+    :username  username
+    :auth      auth
+    :host      host
+    :forge     forge
+    :headers   headers
+    :paginate  paginate
+    :callback  callback
+    :errorback errorback))
 
 (cl-defun ghub-fetch-review-threads ( owner name number callback
                                       &optional until
@@ -359,18 +359,18 @@ data as the only argument."
   (ghub-query (ghub--graphql-narrow-query
                ghub-fetch-repository-review-threads
                `(repository pullRequests (pullRequest . ,number)))
-              `((owner . ,owner)
-                (name  . ,name))
-              :until     until
-              :narrow    '(repository pullRequest)
-              :username  username
-              :auth      auth
-              :host      host
-              :forge     forge
-              :headers   headers
-              :paginate  paginate
-              :callback  callback
-              :errorback errorback))
+    `((owner . ,owner)
+      (name  . ,name))
+    :until     until
+    :narrow    '(repository pullRequest)
+    :username  username
+    :auth      auth
+    :host      host
+    :forge     forge
+    :headers   headers
+    :paginate  paginate
+    :callback  callback
+    :errorback errorback))
 
 ;;; _
 (provide 'ghub-legacy)
