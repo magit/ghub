@@ -253,7 +253,8 @@ token can be used.
 Before you create a token to be used for a certain package, you should
 consult the documentation of that package, which in turn should tell
 you which scopes are needed and why.  The Forge package for example
-does so in [[info:forge#Token Creation]].
+does so in [[info:forge#Setup for Githubcom]] and [[info:forge#Setup for
+Gitlabcom]].
 
 *** Storing a Token
 

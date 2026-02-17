@@ -358,7 +358,7 @@ token can be used.
 Before you create a token to be used for a certain package, you should
 consult the documentation of that package, which in turn should tell
 you which scopes are needed and why.  The Forge package for example
-does so in @ref{Token Creation,,,forge,}.
+does so in @ref{Setup for Githubcom,,,forge,} and @ref{Setup for Gitlabcom,,,forge,}.
 
 @anchor{Storing a Token}
 @subsection Storing a Token
