@@ -1,4 +1,9 @@
 # -*- mode: org -*-
+* v5.1.0    UNRELEASED
+
+- Loading ~ghub~ no longer loads ~ghub-legacy~ and the functions defined
+  in the latter are now declared obsolete.
+
 * v5.0.4    2026-03-01
 
 - Thoughts and whitespace.

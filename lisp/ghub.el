@@ -815,7 +815,6 @@ or (info \"(ghub)Getting Started\") for instructions."
 ;;; _
 (provide 'ghub)
 (require 'ghub-graphql)
-(require 'ghub-legacy)
 ;; Local Variables:
 ;; read-symbol-shorthands: (
 ;;   ("and-let"   . "cond-let--and-let")

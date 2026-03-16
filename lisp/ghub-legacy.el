@@ -34,6 +34,7 @@
                         &key username auth host forge
                         headers silent
                         callback errorback value extra)
+  (declare (obsolete ghub-query "Ghub 5.1.0"))
   (cl-assert (not (stringp variables)))
   (cl-assert (or (stringp graphql)
                  (memq (car-safe graphql) '(query mutation))))
@@ -54,6 +55,7 @@
                          &key username auth host forge
                          headers
                          callback errorback)
+  (declare (obsolete ghub-query "Ghub 5.1.0"))
   (ghub--graphql-vacuum graphql variables callback nil
                         :username  username
                         :auth      auth
@@ -67,6 +69,7 @@
       &optional until
       &key narrow username auth host forge
       headers paginate errorback noerror synchronous)
+  (declare (obsolete ghub-query "Ghub 5.1.0"))
   (ghub-query query variables
     :until until :narrow narrow :headers headers :paginate paginate
     :callback callback
@@ -265,6 +268,7 @@
   "Asynchronously fetch forge data about the specified repository.
 Once all data has been collected, CALLBACK is called with the
 data as the only argument."
+  (declare (obsolete nil "Ghub 5.1.0"))
   (ghub-query (if sparse
                   ghub-fetch-repository-sparse
                 ghub-fetch-repository)
@@ -288,6 +292,7 @@ data as the only argument."
   "Asynchronously fetch forge data about the specified discussion.
 Once all data has been collected, CALLBACK is called with the
 data as the only argument."
+  (declare (obsolete nil "Ghub 5.1.0"))
   (ghub-query (ghub--graphql-prepare-query
                ghub-fetch-repository
                `(repository discussions (discussion . ,number)))
@@ -310,6 +315,7 @@ data as the only argument."
   "Asynchronously fetch forge data about the specified issue.
 Once all data has been collected, CALLBACK is called with the
 data as the only argument."
+  (declare (obsolete nil "Ghub 5.1.0"))
   (ghub-query (ghub--graphql-narrow-query
                ghub-fetch-repository
                `(repository issues (issue . ,number)))
@@ -356,6 +362,7 @@ data as the only argument."
   "Asynchronously fetch forge data about the review threads from a pull-request.
 Once all data has been collected, CALLBACK is called with the
 data as the only argument."
+  (declare (obsolete nil "Ghub 5.1.0"))
   (ghub-query (ghub--graphql-narrow-query
                ghub-fetch-repository-review-threads
                `(repository pullRequests (pullRequest . ,number)))
