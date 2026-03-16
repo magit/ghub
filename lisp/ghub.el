@@ -442,14 +442,15 @@ this function is called with nil for PAYLOAD."
 Signal an error if the id cannot be determined."
   (or (pcase forge
         ((or 'nil 'github)
-         (let-alist (ghub-graphql
-                     '(query (repository [(owner $owner String!)
-                                          (name  $name  String!)]
-                                         id))
-                     `((owner . ,owner)
-                       (name  . ,name))
-                     :username username :auth auth :host host)
-           .data.repository.id))
+         (let-alist (ghub-query
+                      '(query (repository [(owner $owner String!)
+                                           (name  $name  String!)]
+                                          id))
+                      `((owner . ,owner)
+                        (name  . ,name))
+                      :synchronous t
+                      :username username :auth auth :host host)
+           .repository.id))
         ('gitlab
          (number-to-string
           (alist-get
