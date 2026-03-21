@@ -120,9 +120,10 @@ repositories.")
     (with-current-buffer (get-buffer-create " *gsexp-encode*")
       (erase-buffer)
       (insert (ghub--graphql-req-query-str req) "\n\n")
-      (let ((pos (point)))
-        (insert (ghub--encode-payload (ghub--graphql-req-variables req)) "\n")
-        (ignore-errors (json-pretty-print pos (point))))))
+      (when-let ((payload (ghub--graphql-req-variables req)))
+        (let ((pos (point)))
+          (insert (ghub--encode-payload payload) "\n")
+          (ignore-errors (json-pretty-print pos (point)))))))
   (ghub--retrieve
    (ghub--encode-payload
     `((query . ,(ghub--graphql-req-query-str req))
