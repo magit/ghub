@@ -1,8 +1,17 @@
 # -*- mode: org -*-
-* v5.1.0    UNRELEASED
+* v5.1.0    2026-04-01
 
 - Loading ~ghub~ no longer loads ~ghub-legacy~ and the functions defined
-  in the latter are now declared obsolete.
+  in the latter are now declared obsolete.  a81e83c
+
+- Callbacks and errorbacks no longer have to accept four mandatory
+  arguments, they can also just accept one.  42ebf09
+
+- The debugger no longer falsely assumes all GraphQL queries come
+  with a payload/variables.  f1cd5be
+
+- GraphQL errors can now be ignored, which allows processing the
+  data received for the subqueries that succeeded.  3866c82
 
 * v5.0.4    2026-03-01
 

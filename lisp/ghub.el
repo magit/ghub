@@ -6,13 +6,13 @@
 ;; Homepage: https://github.com/magit/ghub
 ;; Keywords: tools
 
-;; Package-Version: 5.0.4
+;; Package-Version: 5.1.0
 ;; Package-Requires: (
 ;;     (emacs   "29.1")
 ;;     (compat  "30.1")
 ;;     (cond-let "0.2")
 ;;     (llama    "1.0")
-;;     (treepy "0.1.2"))
+;;     (treepy "0.1.3"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
