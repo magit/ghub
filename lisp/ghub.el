@@ -78,6 +78,7 @@
 (defvar ghub-default-host-alist
   '((github    . "api.github.com")
     (gitlab    . "gitlab.com/api/v4")
+    (forgejo   . "codeberg.org/api/v1")
     (bitbucket . "api.bitbucket.org/2.0"))
   "Alist of default hosts used when the respective `FORGE.host' is not set.")
 
