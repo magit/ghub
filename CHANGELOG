@@ -1,4 +1,8 @@
 # -*- mode: org -*-
+* v5.2.0    UNRELEASED
+
+- Fixed username lookup to work as documented.
+
 * v5.1.0    2026-04-01
 
 - Loading ~ghub~ no longer loads ~ghub-legacy~ and the functions defined
