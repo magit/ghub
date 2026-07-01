@@ -1,4 +1,8 @@
 # -*- mode: org -*-
+* v5.2.2    2026-07-01
+
+- Raised shields.
+
 * v5.2.1    2026-06-01
 
 - Increased robustness and backward compatibility or ~ghub--token~
