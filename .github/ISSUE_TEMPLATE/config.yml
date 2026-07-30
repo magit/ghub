@@ -1,17 +1,23 @@
 blank_issues_enabled: false
 contact_links:
-  - name: "💡 Suggest a feature"
-    url: https://github.com/magit/ghub/discussions
-    about: Start a discussion suggest an improvement or a new feature.
+  - name: "⁉️ Unsure if this is a bug, suggestion or support request 👉 please open a discussion 👈"
+    url: https://github.com/magit/ghub/discussions/categories/triage
+    about: Start a discussion without having to specify its kind upfront.
+  - name: "💕 Please support my work on Ghub and other Emacs projects"
+    url: https://github.com/sponsors/tarsius
+    about: Thanks! Any support helps. These donations from users are my only income.
+  - name: "💡 Suggest a feature 👉 please open a discussion instead of an issue 👈"
+    url: https://github.com/magit/ghub/discussions/categories/ideas
+    about: Start a discussion suggesting an improvement or a new feature.
   - name: "🆘 Ask the community for support"
     url: https://www.reddit.com/r/emacs
     about: Please also consider supporting others.
-  - name: "🆘 Ask the maintainers for support"
-    url: https://github.com/magit/ghub/discussions
+  - name: "🆘 Ask the maintainers for support 👉 please open a discussion 👈"
+    url: https://github.com/magit/ghub/discussions/categories/support
     about: Please keep in mind that our bandwidth is limited.
   - name: "ℹ️ Ghub FAQ"
-    url: https://github.com/magit/ghub/wiki/FAQ
+    url: https://docs.magit.vc/ghub/FAQ.html
     about: Others might have had the same question before.
   - name: "ℹ️ Ghub Manual"
-    url: https://docs.magit.vc/ghub/#Top
+    url: https://docs.magit.vc/ghub
     about: The fine manual may also be of use.

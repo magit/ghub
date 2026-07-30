@@ -781,6 +781,13 @@ needs; and explain what they are needed for.
               nil :forge 'gitlab)
   #+END_SRC
 
+* FAQ
+:PROPERTIES:
+:APPENDIX:   t
+:END:
+
+See https://github.com/magit/ghub/wiki/Github-Errors.
+
 * Function Index
 :PROPERTIES:
 :APPENDIX:   t

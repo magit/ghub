@@ -58,6 +58,7 @@ This manual is for Ghub version 5.2.2.
 * Getting Started::
 * API::
 * Notes::
+* FAQ::
 * Function Index::
 * Variable Index::
 
@@ -971,6 +972,11 @@ to use @code{user%2Frepo} when accessing Gitlab, e.g.:
           nil :forge 'gitlab)
 @end lisp
 @end itemize
+
+@node FAQ
+@appendix FAQ
+
+See @uref{https://github.com/magit/ghub/wiki/Github-Errors}.
 
 @node Function Index
 @appendix Function Index
