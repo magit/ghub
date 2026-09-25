@@ -31,8 +31,6 @@
 (require 'gsexp)
 (require 'treepy)
 
-(eval-when-compile (require 'subr-x))
-
 (define-error 'ghub-graphql-error "GraphQL Error" 'ghub-error)
 
 (defvar ghub-graphql-message-progress nil
