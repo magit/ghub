@@ -1,4 +1,8 @@
 # -*- mode: org -*-
+* v5.3.3    2026-10-01
+
+- Thoughts and whitespace.
+
 * v5.3.2    2026-09-02
 
 - Downgraded the minimal version of a dependency to a version that
