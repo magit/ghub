@@ -30,3 +30,4 @@ Please consult the [[https://docs.magit.vc/ghub][manual]] for more information.
 #+html: <a href="https://github.com/magit/ghub/actions/workflows/manual.yml"><img alt="Manual" src="https://github.com/magit/ghub/actions/workflows/manual.yml/badge.svg"/></a>
 #+html: <a href="https://snapshots.melpa.org/#/ghub"><img alt="MELPA Snapshots" src="https://snapshots.melpa.org/packages/ghub-badge.svg"/></a>
 #+html: <a href="https://releases.melpa.org/#/ghub"><img alt="MELPA Releases" src="https://releases.melpa.org/packages/ghub-badge.svg"/></a>
+#+html: <a href="https://emacsair.me/human"><img alt="human made" src="https://emacsair.me/assets/badges/human.svg"/></a>
