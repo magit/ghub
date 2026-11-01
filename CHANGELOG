@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v5.4.0    UNRELEASED
+* v5.4.0    2026-11-01
 
 - ~ghub-query~'s ~noerror~ argument can now be a function, which can
   be used to filter out expected errors.  magit/forge#878
