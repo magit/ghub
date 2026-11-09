@@ -27,7 +27,7 @@
 
 * v5.2.1    2026-06-01
 
-- Increased robustness and backward compatibility or ~ghub--token~
+- Increased robustness and backward compatibility of ~ghub--token~
   and ~ghub--username~.
 
 * v5.2.0    2026-05-01
