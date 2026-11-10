@@ -48,6 +48,8 @@
      (concat (format "%s: " (caar field))
              (gsexp--encode-field (cons (car (cdar field))
                                         (cdr field)))))
+    ((stringp (car field))
+     (apply #'format "%s: %s" field))
     ((concat
       (pcase (pop field)
         (`[] "")
